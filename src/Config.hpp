@@ -4,9 +4,6 @@
 #include <map>
 #include <string>
 
-typedef void (*ParseFunc)(std::string);
-typedef std::map<std::string, ParseFunc> ParseMap;
-
 
 class Config
 {
@@ -24,7 +21,6 @@ private:
   int width;
   int height;
 
-  ParseMap parseHandler;
   void timeDef(std::string val);
   void widthDef(std::string val);
   void heightDef(std::string val);
