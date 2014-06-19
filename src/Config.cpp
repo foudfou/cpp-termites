@@ -61,6 +61,7 @@ bool Config::read(std::string const& configFile) {
     parseConsume(key, val);
   }
 
+  return true;
 }
 
 void Config::timeDef(std::string val)
