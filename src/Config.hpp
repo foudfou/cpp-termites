@@ -1,14 +1,19 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#include <functional>
 #include <map>
 #include <string>
 
 
 class Config
 {
-  typedef void (Config::* ParseFunc)(std::string);
-  typedef std::map<std::string, ParseFunc> ParseMap;
+  using ParseFunc = std::function<void(Config&, std::string const&)>;
+  std::map<std::string, ParseFunc> parseHandler {
+    {"temps",   std::mem_fn(&Config::timeDef)},
+    {"largeur", std::mem_fn(&Config::widthDef)},
+    {"hauteur", std::mem_fn(&Config::heightDef)},
+  };
 
 public:
   Config();
@@ -24,7 +29,6 @@ private:
   int width;
   int height;
 
-  ParseMap parseHandler;
   void timeDef(std::string val);
   void widthDef(std::string val);
   void heightDef(std::string val);
