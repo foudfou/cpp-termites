@@ -7,6 +7,9 @@
 
 class Config
 {
+  typedef void (Config::* ParseFunc)(std::string);
+  typedef std::map<std::string, ParseFunc> ParseMap;
+
 public:
   Config();
   virtual ~Config();
@@ -21,6 +24,7 @@ private:
   int width;
   int height;
 
+  ParseMap parseHandler;
   void timeDef(std::string val);
   void widthDef(std::string val);
   void heightDef(std::string val);

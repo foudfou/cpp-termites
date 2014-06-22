@@ -6,8 +6,13 @@
 #include "helpers.hpp"
 #include "log.h"
 
+#define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
+
 
 Config::Config() {
+  parseHandler["temps"]   = &Config::timeDef;
+  parseHandler["largeur"] = &Config::widthDef;
+  parseHandler["hauteur"] = &Config::heightDef;
 }
 
 Config::~Config() {}
@@ -84,12 +89,11 @@ void Config::heightDef(std::string val)
 
 void Config::parseConsume(const std::string& key, const std::string& val)
 {
-  if (key == "temps") timeDef(val);
-  else if (key == "largeur") widthDef(val);
-  else if (key == "hauteur") heightDef(val);
-  else
+  ParseMap::iterator iter = parseHandler.find(key);
+  if (iter == parseHandler.end())
   {
     std::cerr << "Unknown key: " << key << std::endl;
     return;
   }
+  CALL_MEMBER_FN(*this,iter->second)(val);
 }
