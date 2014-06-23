@@ -1,0 +1,7 @@
+#! /usr/bin/env python
+bld(
+    features = 'cxx cxxprogram',
+    source   = bld.path.ant_glob('*.cpp'),
+    target   = 'termites',
+    includes = '../include .',
+)
