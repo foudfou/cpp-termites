@@ -63,20 +63,30 @@ bool Config::read(std::string const& configFile) {
 
 void Config::timeDef(std::string val)
 {
+  time = atoi(val.c_str());
   FILE_LOG(logDEBUG) << "TIME=" << val;
-  setTime(atoi(val.c_str()));
 }
 
 void Config::widthDef(std::string val)
 {
+  width = atoi(val.c_str());
   FILE_LOG(logDEBUG) << "WIDTH=" << val;
-  setWidth(atoi(val.c_str()));
 }
 
 void Config::heightDef(std::string val)
 {
+  height = atoi(val.c_str());
   FILE_LOG(logDEBUG) << "HEIGHT=" << val;
-  setHeight(atoi(val.c_str()));
+}
+
+void Config::chipsDef(std::string val)
+{
+  chips = tokenizeToMap(extractParens(val));
+  if (FILELog::ReportingLevel() >= logDEBUG) {
+    std::string chipsStr;
+    for (auto chip: chips) chipsStr += chip.first + '|';
+    FILE_LOG(logDEBUG) <<  "CHIPS=|" << chipsStr;
+  }
 }
 
 void Config::parseConsume(const std::string& key, const std::string& val)

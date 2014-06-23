@@ -13,6 +13,7 @@ class Config
     {"temps",   std::mem_fn(&Config::timeDef)},
     {"largeur", std::mem_fn(&Config::widthDef)},
     {"hauteur", std::mem_fn(&Config::heightDef)},
+    {"copeaux", std::mem_fn(&Config::chipsDef)},
   };
 
 public:
@@ -20,18 +21,17 @@ public:
   virtual ~Config();
 
   bool read(std::string const& configFile);
-  void setTime(int t) {Config::time = t;}
-  void setWidth(int t) {Config::width = t;}
-  void setHeight(int t) {Config::height = t;}
 
 private:
   int time;
   int width;
   int height;
+  std::map<std::string, int> chips;
 
   void timeDef(std::string val);
   void widthDef(std::string val);
   void heightDef(std::string val);
+  void chipsDef(std::string val);
   void parseConsume(const std::string& key, const std::string& val);
 };
 
