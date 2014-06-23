@@ -2,6 +2,7 @@
 #define _CONFIG_H_
 
 #include <functional>
+#include <iostream>
 #include <map>
 #include <string>
 
@@ -33,6 +34,10 @@ private:
   void heightDef(std::string val);
   void chipsDef(std::string val);
   void parseConsume(const std::string& key, const std::string& val);
+
+  inline void reportErr(std::string cfgFile, int line) {
+    std::cerr << "Wrong format: " << cfgFile << ":" << line << std::endl;
+  }
 };
 
 #endif /* _CONFIG_H_ */

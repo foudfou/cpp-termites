@@ -6,6 +6,7 @@
 #include "helpers.hpp"
 #include "log.h"
 
+
 Config::Config() {}
 
 Config::~Config() {}
@@ -50,12 +51,19 @@ bool Config::read(std::string const& configFile) {
     posColon = line.find(':');
     if (posColon == std::string::npos)
     {
-      std::cerr << "Wrong format: " << configFile << ":" << lineNb << std::endl;
+      reportErr(configFile, lineNb);
       return false;
     }
     key = trim(line.substr(0,posColon));
     val = trim(line.substr(posColon+1));
-    parseConsume(key, val);
+    try
+    {
+      parseConsume(key, val);
+    }
+    catch(const std::invalid_argument& err)
+    {
+      reportErr(configFile, lineNb);
+    }
   }
 
   return true;
@@ -63,20 +71,20 @@ bool Config::read(std::string const& configFile) {
 
 void Config::timeDef(std::string val)
 {
-  time = atoi(val.c_str());
-  FILE_LOG(logDEBUG) << "TIME=" << val;
+  time = std::stoi(val.c_str());
+  FILE_LOG(logDEBUG) << "TIME=" << time;
 }
 
 void Config::widthDef(std::string val)
 {
-  width = atoi(val.c_str());
-  FILE_LOG(logDEBUG) << "WIDTH=" << val;
+  width = std::stoi(val.c_str());
+  FILE_LOG(logDEBUG) << "WIDTH=" << width;
 }
 
 void Config::heightDef(std::string val)
 {
-  height = atoi(val.c_str());
-  FILE_LOG(logDEBUG) << "HEIGHT=" << val;
+  height = std::stoi(val.c_str());
+  FILE_LOG(logDEBUG) << "HEIGHT=" << height;
 }
 
 void Config::chipsDef(std::string val)
