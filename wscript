@@ -18,14 +18,7 @@ def configure(cnf):
         features='cxx cxxprogram',
         cflags=['-Wall'],
     )
+    cnf.recurse('src test')
 
 def build(bld):
-    bld.program(
-        features = 'cxx cxxprogram',
-        source   = bld.path.ant_glob('src/*.cpp'),
-        target   = 'termites',
-        # includes = 'src',
-    )
-
-def foo(ctx):
-    print(type(ctx))
+    bld.recurse('src test')
