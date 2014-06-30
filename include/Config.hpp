@@ -18,9 +18,9 @@ public:
   bool read(std::string const& configFile);
 
 private:
-  int time;
-  int width;
-  int height;
+  // int time;
+  // int width;
+  // int height;
   std::map<std::string, int> chips;
 
   inline void reportErr(std::string cfgFile, int line) {

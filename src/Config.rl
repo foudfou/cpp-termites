@@ -59,6 +59,7 @@ copeau : baobab 1 3
     FILE_LOG(logDEBUG) << "size=" << len;
     num = strndup(tok, len);
     FILE_LOG(logDEBUG) << "tok2=" << num;
+    free(num);
     FILE_LOG(logDEBUG) << "LEAVING";
   }
 
@@ -94,7 +95,7 @@ bool Config::read(std::string const& configFile) {
 
   int cs = 0;
   const char *p, *pe;
-  p = strdup(conf.c_str()); // pointer begin
+  p = conf.c_str();         // pointer begin
   pe = p + strlen(p) + 1;   // pointer end
   char *eof = NULL;
   int line_count = 0;
