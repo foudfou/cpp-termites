@@ -1,0 +1,31 @@
+#! /usr/bin/env python
+
+def build(bld):
+    sources = bld.path.ant_glob('*.cpp')
+    bld.program(
+        features = 'cxx cxxprogram',
+        source   = ['Config.rl'] + sources,
+        target   = 'termites',
+        includes = '../include .',
+        using    = 'rl/termites_conf.rl',
+    )
+    bld.add_manual_dependency(
+        bld.path.find_node('Config.rl'),
+        bld.path.find_node('rl/termites_conf.rl'))
+
+
+
+from waflib.Task import Task
+from waflib.TaskGen import extension
+
+class ragel(Task):
+    run_str = 'ragel ${SRC} -o ${TGT}'
+    color   = 'BLUE'
+    ext_out = ['.cpp']
+
+@extension('.rl')
+def process_rl(self, node):
+    cpp_node = node.change_ext('.cpp')
+    tsk = self.create_task('ragel', node, cpp_node)
+    # self.source.append(cpp_node)
+    self.source.extend(tsk.outputs)

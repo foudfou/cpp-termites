@@ -10,8 +10,6 @@ out = 'build'
 def options(opt):
     opt.load('compiler_c compiler_cxx')
     opt.load('waf_unit_test')
-    opt.add_option('--disable-tests', action='store_true', default=False,
-                   dest='notest', help='do not build tests')
 
 
 def configure(cnf):
@@ -24,7 +22,7 @@ def configure(cnf):
         features='cxx cxxprogram',
         cflags=['-Wall'],
     )
-    # we don't cnf.recurse() as long as there are only wscript_build underneath
+    cnf.find_program('ragel')
 
 
 def build(bld):
