@@ -3,11 +3,8 @@
 
 long fileSize(const std::string& filename);
 
-std::string trim(std::string const& source, char const* delims = " \t\r\n");
+void safefree(void **pp);
 
-std::string extractParens(std::string const& source);
-
-std::map<std::string, int>
-tokenizeToMap(std::string const& source, char const* delims = " \t");
+std::string btos(const bool& b);
 
 #endif /* _HELPERS_H_ */

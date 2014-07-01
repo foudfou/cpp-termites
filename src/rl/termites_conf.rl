@@ -2,34 +2,35 @@
 
   machine termites_conf_core;
 
-  ws = [\t\v\f ];    # whitespace
-  eol = '\r'? '\n';
-  cont = '\\' eol;   # continuation
+  WS = [\t\v\f ];    # whitespace
+  EOL = '\r'? '\n';
+  CONT = '\\' EOL;   # continuation
 
-  def =  ws* ':' ws*;
+  def =  WS* ':' WS*;
   integer = digit+;
   word = alpha+;
-  list = '(' ws* word ( ws+ word )* ws* ')';
-  key_val = word ws+ list;
-  hash =  key_val ( ws+ key_val )* ;
-  coord = integer ws+ integer;
+  list = '(' WS* word ( WS+ word )* WS* ')';
+  key_val = word WS+ list;
+  hash =  key_val ( WS+ key_val )* ;
+  coord = integer WS+ integer;
 
   # action attached to the previous rule/token
-  temps_def    = 'temps'    def integer >start_value %write_value;
+  temps_def    = 'temps'    def integer >mark %time_def;
   largeur_def  = 'largeur'  def integer %{ FILE_LOG(logDEBUG) << "largeur_def"; };
   hauteur_def  = 'hauteur'  def integer %{ FILE_LOG(logDEBUG) << "hauteur_def"; };
   copeaux_def  = 'copeaux'  def list %{ FILE_LOG(logDEBUG) << "copeaux_def"; };
   termites_def = 'termites' def hash %{ FILE_LOG(logDEBUG) << "termites_def"; };
-  termite_def  = 'termite'  def word ws+ coord %{ FILE_LOG(logDEBUG) << "termite_def"; };
-  copeau_def   = 'copeau'   def word ws+ coord %{ FILE_LOG(logDEBUG) << "copeau_def"; };
+  termite_def  = 'termite'  def word WS+ coord %{ FILE_LOG(logDEBUG) << "termite_def"; };
+  copeau_def   = 'copeau'   def word WS+ coord %{ FILE_LOG(logDEBUG) << "copeau_def"; };
 
-  line_comment = ws* '#' (any - eol)* %{ FILE_LOG(logDEBUG) << "#"; };
-  line_void    = ws* %{ FILE_LOG(logDEBUG) << "\\n"; };
-  line_def     = ws* ( temps_def | largeur_def | hauteur_def | copeaux_def |
-                       termites_def | termite_def | copeau_def ) ws*;
+  line_comment = WS* '#' (any - EOL)* %{ FILE_LOG(logDEBUG) << "#"; };
+  line_void    = WS* %{ FILE_LOG(logDEBUG) << "\\n"; };
+  line_def     = WS* ( temps_def | largeur_def | hauteur_def | copeaux_def |
+                       termites_def | termite_def | copeau_def ) WS*;
 
-  line = ( line_void | line_comment | line_def ) eol >line_count_inc;
+  line = ( line_comment | line_void | line_def ) EOL >line_count_inc;
 
-  main := ( line )* <>!error_any;
+  main := line+ $!error_any;
+  # $err{ FILE_LOG(logERROR) << "error: " << fc << ", after: " << int(*(p-1));};
 
 }%%

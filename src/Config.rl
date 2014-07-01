@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include "helpers.hpp"
@@ -36,38 +37,31 @@ copeau : baobab 1 3
   machine termites_conf;
 
   action error_any {
-    FILE_LOG(logERROR) << "Parse error at line " << line_count;
+    FILE_LOG(logERROR) << "Parse error at line " << lineCount;
     fbreak;
     /* fhold; */
     /* fgoto line; */
   }
 
   action line_count_inc {
-    ++line_count;
-    FILE_LOG(logDEBUG) << "line=" << line_count;
+    ++lineCount;
   }
 
-  action start_value {
+  action mark {
     tok = fpc;
-    FILE_LOG(logDEBUG) << "START at=" << *tok;
   }
-  action write_value {
-    char *num;
-    int len;
-    FILE_LOG(logDEBUG) << "tok1=" << *tok;
-    len = fpc - tok;
-    FILE_LOG(logDEBUG) << "size=" << len;
-    num = strndup(tok, len);
-    FILE_LOG(logDEBUG) << "tok2=" << num;
-    free(num);
-    FILE_LOG(logDEBUG) << "LEAVING";
+
+  action time_def {
+    tmp = strndup(tok, fpc - tok);
+    time = std::stoi(tmp);
+    safefree((void **)&tmp);
   }
 
   include termites_conf_core "rl/termites_conf.rl";
 
 }%%
 
-%% write data;
+%% write data noerror nofinal;
 
 
 bool Config::read(std::string const& configFile) {
@@ -95,19 +89,30 @@ bool Config::read(std::string const& configFile) {
 
   int cs = 0;
   const char *p, *pe;
-  p = conf.c_str();         // pointer begin
-  pe = p + strlen(p) + 1;   // pointer end
-  char *eof = NULL;
-  int line_count = 0;
-  // FILE_LOG(logDEBUG) << "conf=" << p;
+  p = conf.c_str();             // pointer begin
+  pe = p + strlen(p);           // pointer end
+  char *eof = nullptr;
+  int lineCount = 1;
 
-  const char *tok;
+  const char *tok = nullptr;
+  char *tmp = nullptr;
 
   %% write init;
 
   %% write exec;
 
-  FILE_LOG(logINFO) << "ERR=" << (cs == termites_conf_error);
+  assert(tmp == nullptr && "tmp must be cleared after every use");
 
-  return true;
+  FILE_LOG(logINFO) << "Config has errors: " << btos(parserHasError(cs));
+
+  return parserIsFinished(cs);
+}
+
+
+bool Config::parserHasError(int cs) {
+  return cs == %%{ write error; }%%;
+}
+
+bool Config::parserIsFinished(int cs) {
+  return cs >= %%{ write first_final; }%%;
 }

@@ -18,14 +18,13 @@ public:
   bool read(std::string const& configFile);
 
 private:
-  // int time;
+  int time;
   // int width;
   // int height;
   std::map<std::string, int> chips;
 
-  inline void reportErr(std::string cfgFile, int line) {
-    std::cerr << "Wrong format: " << cfgFile << ":" << line << std::endl;
-  }
+  bool parserHasError(int cs);
+  bool parserIsFinished(int cs);
 };
 
 #endif /* _CONFIG_H_ */
