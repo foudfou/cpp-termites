@@ -25,6 +25,7 @@ private:
   int time;
   int width;
   int height;
+  // we store wood chips into a map, as wood species are unique
   std::map<std::string, int> chips;
 
   bool parserHasError(int cs);

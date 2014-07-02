@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <list>
 #include <sstream>
 #include <assert.h>
 #include <stdlib.h>
@@ -57,7 +58,7 @@ copeau : baobab 1 3
     safefree((void **)&tmp_str);
   }
 
-  // FIXME: is there no way to refactor *_def actions ?
+  # FIXME: is there no way to refactor *_def actions ?
   action width_def {
     tmp_str = strndup(tok, fpc - tok);
     setWidth(std::stoi(tmp_str));
@@ -73,18 +74,25 @@ copeau : baobab 1 3
   action list_init {
     tmp_list.clear();
     tmp_str = strndup(tok, fpc - tok);
-    tmp_list[tmp_str]++;
+    tmp_list.push_back(tmp_str);
     safefree((void **)&tmp_str);
   }
 
   action list_append {
     tmp_str = strndup(tok, fpc - tok);
-    tmp_list[tmp_str]++;
+    tmp_list.push_back(tmp_str);
     safefree((void **)&tmp_str);
   }
 
   action chips_def {
-    setChips(tmp_list);
+    std::map<std::string, int> tmp_map;
+    std::list<std::string>::const_iterator it(tmp_list.begin()), end(tmp_list.end());
+    for (; it != end; ++it)
+      if (tmp_map[*it])
+        FILE_LOG(logWARNING) << "Duplicate chip: " << *it;
+      else
+        tmp_map[*it]++;
+    setChips(tmp_map);
   }
 
   include termites_conf_core "rl/termites_conf.rl";
@@ -154,7 +162,7 @@ bool Config::read(std::string const& configFile) {
 
   const char *tok = nullptr;
   char *tmp_str = nullptr;
-  std::map<std::string, int> tmp_list;
+  std::list<std::string> tmp_list;
 
   %% write init;
 
