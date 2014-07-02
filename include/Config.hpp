@@ -1,7 +1,6 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#include <functional>
 #include <iostream>
 #include <map>
 #include <string>
@@ -17,10 +16,15 @@ public:
 
   bool read(std::string const& configFile);
 
+  void setTime(int t);
+  void setWidth(int t);
+  void setHeight(int t);
+  void setChips(const std::map<std::string, int>& chps);
+
 private:
   int time;
-  // int width;
-  // int height;
+  int width;
+  int height;
   std::map<std::string, int> chips;
 
   bool parserHasError(int cs);

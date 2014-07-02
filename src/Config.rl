@@ -52,9 +52,39 @@ copeau : baobab 1 3
   }
 
   action time_def {
-    tmp = strndup(tok, fpc - tok);
-    time = std::stoi(tmp);
-    safefree((void **)&tmp);
+    tmp_str = strndup(tok, fpc - tok);
+    setTime(std::stoi(tmp_str));
+    safefree((void **)&tmp_str);
+  }
+
+  // FIXME: is there no way to refactor *_def actions ?
+  action width_def {
+    tmp_str = strndup(tok, fpc - tok);
+    setWidth(std::stoi(tmp_str));
+    safefree((void **)&tmp_str);
+  }
+
+  action height_def {
+    tmp_str = strndup(tok, fpc - tok);
+    setHeight(std::stoi(tmp_str));
+    safefree((void **)&tmp_str);
+  }
+
+  action list_init {
+    tmp_list.clear();
+    tmp_str = strndup(tok, fpc - tok);
+    tmp_list[tmp_str]++;
+    safefree((void **)&tmp_str);
+  }
+
+  action list_append {
+    tmp_str = strndup(tok, fpc - tok);
+    tmp_list[tmp_str]++;
+    safefree((void **)&tmp_str);
+  }
+
+  action chips_def {
+    setChips(tmp_list);
   }
 
   include termites_conf_core "rl/termites_conf.rl";
@@ -63,6 +93,34 @@ copeau : baobab 1 3
 
 %% write data noerror nofinal;
 
+
+void Config::setTime(int t)
+{
+  time = t;
+  FILE_LOG(logDEBUG) << "time set to " << time;
+}
+
+void Config::setWidth(int t)
+{
+  width = t;
+  FILE_LOG(logDEBUG) << "width set to " << width;
+}
+
+void Config::setHeight(int t)
+{
+  height = t;
+  FILE_LOG(logDEBUG) << "height set to " << height;
+}
+
+void Config::setChips(const std::map<std::string, int>& chps)
+{
+  chips = chps;
+  if (FILELog::ReportingLevel() >= logDEBUG) {
+    std::string chipsStr;
+    for (auto chip: chips) chipsStr += chip.first + '|';
+    FILE_LOG(logDEBUG) << "CHIPS=|" << chipsStr;
+  }
+}
 
 bool Config::read(std::string const& configFile) {
   /* We'll buffer the whole config file. We might need to parse by chunk. */
@@ -95,19 +153,19 @@ bool Config::read(std::string const& configFile) {
   int lineCount = 1;
 
   const char *tok = nullptr;
-  char *tmp = nullptr;
+  char *tmp_str = nullptr;
+  std::map<std::string, int> tmp_list;
 
   %% write init;
 
   %% write exec;
 
-  assert(tmp == nullptr && "tmp must be cleared after every use");
+  assert(tmp_str == nullptr && "tmp must be cleared after every use");
 
   FILE_LOG(logINFO) << "Config has errors: " << btos(parserHasError(cs));
 
   return parserIsFinished(cs);
 }
-
 
 bool Config::parserHasError(int cs) {
   return cs == %%{ write error; }%%;
