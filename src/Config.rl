@@ -11,27 +11,9 @@
 #include "helpers.hpp"
 #include "log.h"
 
-/* https://github.com/ironbee/ironbee/blob/master/engine/config-parser.rl */
-Config::Config() {}
+Config::Config(): word{0}, key{0} {}
 
 Config::~Config() {}
-
-/*
-############################################################################
-# Les lignes commençant par le caractère ’#’ sont des commentaires .
-# Ce format , permet une lecture / écriture très simple via les classes
-# std :: fstream .
-############################################################################
-temps : 2000
-largeur : 80
-hauteur : 50
-copeaux : ( boulot chene baobab )
-termites : rouge ( boulot ) verte ( boulot chene ) noir ( baobab boulot ) 10
-termite : rouge 10 5
-termite : rouge 23 34
-copeau : boulot 42 23
-copeau : baobab 1 3
- */
 
 %%{
 
@@ -40,8 +22,11 @@ copeau : baobab 1 3
   action error_any {
     FILE_LOG(logERROR) << "Parse error at line " << lineCount;
     fbreak;
-    /* fhold; */
-    /* fgoto line; */
+  }
+
+  action debug_any {
+    FILE_LOG(logERROR) << "error line " << lineCount << " on char '" << fc \
+                       << "' after '" << *(p-1) << "'";
   }
 
   action line_count_inc {
@@ -49,50 +34,58 @@ copeau : baobab 1 3
   }
 
   action mark {
-    tok = fpc;
+    mark = fpc;
   }
 
   action time_def {
-    tmp_str = strndup(tok, fpc - tok);
-    setTime(std::stoi(tmp_str));
-    safefree((void **)&tmp_str);
+    extractToken(word, fpc, mark);
+    setTime(std::stoi(word));
   }
 
   # FIXME: is there no way to refactor *_def actions ?
   action width_def {
-    tmp_str = strndup(tok, fpc - tok);
-    setWidth(std::stoi(tmp_str));
-    safefree((void **)&tmp_str);
+    extractToken(word, fpc, mark);
+    setWidth(std::stoi(word));
   }
 
   action height_def {
-    tmp_str = strndup(tok, fpc - tok);
-    setHeight(std::stoi(tmp_str));
-    safefree((void **)&tmp_str);
+    extractToken(word, fpc, mark);
+    setHeight(std::stoi(word));
   }
 
   action list_init {
-    tmp_list.clear();
-    tmp_str = strndup(tok, fpc - tok);
-    tmp_list.push_back(tmp_str);
-    safefree((void **)&tmp_str);
+    list.clear();
   }
 
   action list_append {
-    tmp_str = strndup(tok, fpc - tok);
-    tmp_list.push_back(tmp_str);
-    safefree((void **)&tmp_str);
+    extractToken(word, fpc, mark);
+    list.push_back(word);
   }
 
   action chips_def {
-    std::map<std::string, int> tmp_map;
-    std::list<std::string>::const_iterator it(tmp_list.begin()), end(tmp_list.end());
-    for (; it != end; ++it)
-      if (tmp_map[*it])
-        FILE_LOG(logWARNING) << "Duplicate chip: " << *it;
-      else
-        tmp_map[*it]++;
-    setChips(tmp_map);
+    extractToken(word, fpc, mark);
+    setChips(listToMap(list));
+  }
+
+  action key {
+    extractToken(key, fpc, mark);
+  }
+
+  action hash_init {
+    hash.clear();
+  }
+
+  action hash_insert {
+    auto lookup = hash.find(key);
+    if (lookup == hash.end())
+      hash[key] = listToMap(list);
+    else
+      FILE_LOG(logWARNING) << "Duplicate key ignored: " << key;
+  }
+
+  action species_def {
+    if (!checkSpecies(hash)) fbreak;
+    setSpecies(hash);
   }
 
   include termites_conf_core "rl/termites_conf.rl";
@@ -120,15 +113,51 @@ void Config::setHeight(int t)
   FILE_LOG(logDEBUG) << "height set to " << height;
 }
 
+// TODO: this parameter is useless, and redundant, as it can be derived from
+// the species. we need to remove it in the future.
 void Config::setChips(const std::map<std::string, int>& chps)
 {
   chips = chps;
-  if (FILELog::ReportingLevel() >= logDEBUG) {
-    std::string chipsStr;
-    for (auto chip: chips) chipsStr += chip.first + '|';
-    FILE_LOG(logDEBUG) << "CHIPS=|" << chipsStr;
+  if (FILELog::ReportingLevel() >= logDEBUG)
+  {
+    FILE_LOG(logDEBUG) << "CHIPS=|" << mapToString(chips);
   }
 }
+
+void Config::setSpecies(const std::map<std::string, std::map<std::string, int>>& spcs)
+{
+  species = spcs;
+  for (auto sp: species) {
+    FILE_LOG(logDEBUG) << "SPECIES=" << sp.first << " -> |" << mapToString(sp.second);
+  }
+}
+
+bool Config::checkSpecies(const std::map<std::string, std::map<std::string, int>>& spcs)
+{
+  std::map<std::string, int> woods;
+  for (auto sp: spcs)
+    for (auto wood: sp.second)
+      woods[wood.first]++;
+
+  for (auto w: woods)
+  {
+    auto lookup = chips.find(w.first);
+    if (lookup == chips.end()) {
+      FILE_LOG(logERROR) << "Missing chip definition: " << w.first;
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void Config::extractToken(TmpString& dest, const char*& cur, const char*& start)
+{
+  int len = cur - start;
+  memcpy((void*)dest, (void*)start, len);
+  dest[len] = '\0';
+}
+
 
 bool Config::read(std::string const& configFile) {
   /* We'll buffer the whole config file. We might need to parse by chunk. */
@@ -158,17 +187,16 @@ bool Config::read(std::string const& configFile) {
   p = conf.c_str();             // pointer begin
   pe = p + strlen(p);           // pointer end
   char *eof = nullptr;
+
   int lineCount = 1;
 
-  const char *tok = nullptr;
-  char *tmp_str = nullptr;
-  std::list<std::string> tmp_list;
+  const char *mark = nullptr;
+  std::list<std::string> list;
+  std::map<std::string, std::map<std::string, int>> hash;
 
   %% write init;
 
   %% write exec;
-
-  assert(tmp_str == nullptr && "tmp must be cleared after every use");
 
   FILE_LOG(logINFO) << "Config has errors: " << btos(parserHasError(cs));
 

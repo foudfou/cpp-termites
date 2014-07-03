@@ -6,8 +6,6 @@ APPNAME = 'termites'
 top = '.'
 out = 'build'
 
-from waflib import Logs
-
 
 def options(opt):
     opt.load('compiler_c compiler_cxx')
@@ -42,3 +40,10 @@ def build(bld):
 
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.summary)
+
+
+def tags(ctx):
+    cmd = 'find src include test -type f -name "*.c" -o -name "*.h"' \
+          '-o -name "*.cpp" -o -name "*.hpp" -o -name "Config.rl"' \
+          '| etags -'
+    ctx.exec_command(cmd)

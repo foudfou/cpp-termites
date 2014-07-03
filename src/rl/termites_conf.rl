@@ -9,9 +9,9 @@
   def =  WS* ':' WS*;
   integer = digit+;
   word = alpha+;
-  list = '(' WS* word >mark %list_init ( WS+ word >mark %list_append )* WS* ')';
-  key_val = word WS+ list;
-  hash =  key_val ( WS+ key_val )* ;
+  list = '(' >list_init WS* word >mark %list_append ( WS+ word >mark %list_append )* WS* ')';
+  key_val = word >mark %key WS+ list;
+  hash = ( key_val >hash_init %hash_insert ( WS+ key_val %hash_insert )* )**;
   coord = integer WS+ integer;
 
   # action attached to the previous rule/token
@@ -19,7 +19,7 @@
   largeur_def  = 'largeur'  def integer >mark %width_def;
   hauteur_def  = 'hauteur'  def integer >mark %height_def;
   copeaux_def  = 'copeaux'  def list %chips_def;
-  termites_def = 'termites' def hash %{ FILE_LOG(logDEBUG) << "termites_def"; };
+  termites_def = 'termites' def hash %species_def;
   termite_def  = 'termite'  def word WS+ coord %{ FILE_LOG(logDEBUG) << "termite_def"; };
   copeau_def   = 'copeau'   def word WS+ coord %{ FILE_LOG(logDEBUG) << "copeau_def"; };
 
@@ -31,6 +31,5 @@
   line = ( line_comment | line_void | line_def ) EOL >line_count_inc;
 
   main := line+ $!error_any;
-  # $err{ FILE_LOG(logERROR) << "error: " << fc << ", after: " << int(*(p-1));};
 
 }%%
