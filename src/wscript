@@ -14,7 +14,6 @@ def build(bld):
         bld.path.find_node('rl/termites_conf.rl'))
 
 
-
 from waflib.Task import Task
 from waflib.TaskGen import extension
 

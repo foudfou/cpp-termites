@@ -6,6 +6,9 @@ APPNAME = 'termites'
 top = '.'
 out = 'build'
 
+import waflib
+from waflib import Build, Logs, Options
+
 
 def options(opt):
     opt.load('compiler_c compiler_cxx')
@@ -25,14 +28,14 @@ def configure(cnf):
     cnf.load('waf_unit_test')
     cnf.check(
         features='cxx cxxprogram',
-        cflags=['-Wall'],
+        cflags=['-Wall', '-Weffc++'],
     )
     cnf.find_program('ragel')
     cnf.find_program('valgrind')
 
     cnf.env['CC'] = ['clang']
     cnf.env['CXX'] = ['clang++']
-    cnf.env.append_value('CXXFLAGS', ['-Wall', '-std=c++11'])
+    cnf.env.append_value('CXXFLAGS', ['-Wall', '-pedantic', '-Wextra', '-Weffc++', '-std=c++11'])
 
 
 def build(bld):
@@ -47,3 +50,42 @@ def tags(ctx):
           '-o -name "*.cpp" -o -name "*.hpp" -o -name "Config.rl"' \
           '| etags -'
     ctx.exec_command(cmd)
+
+
+def lint(ctx):
+    sources = ctx.path.ant_glob(
+        ['src/**/*.cpp', 'include/**/*.hpp', 'test/**/*.cpp'], dir=False, src=True)
+    sources_str = " ".join([f.abspath() for f in sources])
+
+    cmd = 'clang++ -fsyntax-only -fcolor-diagnostics '
+    # TODO: include should be defined at conf level, and re-used here
+    cmd += " ".join(ctx.env.CXXFLAGS) + " -Iinclude "
+    Logs.info("lint [clang]...")
+    ctx.exec_command(cmd + sources_str)
+
+    cmd = 'python2 tools/cpplint.py '
+    Logs.info("lint [cpplint]...")
+    ctx.exec_command(cmd + sources_str)
+
+
+class LintContext(Build.BuildContext):
+    cmd = 'lint'
+    fun = 'lint'
+
+
+def valgrind(ctx):
+    # # TODO: add depency to `build` task
+    # ctx.add_manual_dependency(
+    #     ctx.path.find_node('src/main.cpp'),
+    #     ctx.path.find_node('src/main.cpp'))
+
+    Logs.info("valgrind [termites]...")
+    cmd = 'valgrind --leak-check=full ./build/src/termites'
+    return ctx.exec_command(cmd)
+
+
+# help here: https://github.com/lycus/mci/blob/master/wscript
+class ValgrindContext(Build.BuildContext):
+    cmd   = 'valgrind'
+    fun   = 'valgrind'
+    after = ['termites']

@@ -2,6 +2,8 @@
 #define _HELPERS_H_
 
 #include <list>
+#include <map>
+#include <string>
 
 long fileSize(const std::string& filename);
 
