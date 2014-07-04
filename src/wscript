@@ -26,5 +26,4 @@ class ragel(Task):
 def process_rl(self, node):
     cpp_node = node.change_ext('.cpp')
     tsk = self.create_task('ragel', node, cpp_node)
-    # self.source.append(cpp_node)
     self.source.extend(tsk.outputs)

@@ -53,6 +53,7 @@ def tags(ctx):
 
 
 def lint(ctx):
+    "run linters over source files"
     sources = ctx.path.ant_glob(
         ['src/**/*.cpp', 'include/**/*.hpp', 'test/**/*.cpp'], dir=False, src=True)
     sources_str = " ".join([f.abspath() for f in sources])
@@ -74,6 +75,7 @@ class LintContext(Build.BuildContext):
 
 
 def valgrind(ctx):
+    "run valgrind over the main binary"
     # # TODO: add depency to `build` task
     # ctx.add_manual_dependency(
     #     ctx.path.find_node('src/main.cpp'),
