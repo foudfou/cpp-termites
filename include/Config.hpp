@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 
 class Config
@@ -12,6 +13,12 @@ class Config
   static const int TMP_STR_MAX_LEN = 64;
 
   typedef char TmpString[TMP_STR_MAX_LEN];
+
+  struct Entity {
+    std::string species;
+    int x;
+    int y;
+  };
 
 public:
   Config();
@@ -33,10 +40,15 @@ private:
   // we store wood chips into a map, as wood species are supposely unique
   std::map<std::string, int> chips;
   std::map<std::string, std::map<std::string, int>> species;
+  std::vector<Entity> termitePositions;
+  std::vector<Entity> chipPositions;
 
   TmpString word;
   TmpString key;
-  void extractToken(TmpString& dest, const char*& cur, const char*& start);
+  TmpString xcoord, ycoord;
+  void extractToken(TmpString &dest, const char* &cur, const char* &start);
+  void storeEntityPos(std::vector<Entity> &store, const TmpString &key,
+                      const TmpString &x, const TmpString &y);
 
   bool parserHasError(int cs);
   bool parserIsFinished(int cs);

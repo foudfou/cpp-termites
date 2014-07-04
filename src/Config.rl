@@ -88,6 +88,22 @@ Config::~Config() {}
     setSpecies(hash);
   }
 
+  action xcoord {
+    extractToken(xcoord, fpc, mark);
+  }
+
+  action ycoord {
+    extractToken(ycoord, fpc, mark);
+  }
+
+  action termite_pos {
+    storeEntityPos(termitePositions, key, xcoord, ycoord);
+  }
+
+  action chip_pos {
+    storeEntityPos(chipPositions, key, xcoord, ycoord);
+  }
+
   include termites_conf_core "rl/termites_conf.rl";
 
 }%%
@@ -127,9 +143,10 @@ void Config::setChips(const std::map<std::string, int>& chps)
 void Config::setSpecies(const std::map<std::string, std::map<std::string, int>>& spcs)
 {
   species = spcs;
-  for (auto sp: species) {
-    FILE_LOG(logDEBUG) << "SPECIES=" << sp.first << " -> |" << mapToString(sp.second);
-  }
+  if (FILELog::ReportingLevel() >= logDEBUG)
+    for (auto sp: species) {
+      FILE_LOG(logDEBUG) << "SPECIES=" << sp.first << " -> |" << mapToString(sp.second);
+    }
 }
 
 bool Config::checkSpecies(const std::map<std::string, std::map<std::string, int>>& spcs)
@@ -158,6 +175,20 @@ void Config::extractToken(TmpString& dest, const char*& cur, const char*& start)
   dest[len] = '\0';
 }
 
+void Config::storeEntityPos(std::vector<Entity> &store, const TmpString &key,
+                            const TmpString &x, const TmpString &y)
+{
+  Entity ent = {key, std::stoi(x), std::stoi(y)};
+  store.push_back(ent);
+  std::string entity = "Unknown";
+  if (&store == &termitePositions)
+    entity = "termite";
+  else if (&store == &chipPositions)
+    entity = "chip";
+  else
+    FILE_LOG(logERROR) << "Unknown entity store.";
+  FILE_LOG(logDEBUG) << entity << ": " << ent.x << ", " << ent.y;
+}
 
 bool Config::read(std::string const& configFile) {
   /* We'll buffer the whole config file. We might need to parse by chunk. */

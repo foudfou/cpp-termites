@@ -12,7 +12,7 @@
   list = '(' >list_init WS* word >mark %list_append ( WS+ word >mark %list_append )* WS* ')';
   key_val = word >mark %key WS+ list;
   hash = ( key_val >hash_init %hash_insert ( WS+ key_val %hash_insert )* )**;
-  coord = integer WS+ integer;
+  coord = integer >mark %xcoord WS+ integer >mark %ycoord;
 
   # action attached to the previous rule/token
   temps_def    = 'temps'    def integer >mark %time_def;
@@ -20,8 +20,8 @@
   hauteur_def  = 'hauteur'  def integer >mark %height_def;
   copeaux_def  = 'copeaux'  def list %chips_def;
   termites_def = 'termites' def hash %species_def;
-  termite_def  = 'termite'  def word WS+ coord %{ FILE_LOG(logDEBUG) << "termite_def"; };
-  copeau_def   = 'copeau'   def word WS+ coord %{ FILE_LOG(logDEBUG) << "copeau_def"; };
+  termite_def  = 'termite'  def word >mark %key WS+ coord %termite_pos;
+  copeau_def   = 'copeau'   def word >mark %key WS+ coord %chip_pos;
 
   line_comment = WS* '#' (any - EOL)* %{ FILE_LOG(logDEBUG) << "#"; };
   line_void    = WS* %{ FILE_LOG(logDEBUG) << "\\n"; };
