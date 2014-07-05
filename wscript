@@ -87,7 +87,7 @@ def lint_clang(ctx):
 def lint_cpplint(ctx):
     src_files, incl_dirs = _lint_pre(ctx)
     cmd = 'python2 tools/cpplint.py --extensions=hpp,cpp,rl ' \
-          '--filter=-whitespace/braces '
+          '--linelength=85 --filter=-whitespace/braces '
     Logs.info("lint [cpplint]...")
     ctx.exec_command(cmd + src_files)
 

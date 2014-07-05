@@ -1,14 +1,15 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include "Config.hpp"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include "log.h"
 #include "helpers.hpp"
-#include "Config.hpp"
 
 Config::Config() {}
 
@@ -134,9 +135,9 @@ void Config::setHeight(int t)
   FILE_LOG(logDEBUG) << "height set to " << height;
 }
 
-// TODO: this parameter is useless, and redundant, as it can be derived from
-// the species. we need to remove it in the future.
-void Config::setChips(const std::map<std::string, int>& chps)
+// TODO(fb): this parameter is useless, and redundant, as it can be derived
+// from the species. we need to remove it in the future.
+void Config::setChips(const Chips &chps)
 {
   chips = chps;
   if (FILELog::ReportingLevel() >= logDEBUG)
@@ -145,23 +146,25 @@ void Config::setChips(const std::map<std::string, int>& chps)
   }
 }
 
-void Config::setSpecies(const std::map<std::string, std::map<std::string, int>>& spcs)
+void Config::setSpecies(const Species &spcs)
 {
   species = spcs;
-  if (FILELog::ReportingLevel() >= logDEBUG)
-    for (auto sp: species) {
-      FILE_LOG(logDEBUG) << "SPECIES=" << sp.first << " -> |" << mapToString(sp.second);
+  if (FILELog::ReportingLevel() >= logDEBUG) {
+    for (auto sp : species) {
+      FILE_LOG(logDEBUG) << "SPECIES=" << sp.first << " -> |"
+                         << mapToString(sp.second);
     }
+  }
 }
 
-bool Config::checkSpecies(const std::map<std::string, std::map<std::string, int>>& spcs)
+bool Config::checkSpecies(const Species &spcs)
 {
-  std::map<std::string, int> woods;
-  for (auto sp: spcs)
-    for (auto wood: sp.second)
+  Chips woods;
+  for (auto sp : spcs)
+    for (auto wood : sp.second)
       woods[wood.first]++;
 
-  for (auto w: woods)
+  for (auto w : woods)
   {
     auto lookup = chips.find(w.first);
     if (lookup == chips.end()) {
@@ -202,7 +205,7 @@ bool Config::read(std::string const& configFile)
   parserInit(pstate);
   while (!file.eof())
   {
-    file.read((char *)pstate.buffer, BUFFER_SIZE); // tellg() for position
+    file.read(pstate.buffer, BUFFER_SIZE);
     parserExecute(pstate, pstate.buffer, file.gcount());
   }
 

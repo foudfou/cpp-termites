@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
@@ -12,9 +14,11 @@ class Config
   static const int TMP_STR_MAX_LEN = 64;
   static const int BUFFER_SIZE     = 1024;
 
+  typedef std::map<std::string, int> Chips;
+  typedef std::map<std::string, Chips> Species;
   typedef std::string TmpString;
   typedef std::list<std::string> TmpList;
-  typedef std::map<std::string, std::map<std::string, int>> TmpHash;
+  typedef Species TmpHash;
 
   struct Entity {
     std::string species;
@@ -31,9 +35,9 @@ public:
   void setTime(int t);
   void setWidth(int t);
   void setHeight(int t);
-  void setChips(const std::map<std::string, int>& chps);
-  void setSpecies(const std::map<std::string, std::map<std::string, int>>& spcs);
-  bool checkSpecies(const std::map<std::string, std::map<std::string, int>>& spcs);
+  void setChips(const Chips &chps);
+  void setSpecies(const Species &spcs);
+  bool checkSpecies(const Species &spcs);
 
 private:
   int time;
@@ -71,7 +75,6 @@ private:
   bool parserFinish(ParserState &parser);
   bool parserHasError(ParserState &parser);
   bool parserIsFinished(ParserState &parser);
-
 };
 
 #endif /* _CONFIG_H_ */
