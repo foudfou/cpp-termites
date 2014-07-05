@@ -64,7 +64,7 @@ def lint(ctx):
     Logs.info("lint [clang]...")
     ctx.exec_command(cmd + sources_str)
 
-    cmd = 'python2 tools/cpplint.py '
+    cmd = 'python2 tools/cpplint.py --extensions=hpp,cpp '
     Logs.info("lint [cpplint]...")
     ctx.exec_command(cmd + sources_str)
 

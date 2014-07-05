@@ -3,7 +3,7 @@
 #include "helpers.hpp"
 #include "log.h"
 
-int main(int argc , char ** argv)
+int main()
 {
   FILELog::ReportingLevel() = FILELog::FromString("DEBUG");
 

@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#include <iostream>
+#include <list>
 #include <map>
 #include <string>
 #include <vector>
@@ -9,10 +9,12 @@
 
 class Config
 {
-  static const int FILE_SIZE_MAX = 2048;
   static const int TMP_STR_MAX_LEN = 64;
+  static const int BUFFER_SIZE     = 1024;
 
-  typedef char TmpString[TMP_STR_MAX_LEN];
+  typedef std::string TmpString;
+  typedef std::list<std::string> TmpList;
+  typedef std::map<std::string, std::map<std::string, int>> TmpHash;
 
   struct Entity {
     std::string species;
@@ -43,15 +45,33 @@ private:
   std::vector<Entity> termitePositions;
   std::vector<Entity> chipPositions;
 
-  TmpString word;
-  TmpString key;
-  TmpString xcoord, ycoord;
-  void extractToken(TmpString &dest, const char* &cur, const char* &start);
+  struct ParserState {
+    int cs;   // must remain persistent across chunk parsing runs
+    const char *p;
+    const char *pe;
+    char *eof;
+
+    int lineCount;
+    bool fail;
+
+    char buffer[BUFFER_SIZE];   // currently parserd chunk
+
+    TmpString integer;
+    TmpString word;
+    TmpList   list;
+    TmpString key;
+    TmpHash   hash;
+    TmpString xcoord, ycoord;
+  };
+
   void storeEntityPos(std::vector<Entity> &store, const TmpString &key,
                       const TmpString &x, const TmpString &y);
+  void parserInit(ParserState &parser);
+  void parserExecute(ParserState &parser, const char *data, int len);
+  bool parserFinish(ParserState &parser);
+  bool parserHasError(ParserState &parser);
+  bool parserIsFinished(ParserState &parser);
 
-  bool parserHasError(int cs);
-  bool parserIsFinished(int cs);
 };
 
 #endif /* _CONFIG_H_ */

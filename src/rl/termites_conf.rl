@@ -9,19 +9,19 @@
   def =  WS* ':' WS*;
   integer = digit+;
   word = alpha+;
-  list = '(' >list_init WS* word >mark %list_append ( WS+ word >mark %list_append )* WS* ')';
-  key_val = word >mark %key WS+ list;
-  hash = ( key_val >hash_init %hash_insert ( WS+ key_val %hash_insert )* )**;
-  coord = integer >mark %xcoord WS+ integer >mark %ycoord;
+  list = '(' WS* word $word %list_append ( WS+ word $word %list_append )* WS* ')';
+  key_val = word $key WS+ list;
+  hash = ( key_val %hash_insert ( WS+ key_val %hash_insert )* )**;
+  coord = integer $xcoord WS+ integer $ycoord;
 
   # action attached to the previous rule/token
-  temps_def    = 'temps'    def integer >mark %time_def;
-  largeur_def  = 'largeur'  def integer >mark %width_def;
-  hauteur_def  = 'hauteur'  def integer >mark %height_def;
+  temps_def    = 'temps'    def integer $integer %time_def;
+  largeur_def  = 'largeur'  def integer $integer %width_def;
+  hauteur_def  = 'hauteur'  def integer $integer %height_def;
   copeaux_def  = 'copeaux'  def list %chips_def;
   termites_def = 'termites' def hash %species_def;
-  termite_def  = 'termite'  def word >mark %key WS+ coord %termite_pos;
-  copeau_def   = 'copeau'   def word >mark %key WS+ coord %chip_pos;
+  termite_def  = 'termite'  def word $word WS+ coord %termite_pos;
+  copeau_def   = 'copeau'   def word $word WS+ coord %chip_pos;
 
   line_comment = WS* '#' (any - EOL)* %{ FILE_LOG(logDEBUG) << "#"; };
   line_void    = WS* %{ FILE_LOG(logDEBUG) << "\\n"; };

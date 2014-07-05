@@ -19,7 +19,7 @@ std::string btos(const bool& b)
 std::string mapToString(const std::map<std::string, int>& m)
 {
   std::string str;
-  for (auto e: m) str += e.first + '|';
+  for (auto e : m) str += e.first + '|';
   return str;
 }
 

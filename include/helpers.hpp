@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 
+
 long fileSize(const std::string& filename);
 
 std::string btos(const bool& b);

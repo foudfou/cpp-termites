@@ -1,17 +1,16 @@
 /* -*- mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-#include "Config.hpp"
 
 #include <fstream>
 #include <iostream>
-#include <list>
 #include <sstream>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "helpers.hpp"
 #include "log.h"
+#include "helpers.hpp"
+#include "Config.hpp"
 
-Config::Config(): word{0}, key{0} {}
+Config::Config() {}
 
 Config::~Config() {}
 
@@ -20,88 +19,94 @@ Config::~Config() {}
   machine termites_conf;
 
   action error_any {
-    FILE_LOG(logERROR) << "Parse error at line " << lineCount;
+    FILE_LOG(logERROR) << "Parse error at line " << pstate.lineCount;
     fbreak;
   }
 
   action debug_any {
-    FILE_LOG(logERROR) << "error line " << lineCount << " on char '" << fc \
-                       << "' after '" << *(p-1) << "'";
+    FILE_LOG(logERROR) << "error line " << pstate.lineCount << " on char '" \
+                       << fc << "' after '" << *(p-1) << "'";
   }
 
   action line_count_inc {
-    ++lineCount;
+    ++pstate.lineCount;
   }
 
-  action mark {
-    mark = fpc;
+  action integer {
+    pstate.integer.append(1, fc);
   }
 
   action time_def {
-    extractToken(word, fpc, mark);
-    setTime(std::stoi(word));
+    setTime(std::stoi(pstate.integer));
+    pstate.integer.clear();
   }
 
-  # FIXME: is there no way to refactor *_def actions ?
   action width_def {
-    extractToken(word, fpc, mark);
-    setWidth(std::stoi(word));
+    setWidth(std::stoi(pstate.integer));
+    pstate.integer.clear();
   }
 
   action height_def {
-    extractToken(word, fpc, mark);
-    setHeight(std::stoi(word));
+    setHeight(std::stoi(pstate.integer));
+    pstate.integer.clear();
   }
 
-  action list_init {
-    list.clear();
+  action word {
+    pstate.word.append(1, fc);
   }
 
   action list_append {
-    extractToken(word, fpc, mark);
-    list.push_back(word);
+    pstate.list.push_back(pstate.word);
+    pstate.word.clear();
   }
 
   action chips_def {
-    extractToken(word, fpc, mark);
-    setChips(listToMap(list));
+    setChips(listToMap(pstate.list));
+    pstate.word.clear();
+    pstate.list.clear();
   }
 
   action key {
-    extractToken(key, fpc, mark);
-  }
-
-  action hash_init {
-    hash.clear();
+    pstate.key.append(1, fc);
   }
 
   action hash_insert {
-    auto lookup = hash.find(key);
-    if (lookup == hash.end())
-      hash[key] = listToMap(list);
+    auto lookup = pstate.hash.find(pstate.key);
+    if (lookup == pstate.hash.end())
+      pstate.hash[pstate.key] = listToMap(pstate.list);
     else
-      FILE_LOG(logWARNING) << "Duplicate key ignored: " << key;
+      FILE_LOG(logWARNING) << "Duplicate key ignored: " << pstate.key;
+    pstate.key.clear();
+    pstate.list.clear();
   }
 
   action species_def {
-    if (!checkSpecies(hash)) fbreak;
-    setSpecies(hash);
+    if (!checkSpecies(pstate.hash)) {
+      pstate.fail = true;
+      fbreak;
+    }
+    setSpecies(pstate.hash);
+    pstate.hash.clear();
   }
 
   action xcoord {
-    extractToken(xcoord, fpc, mark);
+    pstate.xcoord.append(1, fc);
   }
 
   action ycoord {
-    extractToken(ycoord, fpc, mark);
+    pstate.ycoord.append(1, fc);
   }
 
   action termite_pos {
-    storeEntityPos(termitePositions, key, xcoord, ycoord);
+    storeEntityPos(termitePositions, pstate.key, pstate.xcoord, pstate.ycoord);
+    pstate.word.clear();
+    pstate.xcoord.clear(); pstate.ycoord.clear();
   }
 
   action chip_pos {
-    storeEntityPos(chipPositions, key, xcoord, ycoord);
+    storeEntityPos(chipPositions, pstate.key, pstate.xcoord, pstate.ycoord);
+    pstate.word.clear();
+    pstate.xcoord.clear(); pstate.ycoord.clear();
   }
 
   include termites_conf_core "rl/termites_conf.rl";
@@ -168,13 +173,6 @@ bool Config::checkSpecies(const std::map<std::string, std::map<std::string, int>
   return true;
 }
 
-void Config::extractToken(TmpString& dest, const char*& cur, const char*& start)
-{
-  int len = cur - start;
-  memcpy((void*)dest, (void*)start, len);
-  dest[len] = '\0';
-}
-
 void Config::storeEntityPos(std::vector<Entity> &store, const TmpString &key,
                             const TmpString &x, const TmpString &y)
 {
@@ -190,14 +188,8 @@ void Config::storeEntityPos(std::vector<Entity> &store, const TmpString &key,
   FILE_LOG(logDEBUG) << entity << ": " << ent.x << ", " << ent.y;
 }
 
-bool Config::read(std::string const& configFile) {
-  /* We'll buffer the whole config file. We might need to parse by chunk. */
-  if (fileSize(configFile) > FILE_SIZE_MAX)
-  {
-    FILE_LOG(logERROR) << "Config file too big.";
-    exit(EXIT_FAILURE);
-  }
-
+bool Config::read(std::string const& configFile)
+{
   std::ifstream file;
   file.open(configFile);
   if (!file.good())
@@ -206,38 +198,57 @@ bool Config::read(std::string const& configFile) {
     return false;
   }
 
-  std::stringstream buffer;
-  std::string conf;
-  buffer << file.rdbuf();
-  conf = buffer.str();
+  ParserState pstate;
+  parserInit(pstate);
+  while (!file.eof())
+  {
+    file.read((char *)pstate.buffer, BUFFER_SIZE); // tellg() for position
+    parserExecute(pstate, pstate.buffer, file.gcount());
+  }
 
-  file.close();               // close file
+  file.close();
 
-  int cs = 0;
-  const char *p, *pe;
-  p = conf.c_str();             // pointer begin
-  pe = p + strlen(p);           // pointer end
-  char *eof = nullptr;
+  return parserFinish(pstate);
+}
 
-  int lineCount = 1;
+void Config::parserInit(ParserState &pstate)
+{
+  pstate.cs = 0;
+  pstate.lineCount = 1;
+  pstate.fail = false;
 
-  const char *mark = nullptr;
-  std::list<std::string> list;
-  std::map<std::string, std::map<std::string, int>> hash;
+  /* Access all ragel state variables via structure. */
+  %% access pstate.;
 
   %% write init;
+}
+
+void Config::parserExecute(ParserState &pstate, const char *data, int len)
+{
+  pstate.eof = nullptr;
+
+  pstate.p = data;
+  pstate.pe = pstate.p + len;
+
+  /* Access all ragel state variables via structure. */
+  %% access pstate.;
+  %% variable p pstate.p;
+  %% variable pe pstate.pe;
+  %% variable eof pstate.eof;
 
   %% write exec;
-
-  FILE_LOG(logINFO) << "Config has errors: " << btos(parserHasError(cs));
-
-  return parserIsFinished(cs);
 }
 
-bool Config::parserHasError(int cs) {
-  return cs == %%{ write error; }%%;
+bool Config::parserFinish(ParserState &pstate)
+{
+  FILE_LOG(logINFO) << "Config has errors: " << btos(parserHasError(pstate));
+  return parserIsFinished(pstate);
 }
 
-bool Config::parserIsFinished(int cs) {
-  return cs >= %%{ write first_final; }%%;
+bool Config::parserHasError(ParserState &pstate) {
+  return pstate.fail || pstate.cs == %%{ write error; }%%;
+}
+
+bool Config::parserIsFinished(ParserState &pstate) {
+  return !pstate.fail && pstate.cs >= %%{ write first_final; }%%;
 }
