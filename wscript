@@ -1,4 +1,6 @@
 #! /usr/bin/env python
+# Copyright (c) 2014 Foudil Brétel. All rights reserved.
+
 import waflib
 from waflib import Build, Logs, Options
 
@@ -38,6 +40,7 @@ def configure(cnf):
     cnf.env['CXX'] = ['clang++']
     cnf.env.append_value('CXXFLAGS', ['-Wall', '-pedantic', '-Wextra', '-Weffc++', '-std=c++11'])
 
+
 def build(bld):
     bld.recurse('src test')
 
@@ -54,32 +57,51 @@ def tags(ctx):
 
 def lint(ctx):
     "run linters over source files"
-    sources = ctx.path.ant_glob(
+    lint_clang(ctx)
+    lint_cpplint(ctx)
+
+def _lint_pre(ctx):
+    src_files = ctx.path.ant_glob(
         ['src/**/*.cpp', 'src/Config.rl', 'include/**/*.hpp', 'test/**/*.cpp'],
         excl=['include/catch.hpp'],
         dir=False, src=True,
     )
-    sources_str = " ".join([f.abspath() for f in sources])
-    Logs.debug("task: sources being checked: " + sources_str)
+    src_files_str = " "
+    for f in src_files:
+         src_files_str += " " + f.relpath()
 
-    incl = [d[3:] if d.startswith('..') else "src/" + d for d in ctx.env.SRC_INC_DIRS]
-    incl_str = ""
-    for d in  incl:
-         incl_str += " -I" + d
+    incl_dirs = [d[3:] if d.startswith('..') else "src/" + d for d in ctx.env.SRC_INC_DIRS]
+    incl_dirs_str = ""
+    for d in  incl_dirs:
+         incl_dirs_str += " -I" + d
 
+    return src_files_str, incl_dirs_str
+
+def lint_clang(ctx):
+    src_files, incl_dirs = _lint_pre(ctx)
     cmd = 'clang++ -fsyntax-only -fcolor-diagnostics '
     cmd += " ".join(ctx.env.CXXFLAGS)
     Logs.info("lint [clang]...")
-    ctx.exec_command(cmd + incl_str + sources_str)
+    ctx.exec_command(cmd + incl_dirs + src_files)
 
-    cmd = 'python2 tools/cpplint.py --extensions=hpp,cpp,rl '
+def lint_cpplint(ctx):
+    src_files, incl_dirs = _lint_pre(ctx)
+    cmd = 'python2 tools/cpplint.py --extensions=hpp,cpp,rl ' \
+          '--filter=-whitespace/braces '
     Logs.info("lint [cpplint]...")
-    ctx.exec_command(cmd + sources_str)
-
+    ctx.exec_command(cmd + src_files)
 
 class LintContext(Build.BuildContext):
     cmd = 'lint'
     fun = 'lint'
+
+class LintClangContext(Build.BuildContext):
+    cmd = 'lint_clang'
+    fun = 'lint_clang'
+
+class LintCpplintContext(Build.BuildContext):
+    cmd = 'lint_cpplint'
+    fun = 'lint_cpplint'
 
 
 def valgrind(ctx):
