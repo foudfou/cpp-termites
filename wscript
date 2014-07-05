@@ -1,13 +1,12 @@
 #! /usr/bin/env python
+import waflib
+from waflib import Build, Logs, Options
 
 VERSION = '0.0.1'
 APPNAME = 'termites'
 
 top = '.'
 out = 'build'
-
-import waflib
-from waflib import Build, Logs, Options
 
 
 def options(opt):
@@ -18,6 +17,8 @@ def options(opt):
 
 
 def configure(cnf):
+    cnf.recurse('src')
+
     release  = 'Release'
     if cnf.options.no_debug:
         release = 'Debug'
@@ -37,7 +38,6 @@ def configure(cnf):
     cnf.env['CXX'] = ['clang++']
     cnf.env.append_value('CXXFLAGS', ['-Wall', '-pedantic', '-Wextra', '-Weffc++', '-std=c++11'])
 
-
 def build(bld):
     bld.recurse('src test')
 
@@ -55,16 +55,24 @@ def tags(ctx):
 def lint(ctx):
     "run linters over source files"
     sources = ctx.path.ant_glob(
-        ['src/**/*.cpp', 'include/**/*.hpp', 'test/**/*.cpp'], dir=False, src=True)
+        ['src/**/*.cpp', 'src/Config.rl', 'include/**/*.hpp', 'test/**/*.cpp'],
+        excl=['include/catch.hpp'],
+        dir=False, src=True,
+    )
     sources_str = " ".join([f.abspath() for f in sources])
+    Logs.debug("task: sources being checked: " + sources_str)
+
+    incl = [d[3:] if d.startswith('..') else "src/" + d for d in ctx.env.SRC_INC_DIRS]
+    incl_str = ""
+    for d in  incl:
+         incl_str += " -I" + d
 
     cmd = 'clang++ -fsyntax-only -fcolor-diagnostics '
-    # TODO: include should be defined at conf level, and re-used here
-    cmd += " ".join(ctx.env.CXXFLAGS) + " -Iinclude "
+    cmd += " ".join(ctx.env.CXXFLAGS)
     Logs.info("lint [clang]...")
-    ctx.exec_command(cmd + sources_str)
+    ctx.exec_command(cmd + incl_str + sources_str)
 
-    cmd = 'python2 tools/cpplint.py --extensions=hpp,cpp '
+    cmd = 'python2 tools/cpplint.py --extensions=hpp,cpp,rl '
     Logs.info("lint [cpplint]...")
     ctx.exec_command(cmd + sources_str)
 
