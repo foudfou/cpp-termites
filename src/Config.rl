@@ -99,13 +99,14 @@ Config::~Config() {}
   }
 
   action termite_pos {
-    storeEntityPosition(termitePositions, pstate.key, pstate.xcoord, pstate.ycoord);
+    FILE_LOG(logDEBUG) << "pstate.key=" << pstate.word;
+    storeEntityPosition(termitePositions, pstate.word, pstate.xcoord, pstate.ycoord);
     pstate.word.clear();
     pstate.xcoord.clear(); pstate.ycoord.clear();
   }
 
   action chip_pos {
-    storeEntityPosition(chipPositions, pstate.key, pstate.xcoord, pstate.ycoord);
+    storeEntityPosition(chipPositions, pstate.word, pstate.xcoord, pstate.ycoord);
     pstate.word.clear();
     pstate.xcoord.clear(); pstate.ycoord.clear();
   }
@@ -192,10 +193,12 @@ void Config::setChipPositions(const std::vector<Entity> &cpos)
   chipPositions = cpos;
 }
 
-void Config::storeEntityPosition(std::vector<Entity> &store, const TmpString &key,
-                            const TmpString &x, const TmpString &y)
+void Config::storeEntityPosition(std::vector<Entity> &store,
+                                 const TmpString &word,
+                                 const TmpString &r, const TmpString &c)
 {
-  Entity ent = {key, std::stoi(x), std::stoi(y)};
+  int row = std::stoi(r), col = std::stoi(c);
+  Entity ent = {word, row, col};
   store.push_back(ent);
   std::string entity = "Unknown";
   if (&store == &termitePositions)
@@ -204,7 +207,7 @@ void Config::storeEntityPosition(std::vector<Entity> &store, const TmpString &ke
     entity = "chip";
   else
     FILE_LOG(logERROR) << "Unknown entity store.";
-  FILE_LOG(logDEBUG) << entity << ": " << ent.x << ", " << ent.y;
+  FILE_LOG(logDEBUG) << entity << ": " << ent.species << " " << ent.row << ", " << ent.col;
 }
 
 bool Config::read(std::string const& configFile)
@@ -227,7 +230,63 @@ bool Config::read(std::string const& configFile)
 
   file.close();
 
-  return parserFinish(pstate);
+  bool finished = parserFinish(pstate);
+  bool checked = check();
+  return finished && checked;
+}
+
+bool Config::check()
+{
+  return checkParamsDefined() && checkBounds();
+}
+
+bool Config::checkParamsDefined()
+{
+  struct param_check_t { std::string msg; int val; };
+  param_check_t params[] = {
+    { "Undefined parameter 'tics'.", tics },
+    { "Undefined parameter 'height'.", height },
+    { "Undefined parameter 'width'.", width },
+    { "Undefined parameter 'chips'.", int(chips.size()) },
+    { "Undefined parameter 'species'.", int(species.size()) },
+    { "Missing termite positions.", int(termitePositions.size()) },
+    { "Missing chip positions.", int(chipPositions.size()) },
+  };
+  for (auto p : params) {
+    if (!p.val) {
+      FILE_LOG(logERROR) << p.msg;
+      return false;
+    };
+  }
+  return true;
+}
+
+bool Config::checkBounds()
+{
+  struct member_t {
+    std::vector<Entity>* positions;
+    Species* spc;
+    Chips* chp;
+    std::string msg;
+  };
+  member_t members[] = {
+    { &termitePositions, &species, nullptr, "species" },
+    { &chipPositions, nullptr, &chips, "chips" },
+  };
+
+  for (auto mbr : members) {
+    for (auto pos : *(mbr.positions)) {
+      if ((mbr.spc && (*mbr.spc).find(pos.species) == (*mbr.spc).end()) ||
+          (mbr.chp && (*mbr.chp).find(pos.species) == (*mbr.chp).end()))
+      {
+        FILE_LOG(logERROR) << "'" << pos.species
+                           << "' (at " << pos.row << "," << pos.col
+                           << ") is not defined in global species";
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 void Config::parserInit(ParserState &pstate)
@@ -260,8 +319,10 @@ void Config::parserExecute(ParserState &pstate, const char *data, int len)
 
 bool Config::parserFinish(ParserState &pstate)
 {
-  FILE_LOG(logINFO) << "Config has errors: " << tmt::btos(parserHasError(pstate));
-  return parserIsFinished(pstate);
+  bool err = parserHasError(pstate), fin = parserIsFinished(pstate);
+  FILE_LOG(logDEBUG) << "Config has errors: " << tmt::btos(err);
+  FILE_LOG(logDEBUG) << "Config parsed to the end: " << tmt::btos(fin);
+  return !err && fin;
 }
 
 bool Config::parserHasError(ParserState &pstate) {

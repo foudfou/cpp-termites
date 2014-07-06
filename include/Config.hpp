@@ -23,14 +23,15 @@ class Config
 public:
   struct Entity {
     std::string species;
-    int x;
-    int y;
+    int row;
+    int col;
   };
 
   Config();
   virtual ~Config();
 
   bool read(std::string const& configFile);
+  bool check();
 
   int  getTics();
   void setTics(int t);
@@ -40,19 +41,16 @@ public:
   void setHeight(int t);
   void setChips(const Chips &chps);
   void setSpecies(const Species &spcs);
-  bool checkSpecies(const Species &spcs);
   void setTermitePositions(const std::vector<Entity> &tpos);
   void setChipPositions(const std::vector<Entity> &cpos);
-
-  bool check();                 // FIXME: TODO:
 
 private:
   int tics;
   int width;
   int height;
   // we store wood chips into a map, as wood species are supposely unique
-  std::map<std::string, int> chips;
-  std::map<std::string, std::map<std::string, int>> species;
+  Chips chips;
+  Species species;
   std::vector<Entity> termitePositions;
   std::vector<Entity> chipPositions;
 
@@ -82,6 +80,10 @@ private:
   bool parserFinish(ParserState &parser);
   bool parserHasError(ParserState &parser);
   bool parserIsFinished(ParserState &parser);
+
+  bool checkParamsDefined();
+  bool checkBounds();
+  bool checkSpecies(const Species &spcs);
 };
 
 #endif /* _CONFIG_H_ */

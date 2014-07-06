@@ -17,10 +17,8 @@ int main(int argc , char ** argv)
     std::exit(EXIT_FAILURE);
 
   auto confFileName = options.getConfigFileName();
-  if (!confFileName.empty()) {
-    FILE_LOG(logINFO) << "Config parsing finished: "
-                      << tmt::btos(conf->read(confFileName));
-  }
+  if (!confFileName.empty() && !conf->read(confFileName))
+    std::exit(EXIT_FAILURE);
 
   if (auto logFile = options.getLogFile()) {
     fclose(logFile);
