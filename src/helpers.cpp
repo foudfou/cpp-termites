@@ -1,6 +1,7 @@
 /* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
 #include <sys/stat.h>
+#include <random>
 #include "log.h"
 
 #include "helpers.hpp"
@@ -35,4 +36,15 @@ std::map<std::string, int> listToMap(std::list<std::string> l)
     else
       m[*it]++;
   return m;
+}
+
+void randInt(const int a, const int b)
+{
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dis(a, b);
+
+  // for (int n=0; n<10; ++n)
+  //   std::cout << dis(gen) << ' ';
+  // std::cout << '\n';
 }

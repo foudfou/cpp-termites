@@ -1,6 +1,7 @@
 #ifndef _OPTIONPARSER_H_
 #define _OPTIONPARSER_H_
 
+#include <stdio.h>
 #include <memory>
 #include <string>
 #include "Config.hpp"
@@ -13,6 +14,7 @@ class OptionParser
     "  -h, --help\n"
     "  -d, --debug\n"
     "  -v, --version\n"
+    "  -o, --ouput		Log ouput\n"
     "  -H, --height		Board height\n"
     "  -W, --width		Board width\n"
     "  -t, --termites	Number of termites\n"
@@ -24,13 +26,17 @@ public:
   virtual ~OptionParser();
 
   bool parse(const int argc, char *const * argv);
-  void rand();
+  void processInOrder();
+  bool check();
+  FILE* getLogFile();
+  void setLogFile(std::string filename);
+  std::string getConfigFileName();
 
 private:
   std::shared_ptr<Config> conf;
-
-  int debug;
-  std::string configFile;
+  std::map<std::string, std::string> options;
+  std::string logFileName;
+  FILE* logFile;
 };
 
 #endif /* _OPTIONPARSER_H_ */

@@ -1,5 +1,6 @@
 /* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
+#include <cstdlib>
 #include <memory>
 #include "Config.hpp"
 #include "OptionParser.hpp"
@@ -11,8 +12,19 @@ int main(int argc , char ** argv)
   FILELog::ReportingLevel() = FILELog::FromString("INFO");
 
   std::shared_ptr<Config> conf(new Config);
-  // FILE_LOG(logINFO) << "Config parsing finished: " << btos(conf->read("init.cfg"));
-
   OptionParser options = OptionParser(conf);
-  options.parse(argc, argv);
+  if (!options.parse(argc, argv))
+    std::exit(EXIT_FAILURE);
+
+  auto confFileName = options.getConfigFileName();
+  if (!confFileName.empty()) {
+    FILE_LOG(logINFO) << "Config parsing finished: "
+                      << btos(conf->read(confFileName));
+  }
+
+  if (auto logFile = options.getLogFile()) {
+    fclose(logFile);
+  }
+
+  std::exit(EXIT_SUCCESS);
 }

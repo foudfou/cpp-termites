@@ -99,13 +99,13 @@ Config::~Config() {}
   }
 
   action termite_pos {
-    storeEntityPos(termitePositions, pstate.key, pstate.xcoord, pstate.ycoord);
+    storeEntityPosition(termitePositions, pstate.key, pstate.xcoord, pstate.ycoord);
     pstate.word.clear();
     pstate.xcoord.clear(); pstate.ycoord.clear();
   }
 
   action chip_pos {
-    storeEntityPos(chipPositions, pstate.key, pstate.xcoord, pstate.ycoord);
+    storeEntityPosition(chipPositions, pstate.key, pstate.xcoord, pstate.ycoord);
     pstate.word.clear();
     pstate.xcoord.clear(); pstate.ycoord.clear();
   }
@@ -182,7 +182,17 @@ bool Config::checkSpecies(const Species &spcs)
   return true;
 }
 
-void Config::storeEntityPos(std::vector<Entity> &store, const TmpString &key,
+void Config::setTermitePositions(const std::vector<Entity> &tpos)
+{
+  termitePositions = tpos;
+}
+
+void Config::setChipPositions(const std::vector<Entity> &cpos)
+{
+  chipPositions = cpos;
+}
+
+void Config::storeEntityPosition(std::vector<Entity> &store, const TmpString &key,
                             const TmpString &x, const TmpString &y)
 {
   Entity ent = {key, std::stoi(x), std::stoi(y)};

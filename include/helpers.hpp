@@ -16,4 +16,6 @@ std::string mapToString(const std::map<std::string, int>& m);
 
 std::map<std::string, int> listToMap(std::list<std::string> l);
 
+void randInt(const int a, const int b);
+
 #endif /* _HELPERS_H_ */

@@ -3,27 +3,26 @@
 #include "OptionParser.hpp"
 #include <getopt.h>
 #include <iostream>
-#include <random>
 #include "log.h"
 #include "config.h"
 
-OptionParser::OptionParser(std::shared_ptr<Config> cnf): conf(cnf), debug(0) {}
+OptionParser::OptionParser(std::shared_ptr<Config> cnf):
+  conf(cnf), logFile(nullptr) {}
 
 OptionParser::~OptionParser() {}
 
 bool OptionParser::parse(const int argc, char *const * argv)
 {
   static struct option long_options[] = {
-    /* These options set a flag. */
-    {"debug", no_argument, &debug, 1},
-    /* These options don't set a flag. We distinguish them by their indices. */
-    {"help", no_argument, 0, 'h'},
-    {"version", no_argument, 0, 'v'},
-    {"height", required_argument, 0, 'H'},
-    {"width", required_argument, 0, 'W'},
-    {"termites", required_argument, 0, 't'},
-    {"chips", required_argument, 0, 'c'}, // woodchips
-    {"times", required_argument, 0, 'T'},
+    {"debug", no_argument, NULL, 'd'},
+    {"help", no_argument, NULL, 'h'},
+    {"version", no_argument, NULL, 'v'},
+    {"output", no_argument, NULL, 'o'},
+    {"height", required_argument, NULL, 'H'},
+    {"width", required_argument, NULL, 'W'},
+    {"termites", required_argument, NULL, 't'},
+    {"chips", required_argument, NULL, 'c'}, // woodchips
+    {"times", required_argument, NULL, 'T'},
     {0, 0, 0, 0}                // convention
   };
 
@@ -31,7 +30,7 @@ bool OptionParser::parse(const int argc, char *const * argv)
   while (1)
   {
     int option_index = 0;
-    c = getopt_long(argc, argv, "hvH:W:t:c:T:",
+    c = getopt_long(argc, argv, "+dhvo:H:W:t:c:T:",
                     long_options, &option_index);
 
     /* Detect the end of the options. */
@@ -41,45 +40,42 @@ bool OptionParser::parse(const int argc, char *const * argv)
     switch (c)
     {
     case 0:              // for options which set a flag
-      if (opt == "debug")
-        FILELog::ReportingLevel() = FILELog::FromString("DEBUG");
       break;
-
+    case 'd':
+      options["debug"] = "true";
+      break;
     case 'h':
       std::cout << usage;
+      return false;
       break;
-
     case 'v':
       std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << std::endl;
       std::cout << PACKAGE_COPYRIGHT << std::endl;
+      return false;
       break;
-
+    case 'o':
+      options["logFileName"] = optarg;
+      break;
     case 'H':
-      conf->setHeight(std::stoi(optarg));
+      options["height"] = optarg;
       break;
-
     case 'W':
-      conf->setWidth(std::stoi(optarg));
+      options["width"] = optarg;
       break;
-
     case 't':
-      std::cerr << "termites= " << optarg << std::endl;
+      options["termiteAmount"] = optarg;
       break;
-
     case 'c':
-      std::cerr << "chips= " << optarg << std::endl;
+      options["chipAmount"] = optarg;
       break;
-
     case 'T':
-      conf->setTics(std::stoi(optarg));
+      options["tics"] = optarg;
       break;
-
     case '?':               // error
-      /* getopt_long already printed an error message. */
+      return false;
       break;
-
     default:
-      std::cout << "undefined " << c << std::endl;
+      FILE_LOG(logERROR) << "Undefined option " << char(c);
     }
   }
 
@@ -87,23 +83,97 @@ bool OptionParser::parse(const int argc, char *const * argv)
   if (optind < argc)
   {
     if (argc - optind > 1)
+    {
       FILE_LOG(logERROR) << "More than one configuration file given.";
+      return false;
+    }
     else
-      configFile = argv[optind++];
+    {
+      options["configFileName"] = argv[optind++];
+      FILE_LOG(logDEBUG) << "Configuration file set to "
+                         << options["configFileName"];
+    }
   }
 
-  // FIXME: TODO: check options complete
+  if (!check()) return false;
+  processInOrder();
 
   return true;
 }
 
-void OptionParser::rand()
+bool OptionParser::check()
 {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<> dis(1, 6);
+  bool hasConf = !options["configFileName"].empty();
+  bool hasAllOpts = !options["height"].empty() && !options["width"].empty() &&
+    !options["tics"].empty() && !options["termiteAmount"].empty() &&
+    !options["chipAmount"].empty();
+  bool hasSomeOpts = !options["height"].empty() || !options["width"].empty() ||
+    !options["tics"].empty() || !options["termiteAmount"].empty() ||
+    !options["chipAmount"].empty();
 
-  for (int n=0; n<10; ++n)
-    std::cout << dis(gen) << ' ';
-  std::cout << '\n';
+  if (hasConf)
+  {
+    if (hasSomeOpts)
+    {
+      FILE_LOG(logERROR) << "Please provide either a configuration file OR options.";
+      return false;
+    }
+  }
+  else if (hasSomeOpts && !hasAllOpts)
+  {
+      FILE_LOG(logERROR) << "Please provide ALL options (height, width, termites, chips, tics).";
+      return false;
+  }
+  return true;
+}
+
+void OptionParser::processInOrder()
+{
+  if (!options["debug"].empty())
+  {
+    FILELog::ReportingLevel() = FILELog::FromString("DEBUG");
+  }
+  if (!options["logFileName"].empty())
+  {
+    setLogFile(options["logFileName"]);
+  }
+  if (!options["height"].empty())
+  {
+    conf->setHeight(std::stoi(options["height"]));
+  }
+  if (!options["width"].empty())
+  {
+    conf->setWidth(std::stoi(options["width"]));
+  }
+  if (!options["termiteAmount"].empty())
+  {
+    // termiteAmount = std::stoi(optarg);
+    // ... generate positions
+    // conf->setTermitePositions()
+  }
+  if (!options["chipAmount"].empty())
+  {
+    // chipAmount = std::stoi(optarg);
+    // ... generate positions
+    // conf->setChipPositions()
+  }
+  if (!options["tics"].empty())
+  {
+    conf->setTics(std::stoi(options["tics"]));
+  }
+}
+
+FILE* OptionParser::getLogFile() {
+  return logFile;
+}
+
+void OptionParser::setLogFile(std::string filename)
+{
+  logFile = fopen(filename.c_str(), "a");
+  Output2FILE::Stream() = logFile;
+}
+
+std::string OptionParser::getConfigFileName()
+{
+  return options["configFileName"];
 }

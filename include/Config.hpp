@@ -41,6 +41,8 @@ public:
   void setChips(const Chips &chps);
   void setSpecies(const Species &spcs);
   bool checkSpecies(const Species &spcs);
+  void setTermitePositions(const std::vector<Entity> &tpos);
+  void setChipPositions(const std::vector<Entity> &cpos);
 
   bool check();                 // FIXME: TODO:
 
@@ -73,7 +75,7 @@ private:
     TmpString xcoord, ycoord;
   };
 
-  void storeEntityPos(std::vector<Entity> &store, const TmpString &key,
+  void storeEntityPosition(std::vector<Entity> &store, const TmpString &key,
                       const TmpString &x, const TmpString &y);
   void parserInit(ParserState &parser);
   void parserExecute(ParserState &parser, const char *data, int len);

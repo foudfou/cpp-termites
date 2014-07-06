@@ -25,8 +25,8 @@
   termite_def  = 'termite'  def word $word WS+ coord %termite_pos;
   copeau_def   = 'copeau'   def word $word WS+ coord %chip_pos;
 
-  line_comment = WS* '#' (any - EOL)* %{ FILE_LOG(logDEBUG) << "#"; };
-  line_void    = WS* %{ FILE_LOG(logDEBUG) << "\\n"; };
+  line_comment = WS* '#' (any - EOL)*;
+  line_void    = WS*;
   line_def     = WS* ( temps_def | largeur_def | hauteur_def | copeaux_def |
                        termites_def | termite_def | copeau_def ) WS*;
 
