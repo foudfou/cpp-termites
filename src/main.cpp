@@ -19,7 +19,7 @@ int main(int argc , char ** argv)
   auto confFileName = options.getConfigFileName();
   if (!confFileName.empty()) {
     FILE_LOG(logINFO) << "Config parsing finished: "
-                      << btos(conf->read(confFileName));
+                      << tmt::btos(conf->read(confFileName));
   }
 
   if (auto logFile = options.getLogFile()) {

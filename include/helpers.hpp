@@ -5,17 +5,35 @@
 
 #include <list>
 #include <map>
+#include <random>
 #include <string>
 
+namespace tmt {
 
-long fileSize(const std::string& filename);
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
 
-std::string btos(const bool& b);
+  long fileSize(const std::string& filename);
 
-std::string mapToString(const std::map<std::string, int>& m);
+  std::string btos(const bool& b);
 
-std::map<std::string, int> listToMap(std::list<std::string> l);
+  std::string mapToString(const std::map<std::string, int>& m);
 
-void randInt(const int a, const int b);
+  std::map<std::string, int> listToMap(std::list<std::string> l);
+
+  template<typename Iter, typename RandomGenerator>
+  Iter pick(Iter start, Iter end, RandomGenerator& g);
+
+  template<typename Iter>
+  Iter pick(Iter start, Iter end);
+
+  std::vector<int> pickn(const int n, const int len);
+
+  std::vector< std::pair<int, int> >
+  randomIntPairs(const int n, const int h, const int w);
+
+  std::pair<int, int> position(const int n, const int width);
+
+}
 
 #endif /* _HELPERS_H_ */

@@ -62,7 +62,7 @@ Config::~Config() {}
   }
 
   action chips_def {
-    setChips(listToMap(pstate.list));
+    setChips(tmt::listToMap(pstate.list));
     pstate.word.clear();
     pstate.list.clear();
   }
@@ -74,7 +74,7 @@ Config::~Config() {}
   action hash_insert {
     auto lookup = pstate.hash.find(pstate.key);
     if (lookup == pstate.hash.end())
-      pstate.hash[pstate.key] = listToMap(pstate.list);
+      pstate.hash[pstate.key] = tmt::listToMap(pstate.list);
     else
       FILE_LOG(logWARNING) << "Duplicate key ignored: " << pstate.key;
     pstate.key.clear();
@@ -148,7 +148,7 @@ void Config::setChips(const Chips &chps)
   chips = chps;
   if (FILELog::ReportingLevel() >= logDEBUG)
   {
-    FILE_LOG(logDEBUG) << "CHIPS=|" << mapToString(chips);
+    FILE_LOG(logDEBUG) << "CHIPS=|" << tmt::mapToString(chips);
   }
 }
 
@@ -158,7 +158,7 @@ void Config::setSpecies(const Species &spcs)
   if (FILELog::ReportingLevel() >= logDEBUG) {
     for (auto sp : species) {
       FILE_LOG(logDEBUG) << "SPECIES=" << sp.first << " -> |"
-                         << mapToString(sp.second);
+                         << tmt::mapToString(sp.second);
     }
   }
 }
@@ -260,7 +260,7 @@ void Config::parserExecute(ParserState &pstate, const char *data, int len)
 
 bool Config::parserFinish(ParserState &pstate)
 {
-  FILE_LOG(logINFO) << "Config has errors: " << btos(parserHasError(pstate));
+  FILE_LOG(logINFO) << "Config has errors: " << tmt::btos(parserHasError(pstate));
   return parserIsFinished(pstate);
 }
 

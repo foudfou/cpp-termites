@@ -3,8 +3,10 @@
 #include "OptionParser.hpp"
 #include <getopt.h>
 #include <iostream>
+#include <sstream>
 #include "log.h"
 #include "config.h"
+#include "helpers.hpp"
 
 OptionParser::OptionParser(std::shared_ptr<Config> cnf):
   conf(cnf), logFile(nullptr) {}
@@ -96,7 +98,7 @@ bool OptionParser::parse(const int argc, char *const * argv)
   }
 
   if (!check()) return false;
-  processInOrder();
+  if (!processInOrder()) return false;
 
   return true;
 }
@@ -115,19 +117,21 @@ bool OptionParser::check()
   {
     if (hasSomeOpts)
     {
-      FILE_LOG(logERROR) << "Please provide either a configuration file OR options.";
+      FILE_LOG(logERROR) << "Please provide either a configuration file "
+        "OR options.";
       return false;
     }
   }
   else if (hasSomeOpts && !hasAllOpts)
   {
-      FILE_LOG(logERROR) << "Please provide ALL options (height, width, termites, chips, tics).";
-      return false;
+    FILE_LOG(logERROR) << "Please provide ALL options (height, width, "
+      "termites, chips, tics).";
+    return false;
   }
   return true;
 }
 
-void OptionParser::processInOrder()
+bool OptionParser::processInOrder()
 {
   if (!options["debug"].empty())
   {
@@ -145,22 +149,28 @@ void OptionParser::processInOrder()
   {
     conf->setWidth(std::stoi(options["width"]));
   }
-  if (!options["termiteAmount"].empty())
+  if (!options["termiteAmount"].empty() &&  !options["chipAmount"].empty())
   {
-    // termiteAmount = std::stoi(optarg);
-    // ... generate positions
-    // conf->setTermitePositions()
-  }
-  if (!options["chipAmount"].empty())
-  {
-    // chipAmount = std::stoi(optarg);
-    // ... generate positions
-    // conf->setChipPositions()
+    int height = conf->getHeight(), width = conf->getWidth();
+    int tamount = std::stoi(options["termiteAmount"]);
+    int camount = std::stoi(options["chipAmount"]);
+    if (height * width < tamount + camount)
+    {
+      FILE_LOG(logERROR) << "Too many termites and chips for board size.";
+      return false;
+    }
+
+    std::vector<int> randoms = tmt::pickn(tamount + camount, height * width);
+
+    conf->setTermitePositions(buildEntities(tamount, randoms, width, 0));
+    conf->setChipPositions(buildEntities(camount, randoms, width, tamount));
   }
   if (!options["tics"].empty())
   {
     conf->setTics(std::stoi(options["tics"]));
   }
+
+  return true;
 }
 
 FILE* OptionParser::getLogFile() {
@@ -176,4 +186,20 @@ void OptionParser::setLogFile(std::string filename)
 std::string OptionParser::getConfigFileName()
 {
   return options["configFileName"];
+}
+
+std::vector<Config::Entity>
+OptionParser::buildEntities(int amount, const std::vector<int> &randoms,
+                            int width, int off) const
+{
+  std::vector<Config::Entity> positions;
+  std::stringstream randomsStr;
+  for (int i=0; i<amount; ++i) {
+    auto pos = tmt::position(randoms[i+off], width);
+    positions.push_back(Config::Entity({"species0", pos.first, pos.second}));
+    if (FILELog::ReportingLevel() >= logDEBUG)
+      randomsStr << '|' << pos.first << ':' << pos.second;
+  }
+  FILE_LOG(logDEBUG) << "entitiy positions: " << randomsStr.str();
+  return positions;
 }

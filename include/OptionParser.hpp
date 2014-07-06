@@ -26,7 +26,7 @@ public:
   virtual ~OptionParser();
 
   bool parse(const int argc, char *const * argv);
-  void processInOrder();
+  bool processInOrder();
   bool check();
   FILE* getLogFile();
   void setLogFile(std::string filename);
@@ -37,6 +37,10 @@ private:
   std::map<std::string, std::string> options;
   std::string logFileName;
   FILE* logFile;
+
+  std::vector<Config::Entity>
+  buildEntities(int amount, const std::vector<int> &randoms, int width,
+                int offset) const;
 };
 
 #endif /* _OPTIONPARSER_H_ */

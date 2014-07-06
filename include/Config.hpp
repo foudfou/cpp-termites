@@ -20,13 +20,13 @@ class Config
   typedef std::list<std::string> TmpList;
   typedef Species TmpHash;
 
+public:
   struct Entity {
     std::string species;
     int x;
     int y;
   };
 
-public:
   Config();
   virtual ~Config();
 
