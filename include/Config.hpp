@@ -32,15 +32,20 @@ public:
 
   bool read(std::string const& configFile);
 
-  void setTime(int t);
+  int  getTics();
+  void setTics(int t);
+  int  getWidth();
   void setWidth(int t);
+  int  getHeight();
   void setHeight(int t);
   void setChips(const Chips &chps);
   void setSpecies(const Species &spcs);
   bool checkSpecies(const Species &spcs);
 
+  bool check();                 // FIXME: TODO:
+
 private:
-  int time;
+  int tics;
   int width;
   int height;
   // we store wood chips into a map, as wood species are supposely unique

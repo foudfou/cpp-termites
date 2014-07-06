@@ -37,8 +37,8 @@ Config::~Config() {}
     pstate.integer.append(1, fc);
   }
 
-  action time_def {
-    setTime(std::stoi(pstate.integer));
+  action tics_def {
+    setTics(std::stoi(pstate.integer));
     pstate.integer.clear();
   }
 
@@ -117,17 +117,23 @@ Config::~Config() {}
 %% write data noerror nofinal;
 
 
-void Config::setTime(int t)
+int Config::getTics() {return tics;}
+
+void Config::setTics(int t)
 {
-  time = t;
-  FILE_LOG(logDEBUG) << "time set to " << time;
+  tics = t;
+  FILE_LOG(logDEBUG) << "tics set to " << tics;
 }
+
+int Config::getWidth() {return width;}
 
 void Config::setWidth(int t)
 {
   width = t;
   FILE_LOG(logDEBUG) << "width set to " << width;
 }
+
+int Config::getHeight() {return height;}
 
 void Config::setHeight(int t)
 {

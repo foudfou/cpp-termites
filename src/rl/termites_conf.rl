@@ -17,7 +17,7 @@
   coord = integer $xcoord WS+ integer $ycoord;
 
   # action attached to the previous rule/token
-  temps_def    = 'temps'    def integer $integer %time_def;
+  temps_def    = 'temps'    def integer $integer %tics_def;
   largeur_def  = 'largeur'  def integer $integer %width_def;
   hauteur_def  = 'hauteur'  def integer $integer %height_def;
   copeaux_def  = 'copeaux'  def list %chips_def;

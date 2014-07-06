@@ -33,13 +33,21 @@ def configure(cnf):
         features='cxx cxxprogram',
         cflags=['-Wall', '-Weffc++'],
     )
+    cnf.check(header_name='getopt.h', features='cxx cxxprogram')
     cnf.find_program('ragel')
     cnf.find_program('valgrind')
 
     cnf.env['CC'] = ['clang']
     cnf.env['CXX'] = ['clang++']
-    cnf.env.append_value('CXXFLAGS', ['-Wall', '-pedantic', '-Wextra', '-Weffc++', '-std=c++11'])
+    cnf.env.append_value('CXXFLAGS', [
+        '-fcolor-diagnostics',
+        '-Wall', '-pedantic', '-Wextra', '-Weffc++', '-std=c++11'
+    ])
 
+    cnf.define('PACKAGE_NAME', APPNAME)
+    cnf.define('PACKAGE_VERSION', VERSION)
+    cnf.define('PACKAGE_COPYRIGHT', "Copyright (c) 2014 Foudil Brétel. All rights reserved.")
+    cnf.write_config_header('include/config.h')
 
 def build(bld):
     bld.recurse('src test')
