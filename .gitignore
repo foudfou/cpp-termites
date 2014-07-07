@@ -1,4 +1,6 @@
 bin/
 build/
+data/
 .lock-waf*
 .waf*
+TAGS

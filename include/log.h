@@ -159,7 +159,9 @@ inline std::string NowTime()
     char buffer[11];
     time_t t;
     time(&t);
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
     tm r = {};
+#pragma GCC diagnostic pop
     strftime(buffer, sizeof(buffer), "%X", localtime_r(&t, &r));
     struct timeval tv;
     gettimeofday(&tv, 0);

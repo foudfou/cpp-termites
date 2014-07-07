@@ -28,17 +28,15 @@ bool OptionParser::parse(const int argc, char *const * argv)
     {0, 0, 0, 0}                // convention
   };
 
-  int c;
   while (1)
   {
     int option_index = 0;
-    c = getopt_long(argc, argv, "+dhvo:H:W:t:c:T:",
+    int c = getopt_long(argc, argv, "+dhvo:H:W:t:c:T:",
                     long_options, &option_index);
 
     /* Detect the end of the options. */
     if (c == -1) break;
 
-    std::string opt = long_options[option_index].name;
     switch (c)
     {
     case 0:              // for options which set a flag
@@ -48,7 +46,7 @@ bool OptionParser::parse(const int argc, char *const * argv)
       break;
     case 'h':
       std::cout << usage;
-      return false;
+      return true;
       break;
     case 'v':
       std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << std::endl;
@@ -105,20 +103,21 @@ bool OptionParser::parse(const int argc, char *const * argv)
 
 bool OptionParser::check()
 {
-  bool hasConf = !options["configFileName"].empty();
-  bool hasAllOpts = !options["height"].empty() && !options["width"].empty() &&
-    !options["tics"].empty() && !options["termiteAmount"].empty() &&
-    !options["chipAmount"].empty();
-  bool hasSomeOpts = !options["height"].empty() || !options["width"].empty() ||
-    !options["tics"].empty() || !options["termiteAmount"].empty() ||
-    !options["chipAmount"].empty();
+  auto none = options.end();
+  bool hasConf = options.find("configFileName") == none;
+  bool hasAllOpts = options.find("height") == none &&
+    options.find("width") == none && options.find("tics") == none &&
+    options.find("termiteAmount") == none && options.find("chipAmount") == none;
+  bool hasSomeOpts = options.find("height") == none ||
+    options.find("width") == none || options.find("tics") == none ||
+    options.find("termiteAmount") == none || options.find("chipAmount") == none;
 
   if (hasConf)
   {
     if (hasSomeOpts)
     {
       FILE_LOG(logERROR) << "Please provide either a configuration file "
-        "OR options.";
+        "OR all mandatory options (height, width, termites, chips, tics).";
       return false;
     }
   }

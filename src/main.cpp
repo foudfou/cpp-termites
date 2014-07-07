@@ -14,15 +14,15 @@ int main(int argc , char ** argv)
   std::shared_ptr<Config> conf(new Config);
   OptionParser options = OptionParser(conf);
   if (!options.parse(argc, argv))
-    std::exit(EXIT_FAILURE);
+    return EXIT_SUCCESS;
 
   auto confFileName = options.getConfigFileName();
   if (!confFileName.empty() && !conf->read(confFileName))
-    std::exit(EXIT_FAILURE);
+    return EXIT_FAILURE;
 
   if (auto logFile = options.getLogFile()) {
     fclose(logFile);
   }
 
-  std::exit(EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }

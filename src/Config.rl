@@ -3,7 +3,6 @@
 
 #include "Config.hpp"
 #include <assert.h>
-#include <stdlib.h>
 #include <string.h>
 #include <fstream>
 #include <iostream>
@@ -11,7 +10,7 @@
 #include "log.h"
 #include "helpers.hpp"
 
-Config::Config() {}
+Config::Config(): tics(0), width(0), height(0) {}
 
 Config::~Config() {}
 
@@ -264,10 +263,7 @@ bool Config::checkParamsDefined()
 bool Config::checkBounds()
 {
   struct member_t {
-    std::vector<Entity>* positions;
-    Species* spc;
-    Chips* chp;
-    std::string msg;
+    std::vector<Entity>* positions; Species* spc; Chips* chp; std::string msg;
   };
   member_t members[] = {
     { &termitePositions, &species, nullptr, "species" },
@@ -280,8 +276,15 @@ bool Config::checkBounds()
           (mbr.chp && (*mbr.chp).find(pos.species) == (*mbr.chp).end()))
       {
         FILE_LOG(logERROR) << "'" << pos.species
-                           << "' (at " << pos.row << "," << pos.col
-                           << ") is not defined in global species";
+                           << "' (at " << pos.row << ", " << pos.col
+                           << ") is not defined in global species.";
+        return false;
+      }
+
+      if ((pos.row > height) || (pos.col > width))
+      {
+        FILE_LOG(logERROR) << "Position out of bounds (at " << pos.row << ", "
+                           << pos.col << ").";
         return false;
       }
     }

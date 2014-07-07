@@ -4,19 +4,25 @@
 def configure(cnf):
     cnf.env.SRC_INC_DIRS = ['../include', '.']
 
-
 def build(bld):
     sources = bld.path.ant_glob('*.cpp')
+    parser = bld.path.find_node('Config.rl')
     bld.program(
         features = 'cxx cxxprogram',
-        source   = ['Config.rl'] + sources,
+        source   = [parser] + sources,
         target   = 'termites',
         includes = bld.env.SRC_INC_DIRS,
         using    = 'rl/termites_conf.rl',
     )
-    bld.add_manual_dependency(
-        bld.path.find_node('Config.rl'),
-        bld.path.find_node('rl/termites_conf.rl'))
+    bld.add_manual_dependency(parser, bld.path.find_node('rl/termites_conf.rl'))
+
+    if bld.options.valgrind:
+        bld(name = 'valgrind',
+            rule   = ('${env.VALGRIND} --leak-check=full --show-leak-kinds=all '
+                      '${SRC} ${bld.options.valgrind}'),
+            source = 'termites',
+            always = True,
+        )
 
 
 from waflib.Task import Task

@@ -14,12 +14,42 @@ out = 'build'
 def options(opt):
     opt.load('compiler_c compiler_cxx')
     opt.load('waf_unit_test')
-    opt.add_option('--without-debug', action='store_false', default=True,
+    cnf = opt.get_option_group('configure options')
+    cnf.add_option('-c', '--compiler', type='choice', choices=['clang', 'gcc'],
+                   default='clang', action='store',
+                   help='define compiler to use. clang or gcc [default: clang]')
+    cnf.add_option('--with-effc++', action='store_true', default=False,
+                   dest='eff_cpp', help='Thorough diagnostics')
+    cnf.add_option('--without-debug', action='store_false', default=True,
                    dest='no_debug', help='Add debug info to binaries')
+
+    cnf.add_option('--valgrind', type='string', action='store', default=False,
+                   dest='valgrind', help='Run valgrind with arguments [string]')
+    cnf.add_option('--coverage', action='store_true', default=False,
+                   dest='coverage', help='Compile and run coverage')
 
 
 def configure(cnf):
-    cnf.recurse('src')
+    cnf.recurse('src test')
+
+    if cnf.options.compiler == 'clang':
+        cnf.env['CC'] = 'clang'
+        cnf.env['CXX'] = 'clang++'
+    else:
+        cnf.env['CC'] = 'gcc'
+        cnf.env['CXX'] = 'g++'
+
+    cnf.load('compiler_c compiler_cxx')
+    cnf.load('waf_unit_test')
+    cnf.check(
+        features='cxx cxxprogram',
+        cflags=['-Wall', '-std=c++11'],
+    )
+    cnf.check(header_name='getopt.h', features='cxx cxxprogram')
+    cnf.find_program('ragel')
+    cnf.find_program('valgrind', var='VALGRIND')
+    cnf.find_program('lcov', var='LCOV')
+    cnf.find_program('genhtml', var='GENHTML')
 
     release  = 'Release'
     if cnf.options.no_debug:
@@ -27,33 +57,39 @@ def configure(cnf):
         cnf.env.append_value('CXXFLAGS', ['-g'])
     cnf.msg("Compilation mode", release)
 
-    cnf.load('compiler_c compiler_cxx')
-    cnf.load('waf_unit_test')
-    cnf.check(
-        features='cxx cxxprogram',
-        cflags=['-Wall', '-Weffc++'],
-    )
-    cnf.check(header_name='getopt.h', features='cxx cxxprogram')
-    cnf.find_program('ragel')
-    cnf.find_program('valgrind')
+    if cnf.options.coverage:
+        cnf.env.append_value('CXXFLAGS', ['--coverage'])
+        cnf.env.LCOV_DIR = cnf.path.find_dir('data').abspath() + '/cov'
+        if cnf.options.compiler == 'clang':
+            cnf.env.append_value('STLIBPATH', ['/usr/lib/clang/3.4.2/lib/linux'])
+            cnf.env.append_value('STLIB', ['clang_rt.profile-x86_64'])
+        else:
+            cnf.env.append_value('LIB', ['gcov'])
 
-    cnf.env['CC'] = ['clang']
-    cnf.env['CXX'] = ['clang++']
     cnf.env.append_value('CXXFLAGS', [
-        '-fcolor-diagnostics',
-        '-Wall', '-pedantic', '-Wextra', '-Weffc++', '-std=c++11'
+        '-Wall', '-pedantic', '-Wextra', '-std=c++11'
     ])
+    if cnf.options.compiler == 'clang':
+        cnf.env.append_value('CXXFLAGS', ['-fcolor-diagnostics'])
+    if cnf.options.eff_cpp:
+        cnf.env.append_value('CXXFLAGS', ['-Weffc++'])
 
     cnf.define('PACKAGE_NAME', APPNAME)
     cnf.define('PACKAGE_VERSION', VERSION)
     cnf.define('PACKAGE_COPYRIGHT', "Copyright (c) 2014 Foudil Brétel. All rights reserved.")
     cnf.write_config_header('include/config.h')
 
+
 def build(bld):
     bld.recurse('src test')
 
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.summary)
+
+
+from waflib import Scripting
+def distclean(ctx):
+    Scripting.distclean(ctx)
 
 
 def tags(ctx):
@@ -110,22 +146,3 @@ class LintClangContext(Build.BuildContext):
 class LintCpplintContext(Build.BuildContext):
     cmd = 'lint_cpplint'
     fun = 'lint_cpplint'
-
-
-def valgrind(ctx):
-    "run valgrind over the main binary"
-    # # TODO: add depency to `build` task
-    # ctx.add_manual_dependency(
-    #     ctx.path.find_node('src/main.cpp'),
-    #     ctx.path.find_node('src/main.cpp'))
-
-    Logs.info("valgrind [termites]...")
-    cmd = 'valgrind --leak-check=full ./build/src/termites'
-    return ctx.exec_command(cmd)
-
-
-# help here: https://github.com/lycus/mci/blob/master/wscript
-class ValgrindContext(Build.BuildContext):
-    cmd   = 'valgrind'
-    fun   = 'valgrind'
-    after = ['termites']
