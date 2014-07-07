@@ -159,6 +159,7 @@ inline std::string NowTime()
     char buffer[11];
     time_t t;
     time(&t);
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
     tm r = {};
 #pragma GCC diagnostic pop
