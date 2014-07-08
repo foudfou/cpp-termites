@@ -7,8 +7,14 @@ from waflib import Build, Logs, Options
 VERSION = '0.0.1'
 APPNAME = 'termites'
 
+
+def _sysinfo():
+    import os
+    u = os.uname()
+    return "%s-%s" % (u.sysname.lower(), u.machine)
+
 top = '.'
-out = 'build'
+out = 'obj-%s' % _sysinfo()
 
 
 def options(opt):
@@ -121,7 +127,7 @@ def lint(ctx):
 def _lint_pre(ctx):
     src_files = ctx.path.ant_glob(
         ['src/**/*.cpp', 'src/Config.rl', 'include/**/*.hpp', 'test/**/*.cpp'],
-        excl=['include/catch.hpp'],
+        excl=['include/ext/*'],
         dir=False, src=True,
     )
     src_files_str = " "

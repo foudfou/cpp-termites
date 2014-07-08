@@ -3,6 +3,7 @@
 
 def configure(cnf):
     cnf.env.TARGET_APP_TEST = 'termites_tests'
+    cnf.env.TEST_INC_DIRS = ['../include', '../include/ext', '.']
 
 
 def build(bld):
@@ -11,7 +12,7 @@ def build(bld):
         features = 'cxx cxxprogram test',
         source   = bld.path.ant_glob('*.cpp'),
         target   = bld.env.TARGET_APP_TEST,
-        includes = '../include .',
+        includes = bld.env.SRC_INC_DIRS,
     )
 
     if bld.options.coverage:
