@@ -14,6 +14,7 @@ out = 'build'
 def options(opt):
     opt.load('compiler_c compiler_cxx')
     opt.load('waf_unit_test')
+
     cnf = opt.get_option_group('configure options')
     cnf.add_option('-c', '--compiler', type='choice', choices=['clang', 'gcc'],
                    default='clang', action='store',
@@ -22,12 +23,18 @@ def options(opt):
                    dest='eff_cpp', help='Thorough diagnostics')
     cnf.add_option('--without-debug', action='store_false', default=True,
                    dest='no_debug', help='Add debug info to binaries')
-
-    cnf.add_option('--valgrind', type='string', action='store', default=False,
-                   dest='valgrind', help='Run valgrind with arguments [string]')
     cnf.add_option('--coverage', action='store_true', default=False,
                    dest='coverage', help='Compile and run coverage')
 
+    bld = opt.get_option_group('build and install options')
+    bld.add_option('--valgrind', type='string', action='store', default=False,
+                   dest='valgrind', help='Run valgrind with arguments [string]')
+
+    lnt = opt.add_option_group('lint options')
+    lnt.add_option('-l', '--linters', type='string', action='store',
+                   default=False, dest='linters',
+                   help=('Coma-spearated list of linters to apply '
+                         '[cppcheck,clang,cpplint]'))
 
 def configure(cnf):
     cnf.recurse('src test')
@@ -47,6 +54,7 @@ def configure(cnf):
     )
     cnf.check(header_name='getopt.h', features='cxx cxxprogram')
     cnf.find_program('ragel')
+    cnf.find_program('cppcheck', var='CPPCHECK')
     cnf.find_program('valgrind', var='VALGRIND')
     cnf.find_program('lcov', var='LCOV')
     cnf.find_program('genhtml', var='GENHTML')
@@ -57,6 +65,14 @@ def configure(cnf):
         cnf.env.append_value('CXXFLAGS', ['-g'])
     cnf.msg("Compilation mode", release)
 
+    cnf.env.append_value('CXXFLAGS', [
+        '-Wall', '-pedantic', '-Wextra', '-std=c++11'
+    ])
+    if cnf.options.compiler == 'clang':
+        cnf.env.append_value('CXXFLAGS', ['-fcolor-diagnostics'])
+    if cnf.options.eff_cpp:
+        cnf.env.append_value('CXXFLAGS', ['-Weffc++'])
+
     if cnf.options.coverage:
         cnf.env.append_value('CXXFLAGS', ['--coverage'])
         cnf.env.LCOV_DIR = cnf.path.find_dir('data').abspath() + '/cov'
@@ -65,14 +81,6 @@ def configure(cnf):
             cnf.env.append_value('STLIB', ['clang_rt.profile-x86_64'])
         else:
             cnf.env.append_value('LIB', ['gcov'])
-
-    cnf.env.append_value('CXXFLAGS', [
-        '-Wall', '-pedantic', '-Wextra', '-std=c++11'
-    ])
-    if cnf.options.compiler == 'clang':
-        cnf.env.append_value('CXXFLAGS', ['-fcolor-diagnostics'])
-    if cnf.options.eff_cpp:
-        cnf.env.append_value('CXXFLAGS', ['-Weffc++'])
 
     cnf.define('PACKAGE_NAME', APPNAME)
     cnf.define('PACKAGE_VERSION', VERSION)
@@ -101,8 +109,14 @@ def tags(ctx):
 
 def lint(ctx):
     "run linters over source files"
-    lint_clang(ctx)
-    lint_cpplint(ctx)
+    if ctx.options.linters:
+        for linter in ctx.options.linters.split(','):
+            globs = globals()
+            fn = 'lint_' + linter
+            if (fn in globs):
+                globs[fn](ctx)
+            else:
+                Logs.error("linter %s not supported." % linter)
 
 def _lint_pre(ctx):
     src_files = ctx.path.ant_glob(
@@ -114,12 +128,24 @@ def _lint_pre(ctx):
     for f in src_files:
          src_files_str += " " + f.relpath()
 
-    incl_dirs = [d[3:] if d.startswith('..') else "src/" + d for d in ctx.env.SRC_INC_DIRS]
+    incl_dirs = [d[3:] if d.startswith('..') else "src/" + d
+                 for d in ctx.env.SRC_INC_DIRS]
     incl_dirs_str = ""
     for d in  incl_dirs:
          incl_dirs_str += " -I" + d
 
     return src_files_str, incl_dirs_str
+
+def lint_cppcheck(ctx):
+    src_files, incl_dirs = _lint_pre(ctx)
+    cmd = 'cppcheck --enable=all --inconclusive --std=posix '
+    cmd += incl_dirs + src_files
+    Logs.info("lint [cppcheck]...")
+    # ctx.exec_command() is somehow not flushing instantly...
+    import subprocess
+    ret = subprocess.Popen(cmd, shell=True).wait()
+    if ret != 0:
+        ctx.fatal(str(cmd) + ' exited with: ' + str(ret))
 
 def lint_clang(ctx):
     src_files, incl_dirs = _lint_pre(ctx)
