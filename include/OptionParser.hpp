@@ -1,7 +1,7 @@
 #ifndef _OPTIONPARSER_H_
 #define _OPTIONPARSER_H_
 
-#include <stdio.h>
+#include <cstdio>
 #include <memory>
 #include <string>
 #include "Config.hpp"
@@ -24,19 +24,20 @@ class OptionParser
 public:
   OptionParser(std::shared_ptr<Config> cnf);
   virtual ~OptionParser();
+  /* copy not allowed, as OptionParser needs to manage a FILE* for FILELog */
+  OptionParser(const OptionParser& that) = delete;
+  OptionParser& operator=(const OptionParser& that) = delete;
 
   bool parse(const int argc, char *const * argv);
   bool processInOrder();
   bool check();
-  FILE* getLogFile();
   void setLogFile(std::string filename);
   std::string getConfigFileName();
 
 private:
   std::shared_ptr<Config> conf;
   std::map<std::string, std::string> options;
-  std::string logFileName;
-  FILE* logFile;
+  std::FILE* logFile;
 
   std::vector<Config::Entity>
   buildEntities(int amount, const std::vector<int> &randoms, int width,

@@ -12,17 +12,13 @@ int main(int argc , char ** argv)
   FILELog::ReportingLevel() = FILELog::FromString("INFO");
 
   std::shared_ptr<Config> conf(new Config);
-  OptionParser options = OptionParser(conf);
+  OptionParser options(conf);
   if (!options.parse(argc, argv))
     return EXIT_SUCCESS;
 
   auto confFileName = options.getConfigFileName();
   if (!confFileName.empty() && !conf->read(confFileName))
     return EXIT_FAILURE;
-
-  if (auto logFile = options.getLogFile()) {
-    fclose(logFile);
-  }
 
   return EXIT_SUCCESS;
 }

@@ -11,7 +11,12 @@
 OptionParser::OptionParser(std::shared_ptr<Config> cnf):
   conf(cnf), logFile(nullptr) {}
 
-OptionParser::~OptionParser() {}
+OptionParser::~OptionParser() {
+  if (logFile) {
+    std::fclose(logFile);
+    logFile = nullptr;
+  }
+}
 
 bool OptionParser::parse(const int argc, char *const * argv)
 {
@@ -172,13 +177,10 @@ bool OptionParser::processInOrder()
   return true;
 }
 
-FILE* OptionParser::getLogFile() {
-  return logFile;
-}
-
 void OptionParser::setLogFile(std::string filename)
 {
-  logFile = fopen(filename.c_str(), "a");
+  logFile = std::fopen(filename.c_str(), "a");
+  // FIXME: TODO: checks!
   Output2FILE::Stream() = logFile;
 }
 
