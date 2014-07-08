@@ -31,7 +31,7 @@ public:
   bool parse(const int argc, char *const * argv);
   bool processInOrder();
   bool check();
-  void setLogFile(std::string filename);
+  bool setLogFile(std::string filename);
   std::string getConfigFileName();
 
 private:

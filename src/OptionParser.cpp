@@ -1,6 +1,7 @@
 /* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
 #include "OptionParser.hpp"
+#include <cstring>
 #include <getopt.h>
 #include <iostream>
 #include <sstream>
@@ -108,14 +109,13 @@ bool OptionParser::parse(const int argc, char *const * argv)
 
 bool OptionParser::check()
 {
-  auto none = options.end();
-  bool hasConf = options.find("configFileName") == none;
-  bool hasAllOpts = options.find("height") == none &&
-    options.find("width") == none && options.find("tics") == none &&
-    options.find("termiteAmount") == none && options.find("chipAmount") == none;
-  bool hasSomeOpts = options.find("height") == none ||
-    options.find("width") == none || options.find("tics") == none ||
-    options.find("termiteAmount") == none || options.find("chipAmount") == none;
+  bool hasConf = options.count("configFileName");
+  bool hasAllOpts = options.count("height") && options.count("width") &&
+    options.count("tics") && options.count("termiteAmount") &&
+    options.count("chipAmount");
+  bool hasSomeOpts = options.count("height") || options.count("width") ||
+    options.count("tics") || options.count("termiteAmount") ||
+    options.count("chipAmount");
 
   if (hasConf)
   {
@@ -137,23 +137,23 @@ bool OptionParser::check()
 
 bool OptionParser::processInOrder()
 {
-  if (!options["debug"].empty())
+  if (options.count("debug"))
   {
     FILELog::ReportingLevel() = FILELog::FromString("DEBUG");
   }
-  if (!options["logFileName"].empty())
+  if (options.count("logFileName"))
   {
-    setLogFile(options["logFileName"]);
+    if (!setLogFile(options["logFileName"])) return false;
   }
-  if (!options["height"].empty())
+  if (options.count("height"))
   {
     conf->setHeight(std::stoi(options["height"]));
   }
-  if (!options["width"].empty())
+  if (options.count("width"))
   {
     conf->setWidth(std::stoi(options["width"]));
   }
-  if (!options["termiteAmount"].empty() &&  !options["chipAmount"].empty())
+  if (options.count("termiteAmount") && options.count("chipAmount"))
   {
     int height = conf->getHeight(), width = conf->getWidth();
     int tamount = std::stoi(options["termiteAmount"]);
@@ -169,7 +169,7 @@ bool OptionParser::processInOrder()
     conf->setTermitePositions(buildEntities(tamount, randoms, width, 0));
     conf->setChipPositions(buildEntities(camount, randoms, width, tamount));
   }
-  if (!options["tics"].empty())
+  if (options.count("tics"))
   {
     conf->setTics(std::stoi(options["tics"]));
   }
@@ -177,11 +177,17 @@ bool OptionParser::processInOrder()
   return true;
 }
 
-void OptionParser::setLogFile(std::string filename)
+bool OptionParser::setLogFile(std::string filename)
 {
   logFile = std::fopen(filename.c_str(), "a");
-  // FIXME: TODO: checks!
-  Output2FILE::Stream() = logFile;
+  if (logFile == NULL)
+  {
+    FILE_LOG(logERROR) << "Cannot open log file: " << std::strerror(errno);
+    return false;
+  }
+  else
+    Output2FILE::Stream() = logFile;
+  return true;
 }
 
 std::string OptionParser::getConfigFileName()
