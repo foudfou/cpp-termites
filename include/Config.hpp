@@ -31,13 +31,16 @@ public:
   virtual ~Config();
 
   bool read(std::string const& configFile);
-  bool check();
+  bool check() const;
+  bool checkParamsDefined() const;
+  bool checkBounds() const;
+  bool checkSpecies(const Species &spcs) const;
 
-  int  getTics();
+  int  getTics() const;
   void setTics(int t);
-  int  getWidth();
+  int  getWidth() const;
   void setWidth(int t);
-  int  getHeight();
+  int  getHeight() const;
   void setHeight(int t);
   void setChips(const Chips &chps);
   void setSpecies(const Species &spcs);
@@ -80,10 +83,6 @@ private:
   bool parserFinish(ParserState &parser);
   bool parserHasError(ParserState &parser);
   bool parserIsFinished(ParserState &parser);
-
-  bool checkParamsDefined();
-  bool checkBounds();
-  bool checkSpecies(const Species &spcs);
 };
 
 #endif /* _CONFIG_H_ */

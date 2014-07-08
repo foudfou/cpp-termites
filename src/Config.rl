@@ -117,7 +117,7 @@ Config::~Config() {}
 %% write data noerror nofinal;
 
 
-int Config::getTics() {return tics;}
+int Config::getTics() const {return tics;}
 
 void Config::setTics(int t)
 {
@@ -125,7 +125,7 @@ void Config::setTics(int t)
   FILE_LOG(logDEBUG) << "tics set to " << tics;
 }
 
-int Config::getWidth() {return width;}
+int Config::getWidth() const {return width;}
 
 void Config::setWidth(int t)
 {
@@ -133,7 +133,7 @@ void Config::setWidth(int t)
   FILE_LOG(logDEBUG) << "width set to " << width;
 }
 
-int Config::getHeight() {return height;}
+int Config::getHeight() const {return height;}
 
 void Config::setHeight(int t)
 {
@@ -161,25 +161,6 @@ void Config::setSpecies(const Species &spcs)
                          << tmt::mapToString(sp.second);
     }
   }
-}
-
-bool Config::checkSpecies(const Species &spcs)
-{
-  Chips woods;
-  for (auto sp : spcs)
-    for (auto wood : sp.second)
-      woods[wood.first]++;
-
-  for (auto w : woods)
-  {
-    auto lookup = chips.find(w.first);
-    if (lookup == chips.end()) {
-      FILE_LOG(logERROR) << "Missing chip definition: " << w.first;
-      return false;
-    }
-  }
-
-  return true;
 }
 
 void Config::setTermitePositions(const std::vector<Entity> &tpos)
@@ -234,12 +215,12 @@ bool Config::read(std::string const& configFile)
   return finished && checked;
 }
 
-bool Config::check()
+bool Config::check() const
 {
   return checkParamsDefined() && checkBounds();
 }
 
-bool Config::checkParamsDefined()
+bool Config::checkParamsDefined() const
 {
   struct param_check_t { std::string msg; int val; };
   param_check_t params[] = {
@@ -260,11 +241,10 @@ bool Config::checkParamsDefined()
   return true;
 }
 
-bool Config::checkBounds()
+bool Config::checkBounds() const
 {
-  struct member_t {
-    std::vector<Entity>* positions; Species* spc; Chips* chp; std::string msg;
-  };
+  struct member_t { const std::vector<Entity>* positions; const Species* spc;
+    const Chips* chp; std::string msg; };
   member_t members[] = {
     { &termitePositions, &species, nullptr, "species" },
     { &chipPositions, nullptr, &chips, "chips" },
@@ -289,6 +269,25 @@ bool Config::checkBounds()
       }
     }
   }
+  return true;
+}
+
+bool Config::checkSpecies(const Species &spcs) const
+{
+  Chips woods;
+  for (auto sp : spcs)
+    for (auto wood : sp.second)
+      woods[wood.first]++;
+
+  for (auto w : woods)
+  {
+    auto lookup = chips.find(w.first);
+    if (lookup == chips.end()) {
+      FILE_LOG(logERROR) << "Missing chip definition: " << w.first;
+      return false;
+    }
+  }
+
   return true;
 }
 

@@ -138,9 +138,12 @@ def _lint_pre(ctx):
 
 def lint_cppcheck(ctx):
     src_files, incl_dirs = _lint_pre(ctx)
+    # NOTE(fb): we currently can't avoid catch.hpp warning without not
+    # processing tests... see http://5.150.254.56:443/trac-cppcheck/ticket/3390
     cmd = 'cppcheck --enable=all --inconclusive --std=posix '
     cmd += incl_dirs + src_files
     Logs.info("lint [cppcheck]...")
+    Logs.debug(cmd)
     # ctx.exec_command() is somehow not flushing instantly...
     import subprocess
     ret = subprocess.Popen(cmd, shell=True).wait()
