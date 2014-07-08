@@ -102,8 +102,8 @@ def distclean(ctx):
 
 def tags(ctx):
     cmd = 'find src include test -type f -name "*.c" -o -name "*.h"' \
-          '-o -name "*.cpp" -o -name "*.hpp" -o -name "Config.rl"' \
-          '| etags -'
+          ' -o -name "*.cpp" -o -name "*.hpp" -o -name "Config.rl"' \
+          ' | etags -'
     ctx.exec_command(cmd)
 
 
