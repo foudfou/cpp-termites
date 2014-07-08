@@ -2,18 +2,22 @@
 # Copyright (c) 2014 Foudil Brétel. All rights reserved.
 
 def configure(cnf):
-    cnf.env.TARGET_APP_TEST = 'termites_tests'
-    cnf.env.TEST_INC_DIRS = ['../include', '../include/ext', '.']
+    cnf.env.TARGET_APP_TEST = 'unittestmain'
+    cnf.env.TEST_INC_DIRS = ['../include', '.']
 
 
 def build(bld):
+    sources = [f for f in bld.env.SRC_SOURCES if not str(f)[-8:] == 'main.cpp']
     bld.program(
         name     = 'tests',
         features = 'cxx cxxprogram test',
-        source   = bld.path.ant_glob('*.cpp'),
+        source   = bld.path.ant_glob('*.cpp') + sources,
         target   = bld.env.TARGET_APP_TEST,
-        includes = bld.env.SRC_INC_DIRS,
+        includes = bld.env.TEST_INC_DIRS,
     )
+
+    from waflib.Tools import waf_unit_test
+    bld.add_post_fun(waf_unit_test.summary)
 
     if bld.options.coverage:
         bld(name   = 'cov_run',

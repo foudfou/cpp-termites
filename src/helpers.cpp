@@ -1,10 +1,12 @@
 /* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
 #include <algorithm>
+#include <cassert>
+#include <exception>
 #include <iterator>
 #include <numeric>
 #include <vector>
-#include "log.h"
+#include "ext/log.h"
 
 #include "helpers.hpp"
 
@@ -15,14 +17,14 @@ namespace tmt {
     return b ? "true" : "false";
   }
 
-  std::string mapToString(const std::map<std::string, int>& m)
+  std::string dumpMapStringInt(const std::map<std::string, int>& m)
   {
     std::string str;
     for (auto e : m) str += e.first + '|';
     return str;
   }
 
-  std::map<std::string, int> listToMap(std::list<std::string> l)
+  std::map<std::string, int> listStringToMapStringInt(std::list<std::string> l)
   {
     std::map<std::string, int> m;
     std::list<std::string>::const_iterator it(l.begin()), end(l.end());
@@ -36,6 +38,7 @@ namespace tmt {
 
   std::vector<int> pickn(const int n, const int len)
   {
+    if (n > len) throw std::invalid_argument("n > length");
     std::vector<int> vec(len);
     std::iota(std::begin(vec), std::end(vec), 0);
     std::shuffle(vec.begin(), vec.end(), tmt::gen);
@@ -46,8 +49,9 @@ namespace tmt {
     return slice;
   }
 
-  std::pair<int, int> position(const int n, const int width)
+  std::pair<int, int> rankTo2DCoord(const int n, const int width)
   {
+    if (width < 1) throw std::invalid_argument("width < 1");
     int row = n / width, col = n % width;
     return std::pair<int, int>(row, col);
   }

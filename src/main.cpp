@@ -5,7 +5,7 @@
 #include "Config.hpp"
 #include "OptionParser.hpp"
 #include "helpers.hpp"
-#include "log.h"
+#include "ext/log.h"
 
 int main(int argc , char ** argv)
 {

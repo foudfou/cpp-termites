@@ -97,9 +97,6 @@ def configure(cnf):
 def build(bld):
     bld.recurse('src test')
 
-    from waflib.Tools import waf_unit_test
-    bld.add_post_fun(waf_unit_test.summary)
-
 
 from waflib import Scripting
 def distclean(ctx):

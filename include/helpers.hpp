@@ -15,13 +15,13 @@ namespace tmt {
 
   std::string btos(const bool& b);
 
-  std::string mapToString(const std::map<std::string, int>& m);
+  std::string dumpMapStringInt(const std::map<std::string, int>& m);
 
-  std::map<std::string, int> listToMap(std::list<std::string> l);
+  std::map<std::string, int> listStringToMapStringInt(std::list<std::string> l);
 
   std::vector<int> pickn(const int n, const int len);
 
-  std::pair<int, int> position(const int n, const int width);
+  std::pair<int, int> rankTo2DCoord(const int n, const int width);
 
 }
 

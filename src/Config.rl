@@ -7,7 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include "log.h"
+#include "ext/log.h"
 #include "helpers.hpp"
 
 Config::Config(): tics(0), width(0), height(0) {}
@@ -61,7 +61,7 @@ Config::~Config() {}
   }
 
   action chips_def {
-    setChips(tmt::listToMap(pstate.list));
+    setChips(tmt::listStringToMapStringInt(pstate.list));
     pstate.word.clear();
     pstate.list.clear();
   }
@@ -73,7 +73,7 @@ Config::~Config() {}
   action hash_insert {
     auto lookup = pstate.hash.find(pstate.key);
     if (lookup == pstate.hash.end())
-      pstate.hash[pstate.key] = tmt::listToMap(pstate.list);
+      pstate.hash[pstate.key] = tmt::listStringToMapStringInt(pstate.list);
     else
       FILE_LOG(logWARNING) << "Duplicate key ignored: " << pstate.key;
     pstate.key.clear();
@@ -148,7 +148,7 @@ void Config::setChips(const Chips &chps)
   chips = chps;
   if (FILELog::ReportingLevel() >= logDEBUG)
   {
-    FILE_LOG(logDEBUG) << "CHIPS=|" << tmt::mapToString(chips);
+    FILE_LOG(logDEBUG) << "CHIPS=|" << tmt::dumpMapStringInt(chips);
   }
 }
 
@@ -158,7 +158,7 @@ void Config::setSpecies(const Species &spcs)
   if (FILELog::ReportingLevel() >= logDEBUG) {
     for (auto sp : species) {
       FILE_LOG(logDEBUG) << "SPECIES=" << sp.first << " -> |"
-                         << tmt::mapToString(sp.second);
+                         << tmt::dumpMapStringInt(sp.second);
     }
   }
 }

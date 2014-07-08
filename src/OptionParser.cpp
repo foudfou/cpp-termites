@@ -1,11 +1,12 @@
 /* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
 #include "OptionParser.hpp"
-#include <cstring>
 #include <getopt.h>
+#include <cstring>
+#include <exception>
 #include <iostream>
 #include <sstream>
-#include "log.h"
+#include "ext/log.h"
 #include "config.h"
 #include "helpers.hpp"
 
@@ -164,7 +165,13 @@ bool OptionParser::processInOrder()
       return false;
     }
 
-    std::vector<int> randoms = tmt::pickn(tamount + camount, height * width);
+    std::vector<int> randoms;
+    try {
+       randoms = tmt::pickn(tamount + camount, height * width);
+    } catch (const std::invalid_argument& e) {
+      FILE_LOG(logERROR) << "Invalid argument: " << e.what();
+      return false;
+    }
 
     conf->setTermitePositions(buildEntities(tamount, randoms, width, 0));
     conf->setChipPositions(buildEntities(camount, randoms, width, tamount));
@@ -202,7 +209,7 @@ OptionParser::buildEntities(int amount, const std::vector<int> &randoms,
   std::vector<Config::Entity> positions;
   std::stringstream randomsStr;
   for (int i=0; i<amount; ++i) {
-    auto pos = tmt::position(randoms[i+off], width);
+    auto pos = tmt::rankTo2DCoord(randoms[i+off], width);
     positions.push_back(Config::Entity({"species0", pos.first, pos.second}));
     if (FILELog::ReportingLevel() >= logDEBUG)
       randomsStr << '|' << pos.first << ':' << pos.second;

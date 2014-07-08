@@ -2,14 +2,15 @@
 # Copyright (c) 2014 Foudil Brétel. All rights reserved.
 
 def configure(cnf):
-    cnf.env.SRC_INC_DIRS = ['../include', '../include/ext', '.']
+    cnf.env.SRC_INC_DIRS = ['../include', '.']
 
 def build(bld):
     sources = bld.path.ant_glob('*.cpp')
     parser = bld.path.find_node('Config.rl')
+    bld.env.SRC_SOURCES = [parser] + sources
     bld.program(
         features = 'cxx cxxprogram',
-        source   = [parser] + sources,
+        source   = bld.env.SRC_SOURCES,
         target   = 'termites',
         includes = bld.env.SRC_INC_DIRS,
         using    = 'rl/termites_conf.rl',
