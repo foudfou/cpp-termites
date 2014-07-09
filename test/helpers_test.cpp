@@ -13,9 +13,13 @@ TEST_CASE( "Map(string->int) dump", "[helpers]" ) {
 }
 
 TEST_CASE( "List(string) to map(string->int)", "[helpers]" ) {
-  const std::list<std::string> l1 { "can", "be" };
+  std::list<std::string> l1 { "can", "be" };
   const std::map<std::string, int> m1 { {"can", 1}, {"be", 1}, };
   REQUIRE( tmt::listStringToMapStringInt(l1) == m1 );
+  SECTION( "duplicate keys are ignored" ) {
+    l1.push_back("be");
+    REQUIRE( tmt::listStringToMapStringInt(l1) == m1 );
+  }
 }
 
 TEST_CASE( "Pick n integers among N.", "[helpers]" ) {
