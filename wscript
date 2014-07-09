@@ -36,7 +36,7 @@ def options(opt):
 
     bld = opt.get_option_group('build and install options')
     bld.add_option('--valgrind', type='string', action='store', default=False,
-                   dest='valgrind', help='Run valgrind with arguments [string]')
+                   dest='do_valgrind', help='Run valgrind with arguments [string]')
     bld.add_option('--coverage', action='store_true', default=False,
                    dest='do_coverage', help='Run code coverage')
 
@@ -58,16 +58,13 @@ def configure(cnf):
 
     cnf.load('compiler_c compiler_cxx')
     cnf.load('waf_unit_test')
-    cnf.check(
-        features='cxx cxxprogram',
-        cflags=['-Wall', '-std=c++11'],
-    )
+    cnf.check(cflags=['-Wall', '-std=c++11'], features='cxx cxxprogram')
     cnf.check(header_name='getopt.h', features='cxx cxxprogram')
     cnf.find_program('ragel')
-    cnf.find_program('cppcheck', var='CPPCHECK')
-    cnf.find_program('valgrind', var='VALGRIND')
-    cnf.find_program('lcov', var='LCOV')
-    cnf.find_program('genhtml', var='GENHTML')
+    cnf.find_program('cppcheck', var='CPPCHECK', mandatory=False)
+    cnf.find_program('valgrind', var='VALGRIND', mandatory=False)
+    cnf.find_program('lcov', var='LCOV', mandatory=cnf.options.coverage)
+    cnf.find_program('genhtml', var='GENHTML', mandatory=cnf.options.coverage)
 
     cnf.env.append_value('CXXFLAGS', [
         '-Wall', '-pedantic', '-Wextra', '-std=c++11'

@@ -25,7 +25,7 @@ def build(bld):
         use      = 'SRC_OBJS',
     )
 
-    if bld.options.valgrind:
+    if bld.options.do_valgrind:
         bld(name = 'valgrind',
             rule   = ('${env.VALGRIND} --leak-check=full --show-leak-kinds=all'
                       ' --error-exitcode=1 ${SRC} ${bld.options.valgrind}'),
