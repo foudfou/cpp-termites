@@ -5,17 +5,25 @@ def configure(cnf):
     cnf.env.SRC_INC_DIRS = ['../include', '.']
 
 def build(bld):
-    sources = bld.path.ant_glob('*.cpp')
+    sources = [f for f in bld.path.ant_glob('*.cpp')
+               if not str(f)[-8:] == 'main.cpp']
     parser = bld.path.find_node('Config.rl')
     bld.env.SRC_SOURCES = [parser] + sources
-    bld.program(
-        features = 'cxx cxxprogram',
+
+    objs = bld.objects(
         source   = bld.env.SRC_SOURCES,
-        target   = 'termites',
         includes = bld.env.SRC_INC_DIRS,
-        using    = 'rl/termites_conf.rl',
+        target   = 'SRC_OBJS',
     )
     bld.add_manual_dependency(parser, bld.path.find_node('rl/termites_conf.rl'))
+
+    bld.program(
+        features = 'cxx cxxprogram',
+        source   = 'main.cpp',
+        target   = 'termites',
+        includes = bld.env.SRC_INC_DIRS,
+        use      = 'SRC_OBJS',
+    )
 
     if bld.options.valgrind:
         bld(name = 'valgrind',

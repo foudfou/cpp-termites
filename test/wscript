@@ -7,35 +7,33 @@ def configure(cnf):
 
 
 def build(bld):
-    sources = [f for f in bld.env.SRC_SOURCES if not str(f)[-8:] == 'main.cpp']
     bld.program(
         name     = 'tests',
         features = 'cxx cxxprogram test',
-        source   = bld.path.ant_glob('*.cpp') + sources,
+        source   = bld.path.ant_glob('*.cpp'),
         target   = bld.env.TARGET_APP_TEST,
         includes = bld.env.TEST_INC_DIRS,
+        use      = 'SRC_OBJS'
     )
 
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.summary)
 
-    if bld.options.coverage:
-        bld(name   = 'cov_run',
-            rule   = '${SRC}',
-            source = bld.env.TARGET_APP_TEST,
-            always = True,
-        )
-        bld(name  = 'cov_lcov',
-            rule  = (bld.env.LCOV +
-                     ' --directory . --capture' +
-                     ' --output-file ${env.LCOV_DIR}/run.info'),
-            always = True,
-            after = 'cov_run',
-        )
-        bld(name  = 'cov_genhtml',
-            rule  = (bld.env.GENHTML +
-                     ' --output-directory ${env.LCOV_DIR}' +
-                     ' ${env.LCOV_DIR}/run.info'),
-            always = True,
-            after = 'cov_lcov',
-        )
+    if bld.options.do_coverage:
+        lcov_args = ' -c -d . -d ../src --no-external --quiet'
+        bld(name='lcov_ini', always=True, rule=(
+            bld.env.LCOV+lcov_args+' -i -o ${env.LCOV_DIR}/run_base.info'))
+        bld(name='cov_run', after='lcov_ini', always=True, rule=
+            '${SRC}', source=bld.env.TARGET_APP_TEST)
+        bld(name='lcov_test', after='cov_run', always=True, rule=(
+            bld.env.LCOV+lcov_args+' -o ${env.LCOV_DIR}/run_test.info'))
+        bld(name='lcov_add', after='lcov_test', always=True, rule=(
+            bld.env.LCOV+' -a ${env.LCOV_DIR}/run_base.info'
+            ' -a ${env.LCOV_DIR}/run_test.info'
+            ' -o ${env.LCOV_DIR}/run_total.info'))
+        # bld(name='lcov_rm', after='lcov_add', always=True, rule=(
+        #     bld.env.LCOV+' -r ${env.LCOV_DIR}/run_total.info "/usr*"'
+        #     ' -o ${env.LCOV_DIR}/run_total.info'))
+        bld(name='cov_genhtml', always=True, after='lcov_add', rule=(
+            bld.env.GENHTML + ' --output-directory ${env.LCOV_DIR}'
+            ' ${env.LCOV_DIR}/run_total.info --quiet'))

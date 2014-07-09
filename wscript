@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # Copyright (c) 2014 Foudil Brétel. All rights reserved.
 
+# XXX: good example https://bitbucket.org/code_aster/codeaster-src/src/
+
 import waflib
 from waflib import Build, Logs, Options
 
@@ -28,13 +30,15 @@ def options(opt):
     cnf.add_option('--with-effc++', action='store_true', default=False,
                    dest='eff_cpp', help='Thorough diagnostics')
     cnf.add_option('--without-debug', action='store_false', default=True,
-                   dest='no_debug', help='Add debug info to binaries')
-    cnf.add_option('--coverage', action='store_true', default=False,
-                   dest='coverage', help='Compile and run coverage')
+                   dest='debug', help='Compile with debug information')
+    cnf.add_option('--without-coverage', action='store_false', default=True,
+                   dest='coverage', help='Compile with coverage instrumentation')
 
     bld = opt.get_option_group('build and install options')
     bld.add_option('--valgrind', type='string', action='store', default=False,
                    dest='valgrind', help='Run valgrind with arguments [string]')
+    bld.add_option('--coverage', action='store_true', default=False,
+                   dest='do_coverage', help='Run code coverage')
 
     lnt = opt.add_option_group('lint options')
     lnt.add_option('-l', '--linters', type='string', action='store',
@@ -65,12 +69,6 @@ def configure(cnf):
     cnf.find_program('lcov', var='LCOV')
     cnf.find_program('genhtml', var='GENHTML')
 
-    release  = 'Release'
-    if cnf.options.no_debug:
-        release = 'Debug'
-        cnf.env.append_value('CXXFLAGS', ['-g'])
-    cnf.msg("Compilation mode", release)
-
     cnf.env.append_value('CXXFLAGS', [
         '-Wall', '-pedantic', '-Wextra', '-std=c++11'
     ])
@@ -79,7 +77,15 @@ def configure(cnf):
     if cnf.options.eff_cpp:
         cnf.env.append_value('CXXFLAGS', ['-Weffc++'])
 
+    release = 'Release'
+    if cnf.options.debug:
+        release = 'Debug'
+        cnf.env.append_value('CXXFLAGS', ['-g'])
+    cnf.msg("Compilation mode", release)
+
+    with_coverage = 'no'
     if cnf.options.coverage:
+        with_coverage = 'yes'
         cnf.env.append_value('CXXFLAGS', ['--coverage'])
         cnf.env.LCOV_DIR = cnf.path.find_dir('data').abspath() + '/cov'
         if cnf.options.compiler == 'clang':
@@ -87,6 +93,7 @@ def configure(cnf):
             cnf.env.append_value('STLIB', ['clang_rt.profile-x86_64'])
         else:
             cnf.env.append_value('LIB', ['gcov'])
+    cnf.msg("Coverage enabled", with_coverage)
 
     cnf.define('PACKAGE_NAME', APPNAME)
     cnf.define('PACKAGE_VERSION', VERSION)
