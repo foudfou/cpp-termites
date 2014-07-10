@@ -81,10 +81,6 @@ Config::~Config() {}
   }
 
   action species_def {
-    if (!checkSpecies(pstate.hash)) {
-      pstate.fail = true;
-      fbreak;
-    }
     setSpecies(pstate.hash);
     pstate.hash.clear();
   }
@@ -217,7 +213,8 @@ bool Config::read(std::string const& configFile)
 
 bool Config::check() const
 {
-  return checkParamsDefined() && checkBounds();
+  return checkParamsDefined() && checkSpeciesChipsCoherence() &&
+    checkSpeciesAndBounds();
 }
 
 bool Config::checkParamsDefined() const
@@ -241,7 +238,7 @@ bool Config::checkParamsDefined() const
   return true;
 }
 
-bool Config::checkBounds() const
+bool Config::checkSpeciesAndBounds() const
 {
   struct member_t { const std::vector<Entity>* positions; const Species* spc;
     const Chips* chp; std::string msg; };
@@ -272,10 +269,16 @@ bool Config::checkBounds() const
   return true;
 }
 
-bool Config::checkSpecies(const Species &spcs) const
+bool Config::checkInitialPositions() const
+{
+  // FIXME: TODO: positions should not overlap
+  return false;
+}
+
+bool Config::checkSpeciesChipsCoherence() const
 {
   Chips woods;
-  for (auto sp : spcs)
+  for (auto sp : species)
     for (auto wood : sp.second)
       woods[wood.first]++;
 

@@ -11,16 +11,10 @@
 
 class Config
 {
-  static const int TMP_STR_MAX_LEN = 64;
-  static const int BUFFER_SIZE     = 1024;
-
+public:
   typedef std::map<std::string, int> Chips;
   typedef std::map<std::string, Chips> Species;
-  typedef std::string TmpString;
-  typedef std::list<std::string> TmpList;
-  typedef Species TmpHash;
 
-public:
   struct Entity {
     std::string species;
     int row;
@@ -33,8 +27,9 @@ public:
   bool read(std::string const& configFile);
   bool check() const;
   bool checkParamsDefined() const;
-  bool checkBounds() const;
-  bool checkSpecies(const Species &spcs) const;
+  bool checkSpeciesChipsCoherence() const;
+  bool checkSpeciesAndBounds() const;
+  bool checkInitialPositions() const;
 
   int  getTics() const;
   void setTics(int t);
@@ -48,6 +43,13 @@ public:
   void setChipPositions(const std::vector<Entity> &cpos);
 
 private:
+  static const int TMP_STR_MAX_LEN = 64;
+  static const int BUFFER_SIZE     = 1024;
+
+  typedef std::string TmpString;
+  typedef std::list<std::string> TmpList;
+  typedef Species TmpHash;
+
   int tics;
   int width;
   int height;
