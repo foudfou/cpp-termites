@@ -20,8 +20,12 @@ def build(bld):
     bld.add_post_fun(waf_unit_test.summary)
 
     if bld.options.do_coverage:
-        lcov_args = ' -c -d . -d ../src --no-external --quiet'
-        bld(name='lcov_ini', always=True, rule=(
+        bldtest = bld.path.get_bld()
+        bldsrc  = bldtest.parent.make_node('src')
+        # could also use --remove instead of --no-external
+        lcov_args = ' -c -d %s -d %s -d %s --no-external --quiet' % \
+                    (bld.env.SRC_DIR, bldsrc.abspath(), bldtest.abspath())
+        bld(name='lcov_ini', after='utest', always=True, rule=(
             bld.env.LCOV+lcov_args+' -i -o ${env.LCOV_DIR}/run_base.info'))
         bld(name='cov_run', after='lcov_ini', always=True, rule=
             '${SRC}', source=bld.env.TARGET_APP_TEST)
@@ -31,9 +35,6 @@ def build(bld):
             bld.env.LCOV+' -a ${env.LCOV_DIR}/run_base.info'
             ' -a ${env.LCOV_DIR}/run_test.info'
             ' -o ${env.LCOV_DIR}/run_total.info'))
-        # bld(name='lcov_rm', after='lcov_add', always=True, rule=(
-        #     bld.env.LCOV+' -r ${env.LCOV_DIR}/run_total.info "/usr*"'
-        #     ' -o ${env.LCOV_DIR}/run_total.info'))
         bld(name='cov_genhtml', always=True, after='lcov_add', rule=(
             bld.env.GENHTML + ' --output-directory ${env.LCOV_DIR}'
             ' ${env.LCOV_DIR}/run_total.info --quiet'))

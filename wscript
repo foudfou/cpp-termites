@@ -58,7 +58,8 @@ def configure(cnf):
 
     cnf.load('compiler_c compiler_cxx')
     cnf.load('waf_unit_test')
-    cnf.check(cflags=['-Wall', '-std=c++11'], features='cxx cxxprogram')
+    cnf.check_cxx(cxxflags=['-Wall', '-std=c++11'])
+    cnf.check(cxxflags=['--coverage'], linkflags='--coverage')
     cnf.check(header_name='getopt.h', features='cxx cxxprogram')
     cnf.find_program('ragel')
     cnf.find_program('cppcheck', var='CPPCHECK', mandatory=False)
