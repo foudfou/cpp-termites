@@ -7,10 +7,14 @@ def configure(cnf):
 
 
 def build(bld):
+    MAIN = 'main.cpp'
+    sources = bld.path.ant_glob('*.cpp', excl=MAIN)
+    main = bld.path.get_src().find_node(MAIN)
+    sources.insert(0, main)     # linking order matters!
     bld.program(
         name     = 'tests',
         features = 'cxx cxxprogram test',
-        source   = bld.path.ant_glob('*.cpp'),
+        source   = sources,
         target   = bld.env.TARGET_APP_TEST,
         includes = bld.env.TEST_INC_DIRS,
         use      = 'SRC_OBJS'

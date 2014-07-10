@@ -7,8 +7,9 @@ def configure(cnf):
 
 
 def build(bld):
+    MAIN = 'main.cpp'
     sources = [f for f in bld.path.ant_glob('*.cpp')
-               if not str(f)[-8:] == 'main.cpp']
+               if not str(f)[-8:] == MAIN]
     parser = bld.path.find_node('Config.rl')
     bld.env.SRC_SOURCES = [parser] + sources
 
@@ -21,7 +22,7 @@ def build(bld):
 
     bld.program(
         features = 'cxx cxxprogram',
-        source   = 'main.cpp',
+        source   = MAIN,
         target   = 'termites',
         includes = bld.env.SRC_INC_DIRS,
         use      = 'SRC_OBJS',
