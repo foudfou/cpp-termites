@@ -192,8 +192,7 @@ bool OptionParser::setLogFile(std::string filename)
     FILE_LOG(logERROR) << "Cannot open log file: " << std::strerror(errno);
     return false;
   }
-  else
-    Output2FILE::Stream() = logFile;
+  Output2FILE::Stream() = logFile;
   return true;
 }
 
