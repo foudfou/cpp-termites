@@ -49,10 +49,17 @@ namespace tmt {
     return slice;
   }
 
-  std::pair<int, int> rankTo2DCoord(const int n, const int width)
+  std::pair<int, int> rankToCoord2D(const int n, const int width)
   {
     if (width < 1) throw std::invalid_argument("width < 1");
     int row = n / width, col = n % width;
     return std::pair<int, int>(row, col);
+  }
+
+  int coord2DToRank(const int row, const int col, const int width)
+  {
+    if (width < 1) throw std::invalid_argument("width < 1");
+    if (row > width) throw std::invalid_argument("row out of bound");
+    return col * width + row;
   }
 }

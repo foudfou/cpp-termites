@@ -208,7 +208,7 @@ OptionParser::buildEntities(int amount, const std::vector<int> &randoms,
   std::vector<Config::Entity> positions;
   std::stringstream randomsStr;
   for (int i=0; i<amount; ++i) {
-    auto pos = tmt::rankTo2DCoord(randoms[i+off], width);
+    auto pos = tmt::rankToCoord2D(randoms[i+off], width);
     positions.push_back(Config::Entity({"species0", pos.first, pos.second}));
     if (FILELog::ReportingLevel() >= logDEBUG)
       randomsStr << '|' << pos.first << ':' << pos.second;

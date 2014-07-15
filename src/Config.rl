@@ -3,7 +3,6 @@
 
 #include "Config.hpp"
 #include <assert.h>
-#include <string.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -214,7 +213,7 @@ bool Config::read(std::string const& configFile)
 bool Config::check() const
 {
   return checkParamsDefined() && checkSpeciesChipsCoherence() &&
-    checkSpeciesAndBounds();
+    checkSpeciesAndBounds() && checkInitialPositions();
 }
 
 bool Config::checkParamsDefined() const
@@ -271,8 +270,22 @@ bool Config::checkSpeciesAndBounds() const
 
 bool Config::checkInitialPositions() const
 {
-  // FIXME: TODO: positions should not overlap
-  return false;
+  std::vector<bool> cells(width*height);
+
+  for (auto positionSet : { &termitePositions, &chipPositions }) {
+    for (auto pos : *positionSet) {
+      int rank = tmt::coord2DToRank(pos.row, pos.col, width);
+      if (cells[rank]) {
+        FILE_LOG(logERROR) << "Cell (" << pos.row << "," << pos.col
+                           << ") already occupied.";
+        return false;
+      }
+      else {
+        cells[rank] = true;
+      }
+    }
+  }
+  return true;
 }
 
 bool Config::checkSpeciesChipsCoherence() const

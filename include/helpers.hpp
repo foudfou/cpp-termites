@@ -21,7 +21,9 @@ namespace tmt {
 
   std::vector<int> pickn(const int n, const int len);
 
-  std::pair<int, int> rankTo2DCoord(const int n, const int width);
+  std::pair<int, int> rankToCoord2D(const int n, const int width);
+
+  int coord2DToRank(const int row, const int col, const int width);
 
 }
 
