@@ -4,12 +4,10 @@
 #include "Config.hpp"
 #include <assert.h>
 #include <fstream>
-#include <iostream>
-#include <sstream>
 #include "ext/log.h"
 #include "helpers.hpp"
 
-Config::Config(): tics(0), width(0), height(0) {}
+Config::Config(): initialized(false), tics(0), width(0), height(0) {}
 
 Config::~Config() {}
 
@@ -183,6 +181,11 @@ void Config::setChipPositions(const Config::Positions &cpos)
   chipPositions = cpos;
 }
 
+void Config::setInitialized()
+{
+  initialized = true;
+}
+
 void Config::storeEntityPosition(Config::Positions &store, const TmpString &word,
                                  const TmpString &r, const TmpString &c)
 {
@@ -196,11 +199,18 @@ void Config::storeEntityPosition(Config::Positions &store, const TmpString &word
     entity = "chip";
   else
     FILE_LOG(logERROR) << "Unknown entity store.";
-  FILE_LOG(logDEBUG) << entity << ": " << ent.species << " " << ent.row << ", " << ent.col;
+  FILE_LOG(logDEBUG) << entity << ": " << ent.species << " " << ent.row
+                     << ", " << ent.col;
 }
 
 bool Config::read(std::string const& configFile)
 {
+  if (initialized)
+  {
+    FILE_LOG(logERROR) << "Config already initialized.";
+    return false;
+  }
+
   std::ifstream file;
   file.open(configFile);
   if (!file.good())
@@ -208,20 +218,37 @@ bool Config::read(std::string const& configFile)
     FILE_LOG(logERROR) << "Cannot read configuration file: " << configFile;
     return false;
   }
-
-  ParserState pstate;
-  parserInit(pstate);
-  while (!file.eof())
-  {
-    file.read(pstate.buffer, BUFFER_SIZE);
-    parserExecute(pstate, pstate.buffer, file.gcount());
-  }
-
+  bool finished = parserRun(file);
   file.close();
 
-  bool finished = parserFinish(pstate);
+  initialized = true;
   bool checked = check();
   return finished && checked;
+}
+
+bool Config::read(std::istringstream& config)
+{
+  if (initialized)
+  {
+    FILE_LOG(logERROR) << "Config already initialized.";
+    return false;
+  }
+  bool finished = parserRun(config);
+  initialized = true;
+  bool checked = check();
+  return finished && checked;
+}
+
+bool Config::parserRun(std::istream& stream)
+{
+  ParserState pstate;
+  parserInit(pstate);
+  while (!stream.eof())
+  {
+    stream.read(pstate.buffer, BUFFER_SIZE);
+    parserExecute(pstate, pstate.buffer, stream.gcount());
+  }
+  return parserFinish(pstate);
 }
 
 bool Config::check() const

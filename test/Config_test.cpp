@@ -59,7 +59,7 @@ TEST_CASE( "Bare Config", "[config]" ) {
   }
 }
 
-TEST_CASE( "Config from file", "[config]" ) {
+TEST_CASE( "Config file ok", "[config]" ) {
   Config conf;
   REQUIRE( conf.read(std::string(TEST_DIR) + "/fixtures/init_ok.cfg") );
   CHECK( conf.getTics() == 2000 );
@@ -76,4 +76,29 @@ TEST_CASE( "Config from file", "[config]" ) {
         {"rouge",23,34} }) );
   CHECK( conf.getChipPositions() == Config::Positions({ {"boulot",42,23},
         {"baobab",1,3} }) );
+
+  SECTION( "Config file read twice fails" ) {
+    REQUIRE( !conf.read(std::string(TEST_DIR) + "/fixtures/init_ok.cfg") );
+  }
 }
+
+TEST_CASE( "Config file void", "[config]" ) {
+  Config conf;
+  REQUIRE( !conf.read(std::string(TEST_DIR) + "/fixtures/init_void.cfg") );
+}
+
+TEST_CASE( "Config string ok", "[config]" ) {
+  Config conf;
+  std::istringstream ss("temps: 2000\nlargeur: 80\nhauteur: 50\n\n"
+    "# should be ignored\n\ncopeaux: ( boulot   chene baobab  boulot  noyer)\n"
+    "termites: rouge ( boulot ) verte ( boulot chene ) noire ( baobab boulot )"
+    " rouge ( noyer  )\ntermite:   rouge 10 5\ntermite: rouge 23 34\n"
+         "copeau: boulot 42 23\ncopeau: baobab 1 3\n");
+  REQUIRE( conf.read(ss) );
+
+  SECTION( "Config string read twice fails" ) {
+    REQUIRE( !conf.read(ss) );
+  }
+}
+
+// TODO: add more tests for config syntax

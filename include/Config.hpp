@@ -3,6 +3,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#include <istream>
 #include <list>
 #include <map>
 #include <string>
@@ -28,6 +29,7 @@ public:
   virtual ~Config();
 
   bool read(std::string const& configFile);
+  bool read(std::istringstream& config);
   bool check() const;
   bool checkParamsDefined() const;
   bool checkSpeciesChipsCoherence() const;
@@ -48,6 +50,7 @@ public:
   void setTermitePositions(const Positions &tpos);
   Positions getChipPositions() const;
   void setChipPositions(const Positions &cpos);
+  void setInitialized();
 
 private:
   static const int TMP_STR_MAX_LEN = 64;
@@ -57,6 +60,7 @@ private:
   typedef std::list<std::string> TmpList;
   typedef Species TmpHash;
 
+  bool initialized;
   int tics;
   int width;
   int height;
@@ -87,6 +91,7 @@ private:
 
   void storeEntityPosition(Positions &store, const TmpString &key,
                            const TmpString &x, const TmpString &y);
+  bool parserRun(std::istream& stream);
   void parserInit(ParserState &parser);
   void parserExecute(ParserState &parser, const char *data, int len);
   bool parserFinish(ParserState &parser);

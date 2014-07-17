@@ -105,6 +105,7 @@ bool OptionParser::parse(const int argc, char *const * argv)
   if (!check()) return false;
   if (!processInOrder()) return false;
 
+  conf->setInitialized();
   return true;
 }
 
