@@ -4,6 +4,7 @@
 def configure(cnf):
     cnf.env.TARGET_APP_TEST = 'unittestmain'
     cnf.env.TEST_INC_DIRS = ['../include', '.']
+    cnf.env.TEST_DIR = cnf.path.get_src().abspath()
 
 
 def build(bld):

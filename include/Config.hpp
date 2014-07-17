@@ -12,14 +12,17 @@
 class Config
 {
 public:
-  typedef std::map<std::string, int> Chips;
-  typedef std::map<std::string, Chips> Species;
-
   struct Entity {
     std::string species;
     int row;
     int col;
+
+    bool operator==(const Entity& rhs) const;
   };
+
+  typedef std::map<std::string, int>   Chips;
+  typedef std::map<std::string, Chips> Species;
+  typedef std::vector<Entity>          Positions;
 
   Config();
   virtual ~Config();
@@ -37,10 +40,14 @@ public:
   void setWidth(int t);
   int  getHeight() const;
   void setHeight(int t);
+  Chips getChips() const;
   void setChips(const Chips &chps);
+  Species getSpecies() const;
   void setSpecies(const Species &spcs);
-  void setTermitePositions(const std::vector<Entity> &tpos);
-  void setChipPositions(const std::vector<Entity> &cpos);
+  Positions getTermitePositions() const;
+  void setTermitePositions(const Positions &tpos);
+  Positions getChipPositions() const;
+  void setChipPositions(const Positions &cpos);
 
 private:
   static const int TMP_STR_MAX_LEN = 64;
@@ -56,8 +63,8 @@ private:
   // we store wood chips into a map, as wood species are supposely unique
   Chips chips;
   Species species;
-  std::vector<Entity> termitePositions;
-  std::vector<Entity> chipPositions;
+  Positions termitePositions;
+  Positions chipPositions;
 
   struct ParserState {
     int cs;   // must remain persistent across chunk parsing runs
@@ -78,8 +85,8 @@ private:
     TmpString xcoord, ycoord;
   };
 
-  void storeEntityPosition(std::vector<Entity> &store, const TmpString &key,
-                      const TmpString &x, const TmpString &y);
+  void storeEntityPosition(Positions &store, const TmpString &key,
+                           const TmpString &x, const TmpString &y);
   void parserInit(ParserState &parser);
   void parserExecute(ParserState &parser, const char *data, int len);
   bool parserFinish(ParserState &parser);

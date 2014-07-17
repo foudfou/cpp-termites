@@ -68,7 +68,7 @@ def configure(cnf):
     cnf.find_program('genhtml', var='GENHTML', mandatory=cnf.options.coverage)
 
     cnf.env.append_value('CXXFLAGS', [
-        '-Wall', '-pedantic', '-Wextra', '-std=c++11'
+        '-Wall', '-pedantic', '-Wextra', '-std=c++11', '-Wfatal-errors'
     ])
     if cnf.options.compiler == 'clang':
         cnf.env.append_value('CXXFLAGS', ['-fcolor-diagnostics'])
@@ -96,6 +96,7 @@ def configure(cnf):
     cnf.define('PACKAGE_NAME', APPNAME)
     cnf.define('PACKAGE_VERSION', VERSION)
     cnf.define('PACKAGE_COPYRIGHT', "Copyright (c) 2014 Foudil Brétel. All rights reserved.")
+    cnf.define('TEST_DIR', cnf.env.TEST_DIR)
     cnf.write_config_header('include/config.h')
 
 

@@ -13,6 +13,13 @@ Config::Config(): tics(0), width(0), height(0) {}
 
 Config::~Config() {}
 
+bool Config::Entity::operator==(const Entity& rhs) const
+{
+  return species == rhs.species &&
+    row == rhs.row &&
+    col == rhs.col;
+}
+
 %%{
 
   machine termites_conf;
@@ -136,6 +143,8 @@ void Config::setHeight(int t)
   FILE_LOG(logDEBUG) << "height set to " << height;
 }
 
+Config::Chips Config::getChips() const {return chips;}
+
 // TODO(fb): this parameter is useless, and redundant, as it can be derived
 // from the species. we need to remove it in the future.
 void Config::setChips(const Chips &chps)
@@ -146,6 +155,8 @@ void Config::setChips(const Chips &chps)
     FILE_LOG(logDEBUG) << "CHIPS=|" << tmt::dumpMapStringInt(chips);
   }
 }
+
+Config::Species Config::getSpecies() const {return species;}
 
 void Config::setSpecies(const Species &spcs)
 {
@@ -158,18 +169,21 @@ void Config::setSpecies(const Species &spcs)
   }
 }
 
-void Config::setTermitePositions(const std::vector<Entity> &tpos)
+Config::Positions Config::getTermitePositions() const {return termitePositions;}
+
+void Config::setTermitePositions(const Config::Positions &tpos)
 {
   termitePositions = tpos;
 }
 
-void Config::setChipPositions(const std::vector<Entity> &cpos)
+Config::Positions Config::getChipPositions() const {return chipPositions;}
+
+void Config::setChipPositions(const Config::Positions &cpos)
 {
   chipPositions = cpos;
 }
 
-void Config::storeEntityPosition(std::vector<Entity> &store,
-                                 const TmpString &word,
+void Config::storeEntityPosition(Config::Positions &store, const TmpString &word,
                                  const TmpString &r, const TmpString &c)
 {
   int row = std::stoi(r), col = std::stoi(c);
@@ -239,7 +253,7 @@ bool Config::checkParamsDefined() const
 
 bool Config::checkSpeciesAndBounds() const
 {
-  struct member_t { const std::vector<Entity>* positions; const Species* spc;
+  struct member_t { const Config::Positions* positions; const Species* spc;
     const Chips* chp; std::string msg; };
   member_t members[] = {
     { &termitePositions, &species, nullptr, "species" },
