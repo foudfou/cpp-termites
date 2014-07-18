@@ -21,6 +21,8 @@ class Options
     "  -c, --chips		Number of wood chips\n"
     "  -T, --tics		Number of tics\n";
 
+  enum InitMode { FILE, OPTS };
+
 public:
   Options();
   virtual ~Options();
@@ -28,7 +30,7 @@ public:
   Options(const Options& that) = delete;
   Options& operator=(const Options& that) = delete;
 
-  bool setConfig(std::shared_ptr<Config> cnf);
+  void setConfig(std::shared_ptr<Config> cnf);
   bool parse(const int argc, char *const * argv);
   std::string getConfigFileName();
 
@@ -36,7 +38,7 @@ private:
   std::shared_ptr<Config> conf;
   std::map<std::string, std::string> options;
   std::FILE* logFile;
-
+  InitMode initMode;
   bool check();
   bool processInOrder();
   bool setLogFile(std::string filename);

@@ -19,15 +19,9 @@ Options::~Options() {
   }
 }
 
-bool Options::setConfig(std::shared_ptr<Config> cnf)
+void Options::setConfig(std::shared_ptr<Config> cnf)
 {
-  if (cnf->getInitialized())
-  {
-    FILE_LOG(logERROR) << "Config already initialized.";
-    return false;
-  }
   conf = cnf;
-  return true;
 }
 
 bool Options::parse(const int argc, char *const * argv)
@@ -113,9 +107,14 @@ bool Options::parse(const int argc, char *const * argv)
   }
 
   if (!check()) return false;
+  if (conf->getInitialized())
+  {
+    FILE_LOG(logERROR) << "Config already initialized.";
+    return false;
+  }
   if (!processInOrder()) return false;
+  if (initMode == InitMode::OPTS) conf->setInitialized();
 
-  conf->setInitialized();
   return true;
 }
 
@@ -137,6 +136,7 @@ bool Options::check()
         "OR all mandatory options (height, width, termites, chips, tics).";
       return false;
     }
+    initMode = InitMode::FILE;
     return true;
   }
   else if (hasSomeOpts)
@@ -147,6 +147,7 @@ bool Options::check()
         "termites, chips, tics).";
       return false;
     }
+    initMode = InitMode::OPTS;
     return true;
   }
   else {

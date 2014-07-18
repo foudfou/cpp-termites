@@ -4,17 +4,16 @@
 #include "Config.hpp"
 #include "Options.hpp"
 
-
 TEST_CASE( "Options initialization and parsing", "[options]" ) {
   std::shared_ptr<Config> conf(new Config);
   Options options;
-  REQUIRE( options.setConfig(conf) );
+  options.setConfig(conf);
 
   SECTION( "missing options and parameter" ) {
     std::unique_ptr<tmt::LogCapture> logCap(new tmt::LogCapture());
     REQUIRE( !options.parse(1, {}) );
-    // FIXME: messages should be constants
-    std::string msg("Missing options or configuration file");
+    // FIXME: we need msgid's (gettext+boost::format?)
+    std::string msg("Missing options or configuration file.");
     REQUIRE( logCap->getBuffer().find(msg) != std::string::npos );
   }
 
@@ -24,7 +23,7 @@ TEST_CASE( "Options initialization and parsing", "[options]" ) {
       {"/path/me","-W","0","-H","7","-t","10","-c","8","-T","20","someFile",NULL};
     size_t len = tmt::alen(arggv);
     REQUIRE( !options.parse(len, (char *const *)arggv) );
-    std::string msg("Please provide either a configuration file OR all mandatory options");
+    std::string msg("Please provide either a configuration file OR all mandatory options (height, width, termites, chips, tics).");
     REQUIRE( logCap->getBuffer().find(msg) != std::string::npos );
   }
 }

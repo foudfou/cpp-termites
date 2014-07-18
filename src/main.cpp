@@ -13,7 +13,8 @@ int main(int argc , char ** argv)
 
   std::shared_ptr<Config> conf(new Config);
   Options options;
-  if (!options.setConfig(conf) || !options.parse(argc, argv))
+  options.setConfig(conf);
+  if (!options.parse(argc, argv))
     return EXIT_SUCCESS;
 
   auto confFileName = options.getConfigFileName();
