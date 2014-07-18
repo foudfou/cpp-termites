@@ -2,12 +2,12 @@
 #include <memory>
 #include "test_helpers.hpp"
 #include "Config.hpp"
-#include "OptionParser.hpp"
+#include "Options.hpp"
 
 
 TEST_CASE( "Options initialization and parsing", "[options]" ) {
   std::shared_ptr<Config> conf(new Config);
-  OptionParser options;
+  Options options;
   REQUIRE( options.setConfig(conf) );
 
   SECTION( "missing options and parameter" ) {

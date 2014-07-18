@@ -1,6 +1,6 @@
 /* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
-#include "OptionParser.hpp"
+#include "Options.hpp"
 #include <getopt.h>
 #include <cstring>
 #include <exception>
@@ -10,16 +10,16 @@
 #include "config.h"
 #include "helpers.hpp"
 
-OptionParser::OptionParser(): logFile(nullptr) {}
+Options::Options(): logFile(nullptr) {}
 
-OptionParser::~OptionParser() {
+Options::~Options() {
   if (logFile) {
     std::fclose(logFile);
     logFile = nullptr;
   }
 }
 
-bool OptionParser::setConfig(std::shared_ptr<Config> cnf)
+bool Options::setConfig(std::shared_ptr<Config> cnf)
 {
   if (cnf->getInitialized())
   {
@@ -30,7 +30,7 @@ bool OptionParser::setConfig(std::shared_ptr<Config> cnf)
   return true;
 }
 
-bool OptionParser::parse(const int argc, char *const * argv)
+bool Options::parse(const int argc, char *const * argv)
 {
   static struct option long_options[] = {
     {"debug", no_argument, NULL, 'd'},
@@ -119,7 +119,7 @@ bool OptionParser::parse(const int argc, char *const * argv)
   return true;
 }
 
-bool OptionParser::check()
+bool Options::check()
 {
   bool hasConf = options.count("configFileName");
   bool hasAllOpts = options.count("height") && options.count("width") &&
@@ -155,7 +155,7 @@ bool OptionParser::check()
   }
 }
 
-bool OptionParser::processInOrder()
+bool Options::processInOrder()
 {
   if (options.count("debug"))
   {
@@ -203,7 +203,7 @@ bool OptionParser::processInOrder()
   return true;
 }
 
-bool OptionParser::setLogFile(std::string filename)
+bool Options::setLogFile(std::string filename)
 {
   logFile = std::fopen(filename.c_str(), "a");
   if (logFile == NULL)
@@ -215,13 +215,13 @@ bool OptionParser::setLogFile(std::string filename)
   return true;
 }
 
-std::string OptionParser::getConfigFileName()
+std::string Options::getConfigFileName()
 {
   return options["configFileName"];
 }
 
 std::vector<Config::Entity>
-OptionParser::buildEntities(int amount, const std::vector<int> &randoms,
+Options::buildEntities(int amount, const std::vector<int> &randoms,
                             int width, int off) const
 {
   std::vector<Config::Entity> positions;

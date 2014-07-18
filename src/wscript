@@ -31,7 +31,7 @@ def build(bld):
     if bld.options.do_valgrind:
         bld(name = 'valgrind',
             rule   = ('${env.VALGRIND} --leak-check=full --show-leak-kinds=all'
-                      ' --error-exitcode=1 ${SRC} ${bld.options.valgrind}'),
+                      ' --error-exitcode=1 ${SRC} ${bld.options.do_valgrind}'),
             source = 'termites',
             always = True,
         )

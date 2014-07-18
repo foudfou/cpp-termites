@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <memory>
 #include "Config.hpp"
-#include "OptionParser.hpp"
+#include "Options.hpp"
 #include "helpers.hpp"
 #include "ext/log.h"
 
@@ -12,7 +12,7 @@ int main(int argc , char ** argv)
   FILELog::ReportingLevel() = FILELog::FromString("INFO");
 
   std::shared_ptr<Config> conf(new Config);
-  OptionParser options;
+  Options options;
   if (!options.setConfig(conf) || !options.parse(argc, argv))
     return EXIT_SUCCESS;
 

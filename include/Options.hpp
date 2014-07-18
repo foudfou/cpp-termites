@@ -1,12 +1,12 @@
-#ifndef _OPTIONPARSER_H_
-#define _OPTIONPARSER_H_
+#ifndef _OPTIONS_H_
+#define _OPTIONS_H_
 
 #include <cstdio>
 #include <memory>
 #include <string>
 #include "Config.hpp"
 
-class OptionParser
+class Options
 {
   const char * usage =
     "usage: termites [ options ] [ initfile ]\n\n"
@@ -22,11 +22,11 @@ class OptionParser
     "  -T, --tics		Number of tics\n";
 
 public:
-  OptionParser();
-  virtual ~OptionParser();
-  /* copy not allowed, as OptionParser needs to manage a FILE* for FILELog */
-  OptionParser(const OptionParser& that) = delete;
-  OptionParser& operator=(const OptionParser& that) = delete;
+  Options();
+  virtual ~Options();
+  /* copy not allowed, as Options needs to manage a FILE* for FILELog */
+  Options(const Options& that) = delete;
+  Options& operator=(const Options& that) = delete;
 
   bool setConfig(std::shared_ptr<Config> cnf);
   bool parse(const int argc, char *const * argv);
@@ -45,4 +45,4 @@ private:
                 int offset) const;
 };
 
-#endif /* _OPTIONPARSER_H_ */
+#endif /* _OPTIONS_H_ */
