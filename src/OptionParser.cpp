@@ -10,14 +10,24 @@
 #include "config.h"
 #include "helpers.hpp"
 
-OptionParser::OptionParser(std::shared_ptr<Config> cnf):
-  conf(cnf), logFile(nullptr) {}
+OptionParser::OptionParser(): logFile(nullptr) {}
 
 OptionParser::~OptionParser() {
   if (logFile) {
     std::fclose(logFile);
     logFile = nullptr;
   }
+}
+
+bool OptionParser::setConfig(std::shared_ptr<Config> cnf)
+{
+  if (cnf->getInitialized())
+  {
+    FILE_LOG(logERROR) << "Config already initialized.";
+    return false;
+  }
+  conf = cnf;
+  return true;
 }
 
 bool OptionParser::parse(const int argc, char *const * argv)
@@ -39,7 +49,7 @@ bool OptionParser::parse(const int argc, char *const * argv)
   {
     int option_index = 0;
     int c = getopt_long(argc, argv, "+dhvo:H:W:t:c:T:",
-                    long_options, &option_index);
+                        long_options, &option_index);
 
     /* Detect the end of the options. */
     if (c == -1) break;
@@ -127,14 +137,22 @@ bool OptionParser::check()
         "OR all mandatory options (height, width, termites, chips, tics).";
       return false;
     }
+    return true;
   }
-  else if (hasSomeOpts && !hasAllOpts)
+  else if (hasSomeOpts)
   {
-    FILE_LOG(logERROR) << "Please provide ALL options (height, width, "
-      "termites, chips, tics).";
+    if (!hasAllOpts)
+    {
+      FILE_LOG(logERROR) << "Please provide ALL options (height, width, "
+        "termites, chips, tics).";
+      return false;
+    }
+    return true;
+  }
+  else {
+    FILE_LOG(logERROR) << "Missing options or configuration file.";
     return false;
   }
-  return true;
 }
 
 bool OptionParser::processInOrder()

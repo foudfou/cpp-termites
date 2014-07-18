@@ -22,16 +22,14 @@ class OptionParser
     "  -T, --tics		Number of tics\n";
 
 public:
-  OptionParser(std::shared_ptr<Config> cnf);
+  OptionParser();
   virtual ~OptionParser();
   /* copy not allowed, as OptionParser needs to manage a FILE* for FILELog */
   OptionParser(const OptionParser& that) = delete;
   OptionParser& operator=(const OptionParser& that) = delete;
 
+  bool setConfig(std::shared_ptr<Config> cnf);
   bool parse(const int argc, char *const * argv);
-  bool processInOrder();
-  bool check();
-  bool setLogFile(std::string filename);
   std::string getConfigFileName();
 
 private:
@@ -39,6 +37,9 @@ private:
   std::map<std::string, std::string> options;
   std::FILE* logFile;
 
+  bool check();
+  bool processInOrder();
+  bool setLogFile(std::string filename);
   std::vector<Config::Entity>
   buildEntities(int amount, const std::vector<int> &randoms, int width,
                 int offset) const;

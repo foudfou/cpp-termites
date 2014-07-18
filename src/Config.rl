@@ -181,6 +181,8 @@ void Config::setChipPositions(const Config::Positions &cpos)
   chipPositions = cpos;
 }
 
+bool Config::getInitialized() const {return initialized;}
+
 void Config::setInitialized()
 {
   initialized = true;

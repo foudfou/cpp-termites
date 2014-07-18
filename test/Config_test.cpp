@@ -1,7 +1,11 @@
-#include <string>
 #include "ext/catch.hpp"
+#include <memory>
+#include <string>
+#include "test_helpers.hpp"
 #include "Config.hpp"
 #include "config.h"
+
+std::unique_ptr<tmt::LogCapture> logCap(new tmt::LogCapture());
 
 TEST_CASE( "Bare Config", "[config]" ) {
   Config conf;

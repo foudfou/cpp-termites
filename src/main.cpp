@@ -12,8 +12,8 @@ int main(int argc , char ** argv)
   FILELog::ReportingLevel() = FILELog::FromString("INFO");
 
   std::shared_ptr<Config> conf(new Config);
-  OptionParser options(conf);
-  if (!options.parse(argc, argv))
+  OptionParser options;
+  if (!options.setConfig(conf) || !options.parse(argc, argv))
     return EXIT_SUCCESS;
 
   auto confFileName = options.getConfigFileName();

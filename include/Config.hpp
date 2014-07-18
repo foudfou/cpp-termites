@@ -50,6 +50,7 @@ public:
   void setTermitePositions(const Positions &tpos);
   Positions getChipPositions() const;
   void setChipPositions(const Positions &cpos);
+  bool getInitialized() const;
   void setInitialized();
 
 private:

@@ -1,62 +1,28 @@
+#ifndef TEST_HELPERS_H
+#define TEST_HELPERS_H
+
 #include <cstdio>
+#include <string>
 #include "ext/log.h"
 
-class LogCapture {
-public:
-  LogCapture() : buffer(nullptr), bufferSize(0)
-  {
-    bak = Output2FILE::Stream();
-    ss = open_memstream(&buffer, &bufferSize);
-    Output2FILE::Stream() = ss;
-  }
-  ~LogCapture()
-  {
-    Output2FILE::Stream() = bak;
-    fflush(ss);
-    fclose(ss);
-    free(buffer);
-  }
+namespace tmt {
 
-  char* getBuffer();
+  class LogCapture {
+  public:
+    LogCapture();
+    ~LogCapture();
 
-private:
-  char* buffer;
-  size_t bufferSize;
-  FILE* bak;
-  FILE* ss;
-};
+    std::string getBuffer();
 
-char* LogCapture::getBuffer()
-{
-  return buffer;
+  private:
+    char* buffer;
+    size_t bufferSize;
+    FILE* bak;
+    FILE* ss;
+  };
+
+  int alen(const char**ary);
+
 }
 
-
-// /* http://stackoverflow.com/a/5419388/421846 */
-// #include <iostream>
-// #include <streambuf>
-// struct CerrRedirect {
-//   CerrRedirect(std::streambuf* newStream)
-//     : oldStream(std::cerr.rdbuf(newStream))
-//     { }
-//   ~CerrRedirect() {
-//     std::cerr.rdbuf(oldStream);
-//   }
-// private:
-//   std::streambuf* oldStream;
-// };
-// #include <sstream>
-// std::ostringstream buffer;
-// CerrRedirect errRedirect(buffer.rdbuf());
-
-
-// char* buffer = nullptr;
-// size_t bufferSize = 0;
-// FILE* ss = open_memstream(&buffer, &bufferSize);
-// int bak = dup(STDERR_FILENO);
-// dup2(fileno(ss), STDERR_FILENO);
-// // do something...
-// dup2(bak, STDERR_FILENO);
-// close(bak);
-// fclose(ss);
-// free(buffer);
+#endif /* TEST_HELPERS_H */

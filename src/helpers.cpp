@@ -62,4 +62,5 @@ namespace tmt {
     if (row > width) throw std::invalid_argument("row out of bound");
     return col * width + row;
   }
+
 }
