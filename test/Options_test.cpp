@@ -12,7 +12,7 @@ TEST_CASE( "Options initialization and parsing", "[options]" ) {
   SECTION( "missing options and parameter" ) {
     std::unique_ptr<tmt::LogCapture> logCap(new tmt::LogCapture());
     REQUIRE( !options.parse(1, {}) );
-    // FIXME: we need msgid's (gettext+boost::format?)
+    // FIXME: we need msgid's (gettext+format?)
     std::string msg("Missing options or configuration file.");
     REQUIRE( logCap->getBuffer().find(msg) != std::string::npos );
   }

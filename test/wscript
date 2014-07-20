@@ -18,7 +18,8 @@ def build(bld):
         source   = sources,
         target   = bld.env.TARGET_APP_TEST,
         includes = bld.env.TEST_INC_DIRS,
-        use      = 'SRC_OBJS'
+        use      = 'SRC_OBJS',
+        install_path = False,
     )
 
     from waflib.Tools import waf_unit_test

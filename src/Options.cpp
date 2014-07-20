@@ -2,6 +2,8 @@
 
 #include "Options.hpp"
 #include <getopt.h>
+#include <libintl.h>
+#define _(String) gettext(String)
 #include <cstring>
 #include <exception>
 #include <iostream>
@@ -38,6 +40,7 @@ bool Options::parse(const int argc, char *const * argv)
     {"times", required_argument, NULL, 'T'},
     {0, 0, 0, 0}                // convention
   };
+
 
   while (1)
   {
@@ -86,7 +89,10 @@ bool Options::parse(const int argc, char *const * argv)
       return false;
       break;
     default:
-      FILE_LOG(logERROR) << "Undefined option " << char(c);
+      // FIXME: make a helper fonction
+      char msg[MSG_MAX_LEN];
+      snprintf(msg, MSG_MAX_LEN, _("Undefined option '%c'."), c);
+      FILE_LOG(logERROR) << msg;
     }
   }
 

@@ -1,0 +1,149 @@
+#! /usr/bin/env python
+# Copyright (c) 2014 Foudil Brétel. All rights reserved.
+# Adapted from Code_Aster (https://bitbucket.org/code_aster/codeaster-src)
+"""
+Internationalization of messages
+--------------------------------
+
+Content of i18n
+~~~~~~~~~~~~~~~
+
+* ``$LANG/aster_messages.po``: current state of translated messages for each language
+
+* These files are created by ``msginit`` from the ``.pot`` file::
+
+    msginit -i build/i18n/termites_messages.pot --locale=$LANG --no-translator
+
+  or by adding a new language on crowdin and download a fresh package.
+"""
+
+import os
+from waflib import Build, Configure, TaskGen, Task, Errors, Logs
+
+
+def options(ctx):
+    cnf = ctx.get_option_group('install/uninstall options')
+    cnf.add_option('--install-i18n', dest='install_i18n', action='store_true',
+                   default=None, help='Compile i18n files for installation')
+
+
+def configure(cnf):
+    cnf.env['do_i18n_gettext'] = \
+        cnf.check_i18n_tool('msgfmt', 'MSGFMT') and \
+        cnf.check_i18n_tool('xgettext', 'XGETTEXT') and \
+        cnf.check_i18n_tool('msgmerge', 'MSGMERGE')
+    if not cnf.env.LOCALEDIR:
+        cnf.env.LOCALEDIR = os.path.join(cnf.env.PREFIX, 'share', 'locale')
+    cnf.msg("I18n installation", 'yes' if cnf.options.install_i18n else 'no')
+
+
+def build(bld):
+    if bld.options.install_i18n is True:
+        bld(features     = 'gettext_compile',
+            install_path = bld.env.LOCALEDIR,
+        )
+
+
+@Configure.conf
+def check_i18n_tool(self, program, varname):
+    """Check a tool for a i18n program and store it using varname"""
+    self.start_msg('Check for %s programs' % program)
+    try:
+        self.find_program(program, var=varname)
+    except Errors.ConfigurationError:
+        self.end_msg('not found', 'YELLOW')
+        if self.options.install_i18n is True:
+            raise
+    else:
+        self.end_msg(self.env[varname])
+        return True
+
+
+def gettext(ctx):
+    if not ctx.env['do_i18n_gettext']:
+        raise Errors.WafError('Required tools missing. Run `waf configure` '
+            'to check what is missing.')
+    srcs = ctx.env.SRC_FILES
+    pot = ctx.path.get_bld().make_node(ctx.env.APPNAME+'_messages.pot')
+    ctx(features = 'gettext_pot',
+        name     = 'gettext_pot',
+        deps     = srcs,
+        target   = pot,
+    )
+    ctx(features = 'gettext_update',
+        name     = 'gettext_update',
+        pot      = pot,
+        podir    = 'gettext_updated',
+        use      = ['gettext_pot'],
+    )
+
+@TaskGen.feature('gettext_pot')
+def make_pot(self):
+    """Create task to build the pot file
+
+    :param deps: list of the python files to run xgettext on
+    :type deps: nodes
+    :param target: name of the ``.pot`` file
+    :type target: string
+    """
+    target = self.target
+    deps = getattr(self, 'deps', [])
+    target.parent.mkdir()
+    self.create_task('xgettext', deps, target)
+
+
+@TaskGen.feature('gettext_update')
+@TaskGen.after('gettext_pot')
+def update_po(self):
+    """Create task to update the po files
+
+    :param pot: updated .pot file
+    :type pot: string
+    """
+    pot = self.pot
+    podir = self.path.parent.get_bld().make_node(self.podir)
+    for subd in self.path.listdir():
+        node = self.path.find_resource(os.path.join(subd, self.env.APPNAME+'_messages.po'))
+        if node:
+            tail = node.get_src().abspath().split(os.sep)[-2:]
+            output = podir.make_node(tail)
+            output.parent.mkdir()
+            self.create_task('merge_po', [node.get_src(), pot], output)
+
+
+@TaskGen.feature('gettext_compile')
+def run_gettext_compile(self):
+    """compile .po files into .mo and install them.
+
+    :param install_path: installation directory
+    :type install_path: string
+    """
+    if not self.env['do_i18n_gettext']:
+        return
+    inst = getattr(self, 'install_path')
+    for subd in self.path.listdir():
+        node = self.path.find_resource(os.path.join(subd,  self.env.APPNAME+'_messages.po'))
+        if node:
+            task = self.create_task('compile_po', node.get_src(), node.change_ext('.mo'))
+            if inst:
+                lang = task.outputs[0].srcpath().split(os.sep)[-2]
+                path = os.path.join(inst, lang, 'LC_MESSAGES')
+                self.bld.install_files(path, task.outputs[0])
+
+
+class xgettext(Task.Task):
+    """Build the .pot file from a list of source files"""
+    run_str = '${XGETTEXT} -o ${TGT[0].abspath()} ' \
+              '-C -d ${env.APPNAME} -s -k_ ' \
+              '--package-name=TP-Termites --package-version=default ${SRC}'
+    color   = 'BLUE'
+
+class merge_po(Task.Task):
+    """Merge a .po file and a new .pot file"""
+    run_str = '${MSGMERGE} -q -o ${TGT[0].abspath()} ${SRC[0].abspath()} ${SRC[1].abspath()}'
+    color   = 'BLUE'
+
+class compile_po(Task.Task):
+    """Compile .po files into .mo files"""
+    run_str = '${MSGFMT} -o ${TGT[0].abspath()} ${SRC[0].abspath()}'
+    color   = 'BLUE'
