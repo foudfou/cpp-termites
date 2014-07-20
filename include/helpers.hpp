@@ -7,11 +7,18 @@
 #include <map>
 #include <random>
 #include <string>
+#include "ext/log.h"
+
+#define _(String) String      // needed for xgettext
 
 namespace tmt {
 
+  static const int MSG_MAX_LEN = 512;
+
   static std::random_device rd;
   static std::mt19937 gen(rd());
+
+  void log(TLogLevel level, const char* msg, ...);
 
   std::string btos(const bool& b);
 

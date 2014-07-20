@@ -2,14 +2,12 @@
 
 #include "Options.hpp"
 #include <getopt.h>
-#include <libintl.h>
-#define _(String) gettext(String)
 #include <cstring>
 #include <exception>
 #include <iostream>
 #include <sstream>
-#include "ext/log.h"
 #include "config.h"
+#include "ext/log.h"
 #include "helpers.hpp"
 
 Options::Options(): logFile(nullptr) {}
@@ -89,10 +87,7 @@ bool Options::parse(const int argc, char *const * argv)
       return false;
       break;
     default:
-      // FIXME: make a helper fonction
-      char msg[MSG_MAX_LEN];
-      snprintf(msg, MSG_MAX_LEN, _("Undefined option '%c'."), c);
-      FILE_LOG(logERROR) << msg;
+      tmt::log(logERROR, _("Undefined option '%c'."), c);
     }
   }
 

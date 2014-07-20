@@ -93,7 +93,6 @@ def configure(cnf):
     cnf.define('PACKAGE_COPYRIGHT', "Copyright (c) 2014 Foudil Brétel. All rights reserved.")
     cnf.define('LOCALEDIR', cnf.env.LOCALEDIR)
     cnf.define('TEST_DIR', cnf.env.TEST_DIR)
-    cnf.define('MSG_MAX_LEN', 512)
     cnf.write_config_header('include/config.h')
 
 

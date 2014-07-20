@@ -1,16 +1,27 @@
 /* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
 
+#include <libintl.h>
+#include <stdarg.h>
 #include <algorithm>
 #include <cassert>
+#include <cstdio>
 #include <exception>
 #include <iterator>
 #include <numeric>
 #include <vector>
-#include "ext/log.h"
-
 #include "helpers.hpp"
 
 namespace tmt {
+
+  void log(TLogLevel level, const char* msg, ...)
+  {
+    char buff[MSG_MAX_LEN];
+    va_list args;
+    va_start (args, msg);
+    vsnprintf(buff, MSG_MAX_LEN, gettext(msg), args);
+    FILE_LOG(level) << buff;
+    va_end (args);
+  }
 
   std::string btos(const bool& b)
   {
