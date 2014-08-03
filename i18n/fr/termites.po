@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: termites 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-19 14:19+0200\n"
+"POT-Creation-Date: 2014-08-03 17:59+0200\n"
 "PO-Revision-Date: 2014-07-19 14:19+0200\n"
 "Last-Translator:  <foudil.newbie@gmail.com>\n"
 "Language-Team: French\n"
@@ -17,7 +17,164 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/Options.cpp:92
+#: ../src/Options.cpp:213
+#, c-format
+msgid "Cannot open log file: %s."
+msgstr "Ne peut ouvrir le fichier de log: %s."
+
+#: ../src/Config.rl:220
+#, c-format
+msgid "Cannot read configuration file: %s."
+msgstr "Ne peut lire le fichier de configuration: %s."
+
+#: ../src/Config.rl:324
+#, c-format
+msgid "Cell (%d, %d) already occupied."
+msgstr "Cellule (%d, %d) déjà occupée."
+
+#: ../src/Config.rl:212 ../src/Config.rl:236 ../src/Options.cpp:113
+msgid "Config already initialized."
+msgstr "Config déjà initialisée."
+
+#: ../src/Config.rl:385
+#, c-format
+msgid "Config has errors: %s."
+msgstr "Config a des erreurs: %s."
+
+#: ../src/Config.rl:386
+#, c-format
+msgid "Config parsed to the end: %s."
+msgstr "Config parsée jusu'à la fin: %s."
+
+#: ../src/Options.cpp:105
+#, c-format
+msgid "Configuration file set to %s."
+msgstr "Fichier de configuration positionné à %s."
+
+#: ../src/helpers.cpp:44
+#, c-format
+msgid "Duplicate item: %s."
+msgstr "Champ en double: %s."
+
+#: ../src/Config.rl:82
+#, c-format
+msgid "Duplicate key ignored: %s"
+msgstr "Clef en double ignorée: %s."
+
+#: ../src/Options.cpp:193
+#, c-format
+msgid "Invalid argument: %s."
+msgstr "Argument invalide: %s."
+
+#: ../src/Config.rl:346
+#, c-format
+msgid "Missing chip definition: %s"
+msgstr "Définition de copeau manquante: %s."
+
+#: ../src/Config.rl:273
+msgid "Missing chip positions."
+msgstr "Positions des copeaux manquantes."
+
+#: ../src/Options.cpp:155
+msgid "Missing options or configuration file."
+msgstr "Options ou fichier de configuration manquants."
+
+#: ../src/Config.rl:272
+msgid "Missing termite positions."
+msgstr "Positions de termites manquantes."
+
+#: ../src/Options.cpp:99
+msgid "More than one configuration file given."
+msgstr "Plus d'un fichier de configuration fournis."
+
+#: ../src/Config.rl:26
+#, c-format
+msgid "Parse error at line %d."
+msgstr "Erreur de parsing à la ligne %d."
+
+#: ../src/Options.cpp:147
+msgid "Please provide all options (height, width, termites, chips, tics)."
+msgstr ""
+"Merci de fournir toutes les options (hauteur, largeur, termites, copeaux, "
+"temps)."
+
+#: ../src/Options.cpp:136
+msgid ""
+"Please provide either a configuration file OR all mandatory options (height, "
+"width, termites, chips, tics)."
+msgstr ""
+"Merci de fournir soit un fichier de configuration, soit toutes les options "
+"obligatoires (hauteur, largeur, termites, copeaux, temps)"
+
+#: ../src/Config.rl:306
+#, c-format
+msgid "Position out of bounds (at %d, %d)."
+msgstr "Position hors limites (%d, %d)"
+
+#: ../src/Options.cpp:185
+msgid "Too many termites and chips for board size."
+msgstr "Trop de termites et copeau pour la taille du tableau."
+
+#: ../src/Options.cpp:90
 #, c-format
 msgid "Undefined option '%c'."
 msgstr "Option '%c' non-définie."
+
+#: ../src/Config.rl:270
+msgid "Undefined parameter 'chips'."
+msgstr "Paramètre 'copeau' non-défini."
+
+#: ../src/Config.rl:268
+msgid "Undefined parameter 'height'."
+msgstr "Paramètre 'hauteur' non-défini."
+
+#: ../src/Config.rl:271
+msgid "Undefined parameter 'species'."
+msgstr "Paramètre 'copeau' non-défini."
+
+#: ../src/Config.rl:267
+msgid "Undefined parameter 'tics'."
+msgstr "Paramètre 'temps' non-défini."
+
+#: ../src/Config.rl:269
+msgid "Undefined parameter 'width'."
+msgstr "Paramètre 'largeur' non-défini."
+
+#: ../src/Config.rl:203
+msgid "Unknown entity store."
+msgstr "Conteneur d'entités inconnu."
+
+#: ../src/Config.rl:298
+#, c-format
+msgid "Wood species '%s' (at %d, %d) is not defined in global species."
+msgstr "Espèce de bois '%s' (at %d, %d) non défini dans les espèces globales. "
+
+#: ../src/Options.cpp:237
+#, c-format
+msgid "entitiy positions: %s."
+msgstr "positions des entités: %s."
+
+#: ../src/Config.rl:31
+#, c-format
+msgid "Error line %d on char '%c' after '%c'."
+msgstr "Erreur à la ligne %d au caractère '%c' après '%c'."
+
+#: ../src/Config.rl:141
+#, c-format
+msgid "height set to %d"
+msgstr "hautreur positionnée à %d"
+
+#: ../src/Config.rl:101
+#, c-format
+msgid "pstate.key=%s"
+msgstr ""
+
+#: ../src/Config.rl:125
+#, c-format
+msgid "tics set to %d"
+msgstr "temps positionné à %d"
+
+#: ../src/Config.rl:133
+#, c-format
+msgid "width set to %d"
+msgstr "largeur positionnée à %d"

@@ -23,13 +23,13 @@ bool Config::Entity::operator==(const Entity& rhs) const
   machine termites_conf;
 
   action error_any {
-    FILE_LOG(logERROR) << "Parse error at line " << pstate.lineCount;
+    tmt::log(logERROR, _("Parse error at line %d."), pstate.lineCount);
     fbreak;
   }
 
   action debug_any {
-    FILE_LOG(logERROR) << "error line " << pstate.lineCount << " on char '" \
-                       << fc << "' after '" << *(p-1) << "'";
+    tmt::log(logERROR, _("Error line %d on char '%c' after '%c'."),
+                         pstate.lineCount, fc, *(p-1));
   }
 
   action line_count_inc {
@@ -79,8 +79,8 @@ bool Config::Entity::operator==(const Entity& rhs) const
     if (lookup == pstate.hash.end())
       pstate.hash[pstate.key] = tmt::listStringToMapStringInt(pstate.list);
     else
-      FILE_LOG(logWARNING) << "Duplicate key ignored: " << pstate.key;
-    pstate.key.clear();
+      tmt::log(logWARNING, _("Duplicate key ignored: %s"), pstate.key.c_str());
+      pstate.key.clear();
     pstate.list.clear();
   }
 
@@ -98,7 +98,7 @@ bool Config::Entity::operator==(const Entity& rhs) const
   }
 
   action termite_pos {
-    FILE_LOG(logDEBUG) << "pstate.key=" << pstate.word;
+    tmt::log(logDEBUG, _("pstate.key=%s"), pstate.word.c_str());
     storeEntityPosition(termitePositions, pstate.word, pstate.xcoord, pstate.ycoord);
     pstate.word.clear();
     pstate.xcoord.clear(); pstate.ycoord.clear();
@@ -122,7 +122,7 @@ int Config::getTics() const {return tics;}
 void Config::setTics(int t)
 {
   tics = t;
-  FILE_LOG(logDEBUG) << "tics set to " << tics;
+  tmt::log(logDEBUG, _("tics set to %d"), tics);
 }
 
 int Config::getWidth() const {return width;}
@@ -130,7 +130,7 @@ int Config::getWidth() const {return width;}
 void Config::setWidth(int t)
 {
   width = t;
-  FILE_LOG(logDEBUG) << "width set to " << width;
+  tmt::log(logDEBUG, _("width set to %d"), width);
 }
 
 int Config::getHeight() const {return height;}
@@ -138,7 +138,7 @@ int Config::getHeight() const {return height;}
 void Config::setHeight(int t)
 {
   height = t;
-  FILE_LOG(logDEBUG) << "height set to " << height;
+  tmt::log(logDEBUG, _("height set to %d"), height);
 }
 
 Config::Chips Config::getChips() const {return chips;}
@@ -200,7 +200,7 @@ void Config::storeEntityPosition(Config::Positions &store, const TmpString &word
   else if (&store == &chipPositions)
     entity = "chip";
   else
-    FILE_LOG(logERROR) << "Unknown entity store.";
+    tmt::log(logERROR, _("Unknown entity store."));
   FILE_LOG(logDEBUG) << entity << ": " << ent.species << " " << ent.row
                      << ", " << ent.col;
 }
@@ -209,7 +209,7 @@ bool Config::read(std::string const& configFile)
 {
   if (initialized)
   {
-    FILE_LOG(logERROR) << "Config already initialized.";
+    tmt::log(logERROR, _("Config already initialized."));
     return false;
   }
 
@@ -217,7 +217,8 @@ bool Config::read(std::string const& configFile)
   file.open(configFile);
   if (!file.good())
   {
-    FILE_LOG(logERROR) << "Cannot read configuration file: " << configFile;
+    tmt::log(logERROR, _("Cannot read configuration file: %s."),
+             configFile.c_str());
     return false;
   }
   bool finished = parserRun(file);
@@ -232,7 +233,7 @@ bool Config::read(std::istringstream& config)
 {
   if (initialized)
   {
-    FILE_LOG(logERROR) << "Config already initialized.";
+    tmt::log(logERROR, _("Config already initialized."));
     return false;
   }
   bool finished = parserRun(config);
@@ -261,15 +262,15 @@ bool Config::check() const
 
 bool Config::checkParamsDefined() const
 {
-  struct param_check_t { std::string msg; int val; };
+  struct param_check_t { const char* msg; int val; };
   param_check_t params[] = {
-    { "Undefined parameter 'tics'.", tics },
-    { "Undefined parameter 'height'.", height },
-    { "Undefined parameter 'width'.", width },
-    { "Undefined parameter 'chips'.", int(chips.size()) },
-    { "Undefined parameter 'species'.", int(species.size()) },
-    { "Missing termite positions.", int(termitePositions.size()) },
-    { "Missing chip positions.", int(chipPositions.size()) },
+    { _("Undefined parameter 'tics'."), tics },
+    { _("Undefined parameter 'height'."), height },
+    { _("Undefined parameter 'width'."), width },
+    { _("Undefined parameter 'chips'."), int(chips.size()) },
+    { _("Undefined parameter 'species'."), int(species.size()) },
+    { _("Missing termite positions."), int(termitePositions.size()) },
+    { _("Missing chip positions."), int(chipPositions.size()) },
   };
   for (auto p : params) {
     if (!p.val) {
@@ -283,7 +284,7 @@ bool Config::checkParamsDefined() const
 bool Config::checkSpeciesAndBounds() const
 {
   struct member_t { const Config::Positions* positions; const Species* spc;
-    const Chips* chp; std::string msg; };
+    const Chips* chp; const char* msg; };
   member_t members[] = {
     { &termitePositions, &species, nullptr, "species" },
     { &chipPositions, nullptr, &chips, "chips" },
@@ -294,16 +295,16 @@ bool Config::checkSpeciesAndBounds() const
       if ((mbr.spc && (*mbr.spc).find(pos.species) == (*mbr.spc).end()) ||
           (mbr.chp && (*mbr.chp).find(pos.species) == (*mbr.chp).end()))
       {
-        FILE_LOG(logERROR) << "'" << pos.species
-                           << "' (at " << pos.row << ", " << pos.col
-                           << ") is not defined in global species.";
+        tmt::log(logERROR, _("Wood species '%s' (at %d, %d) is not defined in "
+                             "global species."),
+                 pos.species.c_str(), pos.row, pos.col);
         return false;
       }
 
       if ((pos.row > height) || (pos.col > width))
       {
-        FILE_LOG(logERROR) << "Position out of bounds (at " << pos.row << ", "
-                           << pos.col << ").";
+        tmt::log(logERROR, _("Position out of bounds (at %d, %d)."),
+          pos.row, pos.col);
         return false;
       }
     }
@@ -319,8 +320,8 @@ bool Config::checkInitialPositions() const
     for (auto pos : *positionSet) {
       int rank = tmt::coord2DToRank(pos.row, pos.col, width);
       if (cells[rank]) {
-        FILE_LOG(logERROR) << "Cell (" << pos.row << "," << pos.col
-                           << ") already occupied.";
+        tmt::log(logERROR,
+                 _("Cell (%d, %d) already occupied."), pos.row, pos.col);
         return false;
       }
       else {
@@ -342,7 +343,7 @@ bool Config::checkSpeciesChipsCoherence() const
   {
     auto lookup = chips.find(w.first);
     if (lookup == chips.end()) {
-      FILE_LOG(logERROR) << "Missing chip definition: " << w.first;
+      tmt::log(logERROR, _("Missing chip definition: %s"), w.first.c_str());
       return false;
     }
   }
@@ -381,8 +382,8 @@ void Config::parserExecute(ParserState &pstate, const char *data, int len)
 bool Config::parserFinish(ParserState &pstate)
 {
   bool err = parserHasError(pstate), fin = parserIsFinished(pstate);
-  FILE_LOG(logDEBUG) << "Config has errors: " << tmt::btos(err);
-  FILE_LOG(logDEBUG) << "Config parsed to the end: " << tmt::btos(fin);
+  tmt::log(logDEBUG, _("Config has errors: %s."), tmt::btos(err).c_str());
+  tmt::log(logDEBUG, _("Config parsed to the end: %s."), tmt::btos(fin).c_str());
   return !err && fin;
 }
 

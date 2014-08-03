@@ -41,7 +41,7 @@ namespace tmt {
     std::list<std::string>::const_iterator it(l.begin()), end(l.end());
     for (; it != end; ++it)
       if (m[*it])
-        FILE_LOG(logWARNING) << "Duplicate item: " << *it;
+        log(logWARNING, _("Duplicate item: %s."), (*it).c_str());
       else
         m[*it]++;
     return m;

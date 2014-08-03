@@ -96,21 +96,21 @@ bool Options::parse(const int argc, char *const * argv)
   {
     if (argc - optind > 1)
     {
-      FILE_LOG(logERROR) << "More than one configuration file given.";
+      tmt::log(logERROR, _("More than one configuration file given."));
       return false;
     }
     else
     {
       options["configFileName"] = argv[optind++];
-      FILE_LOG(logDEBUG) << "Configuration file set to "
-                         << options["configFileName"];
+      tmt::log(logDEBUG, _("Configuration file set to %s."),
+               options["configFileName"].c_str());
     }
   }
 
   if (!check()) return false;
   if (conf->getInitialized())
   {
-    FILE_LOG(logERROR) << "Config already initialized.";
+    tmt::log(logERROR, _("Config already initialized."));
     return false;
   }
   if (!processInOrder()) return false;
@@ -133,8 +133,8 @@ bool Options::check()
   {
     if (hasSomeOpts)
     {
-      FILE_LOG(logERROR) << "Please provide either a configuration file "
-        "OR all mandatory options (height, width, termites, chips, tics).";
+      tmt::log(logERROR, _("Please provide either a configuration file "
+        "OR all mandatory options (height, width, termites, chips, tics)."));
       return false;
     }
     initMode = InitMode::FILE;
@@ -144,15 +144,15 @@ bool Options::check()
   {
     if (!hasAllOpts)
     {
-      FILE_LOG(logERROR) << "Please provide ALL options (height, width, "
-        "termites, chips, tics).";
+      tmt::log(logERROR, _("Please provide all options (height, width, "
+                           "termites, chips, tics)."));
       return false;
     }
     initMode = InitMode::OPTS;
     return true;
   }
   else {
-    FILE_LOG(logERROR) << "Missing options or configuration file.";
+    tmt::log(logERROR, _("Missing options or configuration file."));
     return false;
   }
 }
@@ -182,7 +182,7 @@ bool Options::processInOrder()
     int camount = std::stoi(options["chipAmount"]);
     if (height * width < tamount + camount)
     {
-      FILE_LOG(logERROR) << "Too many termites and chips for board size.";
+      tmt::log(logERROR, _("Too many termites and chips for board size."));
       return false;
     }
 
@@ -190,7 +190,7 @@ bool Options::processInOrder()
     try {
        randoms = tmt::pickn(tamount + camount, height * width);
     } catch (const std::invalid_argument& e) {
-      FILE_LOG(logERROR) << "Invalid argument: " << e.what();
+      tmt::log(logERROR, _("Invalid argument: %s."), e.what());
       return false;
     }
 
@@ -210,7 +210,7 @@ bool Options::setLogFile(std::string filename)
   logFile = std::fopen(filename.c_str(), "a");
   if (logFile == NULL)
   {
-    FILE_LOG(logERROR) << "Cannot open log file: " << std::strerror(errno);
+    tmt::log(logERROR, _("Cannot open log file: %s."), std::strerror(errno));
     return false;
   }
   Output2FILE::Stream() = logFile;
@@ -234,6 +234,6 @@ Options::buildEntities(int amount, const std::vector<int> &randoms,
     if (FILELog::ReportingLevel() >= logDEBUG)
       randomsStr << '|' << pos.first << ':' << pos.second;
   }
-  FILE_LOG(logDEBUG) << "entitiy positions: " << randomsStr.str();
+  tmt::log(logDEBUG, _("entitiy positions: %s."), randomsStr.str().c_str());
   return positions;
 }
