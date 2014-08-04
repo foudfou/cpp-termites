@@ -17,3 +17,5 @@ Apart from the core simulation functionality, this assignment shows off:
 * configuration parsing with [ragel](www.complang.org/ragel/)
 * logging [DrDobbs](http://www.drdobbs.com/cpp/logging-in-c/201804215?pgno=1)
 * unit testing with [Catch](https://github.com/philsquared/Catch)
+* code coverage (*gcov*)
+* basic tasks for static analysis/lint (*cppcheck*), dynamic analysis (*valgrind*)
