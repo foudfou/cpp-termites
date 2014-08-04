@@ -24,7 +24,7 @@ void Options::setConfig(std::shared_ptr<Config> cnf)
   conf = cnf;
 }
 
-bool Options::parse(const int argc, char *const * argv)
+bool Options::parse(const int argc, char* const* argv)
 {
   static struct option long_options[] = {
     {"debug", no_argument, NULL, 'd'},
@@ -39,7 +39,7 @@ bool Options::parse(const int argc, char *const * argv)
     {0, 0, 0, 0}                // convention
   };
 
-
+  optind = 1;                   // reset extern variable
   while (1)
   {
     int option_index = 0;
@@ -63,7 +63,7 @@ bool Options::parse(const int argc, char *const * argv)
     case 'v':
       std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << std::endl;
       std::cout << PACKAGE_COPYRIGHT << std::endl;
-      return false;
+      return true;
       break;
     case 'o':
       options["logFileName"] = optarg;
@@ -134,7 +134,7 @@ bool Options::check()
     if (hasSomeOpts)
     {
       tmt::log(logERROR, _("Please provide either a configuration file "
-        "OR all mandatory options (height, width, termites, chips, tics)."));
+        "or all mandatory options (height, width, termites, chips, tics)."));
       return false;
     }
     initMode = InitMode::FILE;

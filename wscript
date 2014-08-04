@@ -63,7 +63,7 @@ def configure(cnf):
     cnf.find_program('genhtml', var='GENHTML', mandatory=cnf.options.coverage)
 
     cnf.env.append_value('CXXFLAGS', [
-        '-Wall', '-pedantic', '-Wextra', '-std=c++11', '-Wfatal-errors'
+        '-Wall', '-pedantic', '-Wextra', '-std=c++11', '-Wfatal-errors',
     ])
     if cnf.options.compiler == 'clang':
         cnf.env.append_value('CXXFLAGS', ['-fcolor-diagnostics'])

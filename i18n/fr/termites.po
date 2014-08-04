@@ -100,7 +100,7 @@ msgstr ""
 
 #: ../src/Options.cpp:136
 msgid ""
-"Please provide either a configuration file OR all mandatory options (height, "
+"Please provide either a configuration file or all mandatory options (height, "
 "width, termites, chips, tics)."
 msgstr ""
 "Merci de fournir soit un fichier de configuration, soit toutes les options "

@@ -2,6 +2,11 @@
 
 namespace tmt {
 
+  CoutCapture::CoutCapture(std::streambuf* buff) :
+    old(std::cout.rdbuf(buff)) {}
+
+  CoutCapture::~CoutCapture() {std::cout.rdbuf(old);}
+
   LogCapture::LogCapture(): buffer(nullptr), bufferSize(0)
   {
     bak = Output2FILE::Stream();
@@ -22,7 +27,7 @@ namespace tmt {
   int alen(const char**ary)
   {
     int count = 0;
-    int MAX = 128;
+    const int MAX = 128;
     while (count < MAX)
     {
       if (!ary[count]) return count;

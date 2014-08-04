@@ -10,7 +10,7 @@
 #include "ext/log.h"
 #include "config.h"
 
-int main(int argc , char ** argv)
+int main(int argc , char* argv[])
 {
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE_NAME, LOCALEDIR);
