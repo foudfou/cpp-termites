@@ -4,9 +4,9 @@ Temites
 Overview
 --------
 
-C++ assignement around termite colony simulation. See `doc/termites1.pdf` for
-details. This assignment was originally given at Université du Littoral
-(France) in 2006 by Gauthier Quesnel.
+C++ assignement about termite population simulation. See `doc/termites1.pdf`
+for details. This assignment was formerly proposed to students of the
+Université du Littoral (France) in 2006 by Gauthier Quesnel.
 
 Features
 --------
@@ -19,3 +19,4 @@ Apart from the core simulation functionality, this assignment shows off:
 * unit testing with [Catch](https://github.com/philsquared/Catch)
 * code coverage (*gcov*)
 * basic tasks for static analysis/lint (*cppcheck*), dynamic analysis (*valgrind*)
+* internationalization (*gettext*)
