@@ -8,5 +8,5 @@ bool WoodChip::isWoodChip() const {return true;}
 
 void WoodChip::print(std::ostream& out) const
 {
-  out << "WoodChip" << std::endl;
+  out << "WoodChip";
 }

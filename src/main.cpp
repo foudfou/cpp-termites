@@ -6,6 +6,7 @@
 #include <memory>
 #include "Config.hpp"
 #include "Options.hpp"
+#include "World.hpp"
 #include "helpers.hpp"
 #include "ext/log.h"
 #include "config.h"
@@ -27,6 +28,9 @@ int main(int argc , char* argv[])
   auto confFileName = options.getConfigFileName();
   if (!confFileName.empty() && !conf->read(confFileName))
     return EXIT_FAILURE;
+
+  World& world = World::getInstance();
+  world.populate(conf);
 
   return EXIT_SUCCESS;
 }

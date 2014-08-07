@@ -8,16 +8,14 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include "helpers.hpp"
 
 class Config
 {
 public:
   struct Entity {
     std::string species;
-    int row;
-    int col;
-
+    tmt::Position pos;
     bool operator==(const Entity& rhs) const;
   };
 
@@ -36,40 +34,40 @@ public:
   bool checkSpeciesAndBounds() const;
   bool checkInitialPositions() const;
 
-  int  getTics() const;
-  void setTics(int t);
-  int  getWidth() const;
-  void setWidth(int t);
-  int  getHeight() const;
-  void setHeight(int t);
-  Chips getChips() const;
-  void setChips(const Chips &chps);
-  Species getSpecies() const;
-  void setSpecies(const Species &spcs);
+  unsigned  getTics() const;
+  void      setTics(unsigned t);
+  unsigned  getWidth() const;
+  void      setWidth(unsigned t);
+  unsigned  getHeight() const;
+  void      setHeight(unsigned t);
+  Chips     getChips() const;
+  void      setChips(const Chips &chps);
+  Species   getSpecies() const;
+  void      setSpecies(const Species &spcs);
   Positions getTermitePositions() const;
-  void setTermitePositions(const Positions &tpos);
+  void      setTermitePositions(const Positions &tpos);
   Positions getChipPositions() const;
-  void setChipPositions(const Positions &cpos);
-  bool getInitialized() const;
-  void setInitialized();
+  void      setChipPositions(const Positions &cpos);
+  bool      getInitialized() const;
+  void      setInitialized();
 
 private:
-  static const int TMP_STR_MAX_LEN = 64;
-  static const int BUFFER_SIZE     = 1024;
-
-  typedef std::string TmpString;
-  typedef std::list<std::string> TmpList;
-  typedef Species TmpHash;
-
   bool initialized;
-  int tics;
-  int width;
-  int height;
+  unsigned tics;
+  unsigned width;
+  unsigned height;
   // we store wood chips into a map, as wood species are supposely unique
   Chips chips;
   Species species;
   Positions termitePositions;
   Positions chipPositions;
+
+  static const unsigned TMP_STR_MAX_LEN = 64;
+  static const unsigned BUFFER_SIZE     = 1024;
+
+  typedef std::string TmpString;
+  typedef std::list<std::string> TmpList;
+  typedef Species TmpHash;
 
   struct ParserState {
     int cs;   // must remain persistent across chunk parsing runs

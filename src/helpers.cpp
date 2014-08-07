@@ -13,6 +13,11 @@
 
 namespace tmt {
 
+  bool Position::operator==(const Position& rhs) const
+  {
+    return col == rhs.col && row == rhs.row;
+  }
+
   void log(TLogLevel level, const char* msg, ...)
   {
     char buff[MSG_MAX_LEN];
@@ -60,18 +65,20 @@ namespace tmt {
     return slice;
   }
 
-  std::pair<int, int> rankToCoord2D(const int n, const int width)
+  Position rankToPosition(const unsigned n, const unsigned width)
   {
     if (width < 1) throw std::invalid_argument("width < 1");
-    int row = n / width, col = n % width;
-    return std::pair<int, int>(row, col);
+    unsigned row = n / width, col = n % width;
+    return {col, row};
   }
 
-  int coord2DToRank(const int row, const int col, const int width)
+  unsigned positionToRank(const Position pos, const unsigned width)
   {
     if (width < 1) throw std::invalid_argument("width < 1");
-    if (row > width) throw std::invalid_argument("row out of bound");
-    return col * width + row;
+    if (pos.col >= width) throw std::invalid_argument("row out of bound");
+    if (pos.col < 0 || pos.row < 0)
+      throw std::invalid_argument("negative coordinate");
+    return pos.row * width + pos.col;
   }
 
 }

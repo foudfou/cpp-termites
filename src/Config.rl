@@ -13,9 +13,7 @@ Config::~Config() {}
 
 bool Config::Entity::operator==(const Entity& rhs) const
 {
-  return species == rhs.species &&
-    row == rhs.row &&
-    col == rhs.col;
+  return species == rhs.species && pos == rhs.pos;
 }
 
 %%{
@@ -117,25 +115,25 @@ bool Config::Entity::operator==(const Entity& rhs) const
 %% write data noerror nofinal;
 
 
-int Config::getTics() const {return tics;}
+unsigned Config::getTics() const {return tics;}
 
-void Config::setTics(int t)
+void Config::setTics(unsigned t)
 {
   tics = t;
   tmt::log(logDEBUG, _("tics set to %d"), tics);
 }
 
-int Config::getWidth() const {return width;}
+unsigned Config::getWidth() const {return width;}
 
-void Config::setWidth(int t)
+void Config::setWidth(unsigned t)
 {
   width = t;
   tmt::log(logDEBUG, _("width set to %d"), width);
 }
 
-int Config::getHeight() const {return height;}
+unsigned Config::getHeight() const {return height;}
 
-void Config::setHeight(int t)
+void Config::setHeight(unsigned t)
 {
   height = t;
   tmt::log(logDEBUG, _("height set to %d"), height);
@@ -189,10 +187,10 @@ void Config::setInitialized()
 }
 
 void Config::storeEntityPosition(Config::Positions &store, const TmpString &word,
-                                 const TmpString &r, const TmpString &c)
+                                 const TmpString &c, const TmpString &r)
 {
-  int row = std::stoi(r), col = std::stoi(c);
-  Entity ent = {word, row, col};
+  unsigned col = std::stoi(c), row = std::stoi(r);
+  Entity ent = {word, col, row};
   store.push_back(ent);
   std::string entity = "Unknown";
   if (&store == &termitePositions)
@@ -201,8 +199,8 @@ void Config::storeEntityPosition(Config::Positions &store, const TmpString &word
     entity = "chip";
   else
     tmt::log(logERROR, _("Unknown entity store."));
-  FILE_LOG(logDEBUG) << entity << ": " << ent.species << " " << ent.row
-                     << ", " << ent.col;
+  FILE_LOG(logDEBUG) << entity << ": " << ent.species << " " << ent.pos.col
+                     << ", " << ent.pos.row;
 }
 
 bool Config::read(std::string const& configFile)
@@ -262,15 +260,15 @@ bool Config::check() const
 
 bool Config::checkParamsDefined() const
 {
-  struct param_check_t { const char* msg; int val; };
+  struct param_check_t { const char* msg; unsigned val; };
   param_check_t params[] = {
     { _("Undefined parameter 'tics'."), tics },
     { _("Undefined parameter 'height'."), height },
     { _("Undefined parameter 'width'."), width },
-    { _("Undefined parameter 'chips'."), int(chips.size()) },
-    { _("Undefined parameter 'species'."), int(species.size()) },
-    { _("Missing termite positions."), int(termitePositions.size()) },
-    { _("Missing chip positions."), int(chipPositions.size()) },
+    { _("Undefined parameter 'chips'."), unsigned(chips.size()) },
+    { _("Undefined parameter 'species'."), unsigned(species.size()) },
+    { _("Missing termite positions."), unsigned(termitePositions.size()) },
+    { _("Missing chip positions."), unsigned(chipPositions.size()) },
   };
   for (auto p : params) {
     if (!p.val) {
@@ -291,20 +289,20 @@ bool Config::checkSpeciesAndBounds() const
   };
 
   for (auto mbr : members) {
-    for (auto pos : *(mbr.positions)) {
-      if ((mbr.spc && (*mbr.spc).find(pos.species) == (*mbr.spc).end()) ||
-          (mbr.chp && (*mbr.chp).find(pos.species) == (*mbr.chp).end()))
+    for (auto ent : *(mbr.positions)) {
+      if ((mbr.spc && (*mbr.spc).find(ent.species) == (*mbr.spc).end()) ||
+          (mbr.chp && (*mbr.chp).find(ent.species) == (*mbr.chp).end()))
       {
         tmt::log(logERROR, _("Wood species '%s' (at %d, %d) is not defined in "
                              "global species."),
-                 pos.species.c_str(), pos.row, pos.col);
+                 ent.species.c_str(), ent.pos.col, ent.pos.row);
         return false;
       }
 
-      if ((pos.row > height) || (pos.col > width))
+      if ((ent.pos.col >= width) || (ent.pos.row >= height))
       {
         tmt::log(logERROR, _("Position out of bounds (at %d, %d)."),
-          pos.row, pos.col);
+          ent.pos.col, ent.pos.row);
         return false;
       }
     }
@@ -317,11 +315,11 @@ bool Config::checkInitialPositions() const
   std::vector<bool> cells(width*height);
 
   for (auto positionSet : { &termitePositions, &chipPositions }) {
-    for (auto pos : *positionSet) {
-      int rank = tmt::coord2DToRank(pos.row, pos.col, width);
+    for (auto ent : *positionSet) {
+      unsigned rank = tmt::positionToRank({ent.pos.col, ent.pos.row}, width);
       if (cells[rank]) {
         tmt::log(logERROR,
-                 _("Cell (%d, %d) already occupied."), pos.row, pos.col);
+                 _("Cell (%d, %d) already occupied."), ent.pos.col, ent.pos.row);
         return false;
       }
       else {

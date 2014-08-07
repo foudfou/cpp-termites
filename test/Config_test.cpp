@@ -19,7 +19,7 @@ TEST_CASE( "Bare Config", "[config]" ) {
     {"green", { {"cypress",0} } },
   });
   conf.setTermitePositions({ {"red",5,4}, {"brown",1,1}, });
-  conf.setChipPositions({ {"pine",7,7}, {"pine",5,5}, {"balsa",6,6},
+  conf.setChipPositions({ {"pine",2,2}, {"pine",5,5}, {"balsa",6,6},
       {"balsa",3,2}, {"oak",6,7} });
 
   SECTION( "missing parameter" ) {
@@ -36,8 +36,8 @@ TEST_CASE( "Bare Config", "[config]" ) {
   }
 
   SECTION( "bound checks fail" ) {
-    conf.setChipPositions({ {"pine",7,7}, {"pine",5,5}, {"balsa",6,6},
-        {"balsa",3,2}, {"oak",7,8} });
+    conf.setChipPositions({ {"pine",2,2}, {"pine",5,5}, {"balsa",6,6},
+        {"balsa",3,2}, {"oak",7,7} });
     REQUIRE( !conf.checkSpeciesAndBounds() );
     REQUIRE( !conf.check() );
   }
@@ -58,7 +58,7 @@ TEST_CASE( "Bare Config", "[config]" ) {
 
   SECTION( "check initial positions" ) {
     REQUIRE( conf.checkInitialPositions() );
-    conf.setTermitePositions({ {"red",5,4}, {"brown",1,1}, {"brown",7,7},});
+    conf.setTermitePositions({ {"red",5,4}, {"brown",1,1}, {"brown",6,7},});
     REQUIRE( !conf.checkInitialPositions() );
   }
 }

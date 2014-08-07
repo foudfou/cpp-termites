@@ -1,11 +1,13 @@
 #ifndef _WORLD_H_
 #define _WORLD_H_
 
-#include <string>
 #include <list>
+#include <memory>
+#include <string>
+#include "Board.hpp"
+#include "Config.hpp"
 #include "TermiteSpecies.hpp"
 #include "WoodSpecies.hpp"
-#include "Board.hpp"
 
 class World
 {
@@ -14,18 +16,19 @@ public:
     static World W;
     return W;
   }
-
-  // copy not permitted
-  World(const World&) = delete;
-  void operator=(const World&) = delete;
+  void populate(std::shared_ptr<Config> conf);
 
 private:
   World();
   ~World();
 
+  // copy not permitted
+  World(const World&) = delete;
+  void operator=(const World&) = delete;
+
+  Board board;
   std::list<TermiteSpecies*> termiteSpecies;
   std::list<WoodSpecies*> woodSpecies;
-  Board board;
 };
 
 #endif /* _WORLD_H_ */

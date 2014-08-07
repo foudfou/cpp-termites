@@ -8,5 +8,5 @@ bool Termite::isTermite() const {return true;}
 
 void Termite::print(std::ostream& out) const
 {
-  out << "Termite" << std::endl;
+  out << "Termite";
 }

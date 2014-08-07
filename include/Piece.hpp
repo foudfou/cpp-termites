@@ -9,8 +9,8 @@ public:
   Piece();
   virtual ~Piece();
 
-  virtual bool isWoodChip() const = 0;
-  virtual bool isTermite() const = 0;
+  virtual bool isWoodChip() const;
+  virtual bool isTermite() const;
 
   virtual void print(std::ostream& out) const = 0;
 };

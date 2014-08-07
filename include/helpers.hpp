@@ -13,6 +13,12 @@
 
 namespace tmt {
 
+  struct Position {
+    unsigned col;
+    unsigned row;
+    bool operator==(const Position& rhs) const;
+  };
+
   static const int MSG_MAX_LEN = 512;
 
   static std::random_device rd;
@@ -28,9 +34,9 @@ namespace tmt {
 
   std::vector<int> pickn(const int n, const int len);
 
-  std::pair<int, int> rankToCoord2D(const int n, const int width);
+  Position rankToPosition(const unsigned n, const unsigned width);
 
-  int coord2DToRank(const int row, const int col, const int width);
+  unsigned positionToRank(const Position pos, const unsigned width);
 
 }
 

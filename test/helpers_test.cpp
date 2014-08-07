@@ -32,18 +32,19 @@ TEST_CASE( "Pick n integers among N.", "[helpers]" ) {
   REQUIRE( (v1.at(0) + v1.at(1)) < (2 * 3) );
 }
 
-TEST_CASE( "Rank to Coord2D.", "[helpers]" ) {
-  REQUIRE_THROWS( tmt::rankToCoord2D(0, 0) );
-  REQUIRE( tmt::rankToCoord2D(0, 1) == (std::pair<int, int>(0, 0)) );
-  REQUIRE( tmt::rankToCoord2D(0, 3) == (std::pair<int, int>(0, 0)) );
-  REQUIRE( tmt::rankToCoord2D(4, 3) == (std::pair<int, int>(1, 1)) );
-  REQUIRE( tmt::rankToCoord2D(3, 3) == (std::pair<int, int>(1, 0)) );
+TEST_CASE( "Rank to Position.", "[helpers]" ) {
+  REQUIRE_THROWS( tmt::rankToPosition(0, 0) );
+  REQUIRE( tmt::rankToPosition(0, 1) == tmt::Position({0, 0}) );
+  REQUIRE( tmt::rankToPosition(0, 3) == tmt::Position({0, 0}) );
+  REQUIRE( tmt::rankToPosition(4, 3) == tmt::Position({1, 1}) );
+  REQUIRE( tmt::rankToPosition(3, 3) == tmt::Position({0, 1}) );
+  REQUIRE( tmt::rankToPosition(2, 3) == tmt::Position({2, 0}) );
 }
 
-TEST_CASE( "Coord2D to Rank.", "[helpers]" ) {
-  REQUIRE_THROWS( tmt::coord2DToRank(0, 0, 0) ); // zero-width
-  REQUIRE_THROWS( tmt::coord2DToRank(6, 1, 5) );
-  REQUIRE( tmt::coord2DToRank(0, 1, 5) == 5 );
-  REQUIRE( tmt::coord2DToRank(2, 0, 5) == 2 );
-  REQUIRE( tmt::coord2DToRank(2, 2, 5) == 12 );
+TEST_CASE( "Position to Rank.", "[helpers]" ) {
+  REQUIRE_THROWS( tmt::positionToRank({0, 0}, 0) ); // zero-width
+  REQUIRE_THROWS( tmt::positionToRank({6, 5}, 5) );
+  REQUIRE( tmt::positionToRank({0, 1}, 5) == 5 );
+  REQUIRE( tmt::positionToRank({2, 0}, 5) == 2 );
+  REQUIRE( tmt::positionToRank({2, 2}, 5) == 12 );
 }

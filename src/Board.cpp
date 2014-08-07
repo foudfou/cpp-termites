@@ -1,11 +1,14 @@
+#include <stdexcept>
 #include "Board.hpp"
 
-Board::Board() { }
+Board::Board() {}
 
 Board::~Board() { }
 
-Piece& Board::piece(const Position pos) const
+void Board::resize(tmt::Position outer)
 {
+  width = outer.col; height = outer.row;
+  grid.resize(height*width, nullptr);
 }
 
 void Board::moveTermite()

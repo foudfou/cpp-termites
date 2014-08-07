@@ -10,5 +10,5 @@ bool Piece::isTermite() const {return false;}
 
 void Piece::print(std::ostream& out) const
 {
-  out << "Piece" << std::endl;
+  out << "Piece";
 }
