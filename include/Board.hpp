@@ -16,7 +16,7 @@ public:
   Board();
   virtual ~Board();
 
-  void resize(tmt::Position last);
+  void resize(tmt::Position outer);
   void moveTermite();
   void display(std::ostream& out) const;
 
@@ -26,8 +26,8 @@ public:
   }
 
 private:
-  int height;
   int width;
+  int height;
   std::vector<PiecePtr> grid;
 };
 

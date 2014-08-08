@@ -57,7 +57,7 @@ namespace tmt {
     if (n > len) throw std::invalid_argument("n > length");
     std::vector<int> vec(len);
     std::iota(std::begin(vec), std::end(vec), 0);
-    std::shuffle(vec.begin(), vec.end(), tmt::gen);
+    std::shuffle(vec.begin(), vec.end(), random_gen());
 
     std::vector<int>::const_iterator first = vec.begin();
     std::vector<int>::const_iterator last = vec.begin() + n;
@@ -76,8 +76,6 @@ namespace tmt {
   {
     if (width < 1) throw std::invalid_argument("width < 1");
     if (pos.col >= width) throw std::invalid_argument("row out of bound");
-    if (pos.col < 0 || pos.row < 0)
-      throw std::invalid_argument("negative coordinate");
     return pos.row * width + pos.col;
   }
 

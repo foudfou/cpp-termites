@@ -21,8 +21,11 @@ namespace tmt {
 
   static const int MSG_MAX_LEN = 512;
 
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
+  inline std::mt19937& random_gen() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    return gen;
+  }
 
   void log(TLogLevel level, const char* msg, ...);
 

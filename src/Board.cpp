@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include "Board.hpp"
 
-Board::Board() {}
+Board::Board() : width(0), height(0) {}
 
 Board::~Board() { }
 
