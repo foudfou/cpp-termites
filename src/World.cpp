@@ -6,7 +6,7 @@ World::~World() { }
 
 void World::populate(std::shared_ptr<Config> conf)
 {
-  board.resize({conf->getHeight(), conf->getWidth()});
+  board.resize({conf->getWidth(), conf->getHeight()});
   // Chips chips;
   // Species species;
   // Positions termitePositions;
