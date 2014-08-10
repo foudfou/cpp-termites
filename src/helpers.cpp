@@ -2,7 +2,6 @@
 
 #include <libintl.h>
 #include <stdarg.h>
-#include <algorithm>
 #include <cassert>
 #include <cstdio>
 #include <exception>

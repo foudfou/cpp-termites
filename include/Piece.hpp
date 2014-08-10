@@ -1,7 +1,7 @@
 #ifndef _PIECE_H_
 #define _PIECE_H_
 
-#include <iostream>
+#include <string>
 
 class Piece
 {
@@ -12,7 +12,7 @@ public:
   virtual bool isWoodChip() const;
   virtual bool isTermite() const;
 
-  virtual void print(std::ostream& out) const = 0;
+  virtual std::string dump() const = 0;
 };
 
 #endif /* _PIECE_H_ */

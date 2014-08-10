@@ -10,6 +10,6 @@ TEST_CASE( "Board", "[world]" ) {
   REQUIRE( !b({1,2}) );
   b({1,1}) = Board::PiecePtr(new Termite);
   std::ostringstream out;
-  b({1,1})->print(out);
+  out << b({1,1})->dump();
   REQUIRE( out.str() == "Termite");
 }

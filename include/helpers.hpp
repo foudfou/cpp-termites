@@ -3,8 +3,10 @@
 #ifndef _HELPERS_H_
 #define _HELPERS_H_
 
+#include <algorithm>
 #include <list>
 #include <map>
+#include <memory>
 #include <random>
 #include <string>
 #include "ext/log.h"
@@ -40,6 +42,19 @@ namespace tmt {
   Position rankToPosition(const unsigned n, const unsigned width);
 
   unsigned positionToRank(const Position pos, const unsigned width);
+
+  template<
+    template<class T, class All = std::allocator<T> > class ContainerT,
+    typename PtrT>
+  PtrT find(const ContainerT<PtrT>& ctnr, const std::string& entry)
+  {
+    auto it =
+      std::find_if(
+      ctnr.begin(), ctnr.end(),
+      [entry](PtrT const& i){ return i.get()->getName() == entry; }
+      );
+    return (it != ctnr.end()) ? *it : nullptr;
+  }
 
 }
 

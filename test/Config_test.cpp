@@ -4,24 +4,13 @@
 #include "test_helpers.hpp"
 #include "Config.hpp"
 #include "config.h"
-
-std::unique_ptr<tmt::LogCapture> logCap(new tmt::LogCapture());
+#include "fixtures/ConfigFixt.hpp"
 
 TEST_CASE( "Bare Config", "[config]" ) {
-  Config conf;
-  conf.setWidth(7);
-  conf.setHeight(8);
-  conf.setChips({ {"pine",0}, {"balsa",1}, {"oak",2}, {"ebony",1},
-    {"cypress",1} });
-  conf.setSpecies({
-    {"red",   { {"pine",0}, {"balsa",1}, {"oak",2} } },
-    {"brown", { {"balsa",0}, {"ebony",1} } },
-    {"green", { {"cypress",0} } },
-  });
-  conf.setTermitePositions({ {"red",5,4}, {"brown",1,1}, });
-  conf.setChipPositions({ {"pine",2,2}, {"pine",5,5}, {"balsa",6,6},
-      {"balsa",3,2}, {"oak",6,7} });
+  tmt::LogCapture logCap;
+  Config conf = confFixt1();
 
+  conf.setTics(0);
   SECTION( "missing parameter" ) {
     REQUIRE( !conf.checkParamsDefined() );
     REQUIRE( !conf.check() );
@@ -36,14 +25,14 @@ TEST_CASE( "Bare Config", "[config]" ) {
   }
 
   SECTION( "bound checks fail" ) {
-    conf.setChipPositions({ {"pine",2,2}, {"pine",5,5}, {"balsa",6,6},
-        {"balsa",3,2}, {"oak",7,7} });
+    conf.setChipPositions({ {"pine",{2,2}}, {"pine",{5,5}}, {"balsa",{6,6}},
+      {"balsa",{3,2}}, {"oak",{7,7}} });
     REQUIRE( !conf.checkSpeciesAndBounds() );
     REQUIRE( !conf.check() );
   }
 
   SECTION( "missing species definition" ) {
-    conf.setTermitePositions({ {"red",5,4}, {"brown",1,1}, {"blue",2,6} });
+    conf.setTermitePositions({ {"red",{5,4}}, {"brown",{1,1}}, {"blue",{2,6}} });
     REQUIRE( !conf.checkSpeciesAndBounds() );
     REQUIRE( !conf.check() );
   }
@@ -58,12 +47,13 @@ TEST_CASE( "Bare Config", "[config]" ) {
 
   SECTION( "check initial positions" ) {
     REQUIRE( conf.checkInitialPositions() );
-    conf.setTermitePositions({ {"red",5,4}, {"brown",1,1}, {"brown",6,7},});
+    conf.setTermitePositions({ {"red",{5,4}}, {"brown",{1,1}}, {"brown",{6,7}},});
     REQUIRE( !conf.checkInitialPositions() );
   }
 }
 
 TEST_CASE( "Config file ok", "[config]" ) {
+  tmt::LogCapture logCap;
   Config conf;
   REQUIRE( conf.read(std::string(TEST_DIR) + "/fixtures/init_ok.cfg") );
   CHECK( conf.getTics() == 2000 );
@@ -76,10 +66,10 @@ TEST_CASE( "Config file ok", "[config]" ) {
         {"verte", { {"boulot",1}, {"chene",1} } },
         {"noire", { {"baobab",1}, {"boulot",1} } },
           }) );
-  CHECK( conf.getTermitePositions() == Config::Positions({ {"rouge",10,5},
-        {"rouge",23,34} }) );
-  CHECK( conf.getChipPositions() == Config::Positions({ {"boulot",42,23},
-        {"baobab",1,3} }) );
+  CHECK( conf.getTermitePositions() == Config::Positions({ {"rouge",{10,5}},
+        {"rouge",{23,34}} }) );
+  CHECK( conf.getChipPositions() == Config::Positions({ {"boulot",{42,23}},
+        {"baobab",{1,3}} }) );
 
   SECTION( "Config file read twice fails" ) {
     REQUIRE( !conf.read(std::string(TEST_DIR) + "/fixtures/init_ok.cfg") );
@@ -87,11 +77,13 @@ TEST_CASE( "Config file ok", "[config]" ) {
 }
 
 TEST_CASE( "Config file void", "[config]" ) {
+  tmt::LogCapture logCap;
   Config conf;
   REQUIRE( !conf.read(std::string(TEST_DIR) + "/fixtures/init_void.cfg") );
 }
 
 TEST_CASE( "Config string ok", "[config]" ) {
+  tmt::LogCapture logCap;
   Config conf;
   std::istringstream ss("temps: 2000\nlargeur: 80\nhauteur: 50\n\n"
     "# should be ignored\n\ncopeaux: ( boulot   chene baobab  boulot  noyer)\n"

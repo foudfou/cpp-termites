@@ -6,7 +6,4 @@ WoodChip::~WoodChip() { }
 
 bool WoodChip::isWoodChip() const {return true;}
 
-void WoodChip::print(std::ostream& out) const
-{
-  out << "WoodChip";
-}
+std::string WoodChip::dump() const {return "WoodChip";}

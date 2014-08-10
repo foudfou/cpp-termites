@@ -1,10 +1,17 @@
+#include <algorithm>
+#include "helpers.hpp"
 #include "TermiteSpecies.hpp"
 
-TermiteSpecies::TermiteSpecies ( ) { }
+TermiteSpecies::TermiteSpecies(const std::string& nam,
+                               const std::list<WoodSpeciesPtr>& wds)
+  : name(nam), woodsLiked(wds)
+{}
 
-TermiteSpecies::~TermiteSpecies ( ) { }
+TermiteSpecies::~TermiteSpecies() { }
 
-bool likesWood(std::string wood)
+std::string TermiteSpecies::getName() const {return name;}
+
+bool TermiteSpecies::likes(const std::string& wood) const
 {
-  return false;
+  return bool(tmt::find(woodsLiked, wood));
 }

@@ -8,7 +8,4 @@ bool Piece::isWoodChip() const {return false;}
 
 bool Piece::isTermite() const {return false;}
 
-void Piece::print(std::ostream& out) const
-{
-  out << "Piece";
-}
+std::string Piece::dump() const {return "Piece";}

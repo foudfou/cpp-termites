@@ -1,6 +1,7 @@
 #ifndef _TERMITESPECIES_H_
 #define _TERMITESPECIES_H_
 
+#include <memory>
 #include <string>
 #include <list>
 #include "WoodSpecies.hpp"
@@ -8,14 +9,19 @@
 // single species
 class TermiteSpecies
 {
-  std::string species;
-  std::list<WoodSpecies*> woodsLiked;
-
 public:
-  TermiteSpecies();
+  TermiteSpecies(const std::string& spc, const std::list<WoodSpeciesPtr>& wd);
   virtual ~TermiteSpecies();
 
-  bool likesWood(std::string wood);
+  std::string getName() const;
+  bool likes(const std::string& wood) const;
+
+private:
+  std::string name;
+  std::list<WoodSpeciesPtr> woodsLiked;
 };
+
+typedef std::shared_ptr<TermiteSpecies> TermiteSpeciesPtr;
+
 
 #endif /* _TERMITESPECIES_H_ */

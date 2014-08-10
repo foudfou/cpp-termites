@@ -6,7 +6,4 @@ Termite::~Termite() { }
 
 bool Termite::isTermite() const {return true;}
 
-void Termite::print(std::ostream& out) const
-{
-  out << "Termite";
-}
+std::string Termite::dump() const {return "Termite";}

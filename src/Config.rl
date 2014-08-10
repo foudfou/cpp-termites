@@ -190,7 +190,7 @@ void Config::storeEntityPosition(Config::Positions &store, const TmpString &word
                                  const TmpString &c, const TmpString &r)
 {
   unsigned col = std::stoi(c), row = std::stoi(r);
-  Entity ent = {word, col, row};
+  Entity ent = {word, {col, row}};
   store.push_back(ent);
   std::string entity = "Unknown";
   if (&store == &termitePositions)

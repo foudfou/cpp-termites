@@ -230,7 +230,7 @@ Options::buildEntities(int amount, const std::vector<int> &randoms,
   std::stringstream randomsStr;
   for (int i=0; i<amount; ++i) {
     auto pos = tmt::rankToPosition(randoms[i+off], width);
-    positions.push_back(Config::Entity({"species0", pos.col, pos.row}));
+    positions.push_back(Config::Entity({"species0", {pos.col, pos.row}}));
     if (FILELog::ReportingLevel() >= logDEBUG)
       randomsStr << '|' << pos.col << ':' << pos.row;
   }

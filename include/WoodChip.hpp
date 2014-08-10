@@ -13,7 +13,7 @@ public:
   virtual ~WoodChip();
 
   virtual bool isWoodChip() const;
-  virtual void print(std::ostream& out) const;
+  std::string dump() const;
 };
 
 #endif /* _WOODCHIP_H_ */

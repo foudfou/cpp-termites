@@ -16,6 +16,12 @@ public:
     static World W;
     return W;
   }
+  WoodSpeciesPtr getWoodSpecies(const std::string& name) const;
+  inline size_t getWoodSpeciesSize() const {return woodSpecies.size();}
+  TermiteSpeciesPtr getTermiteSpecies(const std::string& name) const;
+  inline size_t getTermiteSpeciesSize() const {return termiteSpecies.size();}
+  std::string dumpWoodSpecies() const;
+  std::string dumpTermiteSpecies() const;
   void populate(std::shared_ptr<Config> conf);
 
 private:
@@ -27,8 +33,8 @@ private:
   void operator=(const World&) = delete;
 
   Board board;
-  std::list<TermiteSpecies*> termiteSpecies;
-  std::list<WoodSpecies*> woodSpecies;
+  std::list<WoodSpeciesPtr> woodSpecies;
+  std::list<TermiteSpeciesPtr> termiteSpecies;
 };
 
 #endif /* _WORLD_H_ */

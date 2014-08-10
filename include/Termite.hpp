@@ -13,7 +13,7 @@ public:
   virtual ~Termite();
 
   virtual bool isTermite() const;
-  virtual void print(std::ostream& out) const;
+  virtual std::string dump() const;
 };
 
 #endif /* _TERMITE_H_ */
