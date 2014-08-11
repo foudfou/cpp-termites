@@ -18,7 +18,7 @@ public:
 
   void resize(tmt::Position outer);
   void moveTermite();
-  void display(std::ostream& out) const;
+  std::string dump() const;
 
   /* we could make `grid` public, but this one's handy */
   inline PiecePtr& operator()(const tmt::Position pos) {

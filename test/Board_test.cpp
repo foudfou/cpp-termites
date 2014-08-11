@@ -8,7 +8,9 @@ TEST_CASE( "Board", "[world]" ) {
   b.resize({2,3});
   REQUIRE( !b({0,0}) );
   REQUIRE( !b({1,2}) );
-  b({1,1}) = Board::PiecePtr(new Termite);
+  WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
+  TermiteSpeciesPtr tspc1(new TermiteSpecies("brown", {wspc1}));
+  b({1,1}) = Board::PiecePtr(new Termite(tspc1));
   std::ostringstream out;
   out << b({1,1})->dump();
   REQUIRE( out.str() == "Termite");

@@ -15,7 +15,25 @@ void Board::moveTermite()
 {
 }
 
-void Board::display(std::ostream& out) const
+std::string Board::dump() const
 {
-  out << "Board" << std::endl;
+  std::string brd;
+  for (int i=0, len=grid.size(); i<len; ++i) {
+    if (i%width == 0 && i>=width) brd += "\n";
+    auto pc = grid[i];
+    if (pc)
+    {
+      if (pc->isTermite())
+        brd += "T";
+      else if (pc->isWoodChip())
+        brd += "W";
+      else
+        throw std::logic_error("unknown piece type");
+    }
+    else
+    {
+      brd += "-";
+    }
+  }
+  return brd;
 }

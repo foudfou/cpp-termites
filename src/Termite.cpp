@@ -1,8 +1,8 @@
 #include "Termite.hpp"
 
-Termite::Termite() { }
+Termite::Termite(const TermiteSpeciesPtr& spc) : species(spc) {}
 
-Termite::~Termite() { }
+Termite::~Termite() {}
 
 bool Termite::isTermite() const {return true;}
 

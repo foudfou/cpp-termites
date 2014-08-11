@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <iostream>
 #include "World.hpp"
+#include "Termite.hpp"
+#include "WoodChip.hpp"
 #include "helpers.hpp"
 
 World::World() { }
@@ -46,13 +48,19 @@ void World::populate(std::shared_ptr<Config> conf)
     std::list<WoodSpeciesPtr> wlist;
     for (auto& wspcName : t2w.second) {
       auto wspc = getWoodSpecies(wspcName.first);
-      // std::cout << t2w.first << " likes " << *wspc << std::endl;
       wlist.push_back(wspc);
     }
     TermiteSpeciesPtr tspc(new TermiteSpecies(t2w.first, wlist));
     termiteSpecies.push_back(tspc);
   }
 
-  // Positions termitePositions;
-  // Positions chipPositions;
+  for (auto& ent : conf->getTermitePositions()) {
+    TermiteSpeciesPtr tspc = getTermiteSpecies(ent.species);
+    board({ent.pos.col, ent.pos.row}) = Board::PiecePtr(new Termite(tspc));
+  }
+
+  for (auto& ent : conf->getChipPositions()) {
+    WoodSpeciesPtr wspc = getWoodSpecies(ent.species);
+    board({ent.pos.col, ent.pos.row}) = Board::PiecePtr(new WoodChip(wspc));
+  }
 }

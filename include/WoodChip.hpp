@@ -6,14 +6,15 @@
 
 class WoodChip : public Piece
 {
-  WoodSpecies* species;
-
 public:
-  WoodChip();
+  WoodChip(const WoodSpeciesPtr& spc);
   virtual ~WoodChip();
 
   virtual bool isWoodChip() const;
   std::string dump() const;
+
+private:
+  WoodSpeciesPtr species;
 };
 
 #endif /* _WOODCHIP_H_ */

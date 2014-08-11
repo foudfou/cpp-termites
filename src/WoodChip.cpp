@@ -1,8 +1,8 @@
 #include "WoodChip.hpp"
 
-WoodChip::WoodChip() { }
+WoodChip::WoodChip(const WoodSpeciesPtr& spc) : species(spc) {}
 
-WoodChip::~WoodChip() { }
+WoodChip::~WoodChip() {}
 
 bool WoodChip::isWoodChip() const {return true;}
 

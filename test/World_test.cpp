@@ -23,4 +23,13 @@ TEST_CASE( "World setup", "[world]" ) {
   REQUIRE( w1.getTermiteSpecies("red") );
   REQUIRE( !w1.getWoodSpecies("NOTSPECIES") );
   REQUIRE( w1.getTermiteSpeciesSize() == 3 );
+  auto brd = R"(-------
+-T-----
+--WW---
+-------
+-----T-
+-----W-
+------W
+------W)";
+  REQUIRE( w1.board.dump() == brd );
 }

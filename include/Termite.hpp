@@ -6,14 +6,15 @@
 
 class Termite : public Piece
 {
-  TermiteSpecies* species;
-
 public:
-  Termite();
+  Termite(const TermiteSpeciesPtr& spc);
   virtual ~Termite();
 
   virtual bool isTermite() const;
   virtual std::string dump() const;
+
+private:
+  TermiteSpeciesPtr species;
 };
 
 #endif /* _TERMITE_H_ */
