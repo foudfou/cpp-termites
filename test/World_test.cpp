@@ -1,4 +1,5 @@
 #include "ext/catch.hpp"
+#include "Board.hpp"
 #include "Config.hpp"
 #include "World.hpp"
 #include "test_helpers.hpp"
@@ -32,4 +33,14 @@ TEST_CASE( "World setup", "[world]" ) {
 ------W
 ------W)";
   REQUIRE( w1.board.dump() == brd );
+  REQUIRE( !w1.board({0,0}) );
+  Board::PiecePtr p1 = w1.board({1,1});
+  REQUIRE( p1 );
+  REQUIRE( p1->isTermite() );
+  REQUIRE( !p1->isWoodChip() );
+  Board::PiecePtr p2 = w1.board({2,2});
+  REQUIRE( p2 );
+  REQUIRE( !p2->isTermite() );
+  REQUIRE( p2->isWoodChip() );
+  REQUIRE( w1.board({6,7}) );
 }
