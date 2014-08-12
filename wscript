@@ -2,7 +2,7 @@
 # Copyright (c) 2014 Foudil Brétel. All rights reserved.
 
 import waflib
-from waflib import Build, Logs, Options
+from waflib import Build, ConfigSet, Logs, Options, Scripting
 
 VERSION = '0.0.1'
 APPNAME = 'termites'
@@ -98,6 +98,29 @@ def configure(cnf):
 
 def build(bld):
     bld.recurse('src test i18n')
+
+
+def distclean(ctx):
+    import os
+    CACHE_PATH = out + "/c4che/_cache.py"
+    node = ctx.path.find_node(CACHE_PATH)
+    if node:
+        env = ConfigSet.ConfigSet()
+        env.load(node.abspath())
+        if ctx.options.coverage:
+            _rm_in_dir(env.get_flat('LCOV_DIR'))
+
+    Scripting.distclean(ctx)
+
+
+def _rm_in_dir(tgt):
+    import glob, os
+    for root, dirs, files in os.walk(tgt, topdown=False):
+        for f in files:
+            if f != ".gitignore":
+                os.remove(os.path.join(root, f))
+        for d in dirs:
+            os.rmdir(os.path.join(root, d))
 
 
 def tags(ctx):
