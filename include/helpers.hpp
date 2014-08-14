@@ -15,11 +15,18 @@
 
 namespace tmt {
 
+  typedef size_t idx_t;
+
+  // TODO: if we want an infinite board in the future, we probably want int's,
+  // and the board centered around Position({0,0}).
   struct Position {
     unsigned col;
     unsigned row;
     bool operator==(const Position& rhs) const;
+    bool operator<(const Position& rhs) const;
   };
+
+  std::ostream& operator<<(std::ostream& os, const Position& pos);
 
   static const int MSG_MAX_LEN = 512;
 
@@ -39,9 +46,9 @@ namespace tmt {
 
   std::vector<int> pickn(const int n, const int len);
 
-  Position rankToPosition(const unsigned n, const unsigned width);
+  Position rankToPosition(const idx_t& n, const unsigned& width);
 
-  unsigned positionToRank(const Position pos, const unsigned width);
+  idx_t positionToRank(const Position& pos, const unsigned& width);
 
   template<
     template<class T, class All = std::allocator<T> > class ContainerT,

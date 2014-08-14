@@ -26,6 +26,7 @@ public:
   inline size_t getTermiteSpeciesSize() const {return termiteSpecies.size();}
   std::string dumpTermiteSpecies() const;
   void populate(std::shared_ptr<Config> conf);
+  unsigned tic();
 
 private:
   World();
@@ -35,6 +36,7 @@ private:
   World(const World&) = delete;
   void operator=(const World&) = delete;
 
+  unsigned tics;
   std::list<WoodSpeciesPtr> woodSpecies;
   std::list<TermiteSpeciesPtr> termiteSpecies;
 };

@@ -23,7 +23,7 @@ namespace tmt {
     LogCapture();
     ~LogCapture();
 
-    std::string getBuffer();
+    std::string getBuffer() const;
 
   private:
     char* buffer;

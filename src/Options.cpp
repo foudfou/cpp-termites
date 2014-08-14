@@ -10,7 +10,7 @@
 #include "ext/log.h"
 #include "helpers.hpp"
 
-Options::Options(): logFile(nullptr) {}
+Options::Options(): logFile(nullptr), initMode(InitMode::OPTS) {}
 
 Options::~Options() {
   if (logFile) {

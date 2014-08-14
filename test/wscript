@@ -24,6 +24,7 @@ def build(bld):
 
     from waflib.Tools import waf_unit_test
     bld.add_post_fun(waf_unit_test.set_exit_code)
+    # FIXME: does not seem to work when exit 2
 
     if bld.options.do_coverage:
         bldtest = bld.path.get_bld()

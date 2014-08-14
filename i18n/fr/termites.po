@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: termites 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-03 17:59+0200\n"
+"POT-Creation-Date: 2014-08-13 11:46+0200\n"
 "PO-Revision-Date: 2014-07-19 14:19+0200\n"
 "Last-Translator:  <foudil.newbie@gmail.com>\n"
 "Language-Team: French\n"
@@ -22,26 +22,26 @@ msgstr ""
 msgid "Cannot open log file: %s."
 msgstr "Ne peut ouvrir le fichier de log: %s."
 
-#: ../src/Config.rl:220
+#: ../src/Config.rl:218
 #, c-format
 msgid "Cannot read configuration file: %s."
 msgstr "Ne peut lire le fichier de configuration: %s."
 
-#: ../src/Config.rl:324
+#: ../src/Config.rl:322
 #, c-format
 msgid "Cell (%d, %d) already occupied."
 msgstr "Cellule (%d, %d) déjà occupée."
 
-#: ../src/Config.rl:212 ../src/Config.rl:236 ../src/Options.cpp:113
+#: ../src/Config.rl:210 ../src/Config.rl:234 ../src/Options.cpp:113
 msgid "Config already initialized."
 msgstr "Config déjà initialisée."
 
-#: ../src/Config.rl:385
+#: ../src/Config.rl:383
 #, c-format
 msgid "Config has errors: %s."
 msgstr "Config a des erreurs: %s."
 
-#: ../src/Config.rl:386
+#: ../src/Config.rl:384
 #, c-format
 msgid "Config parsed to the end: %s."
 msgstr "Config parsée jusu'à la fin: %s."
@@ -51,27 +51,32 @@ msgstr "Config parsée jusu'à la fin: %s."
 msgid "Configuration file set to %s."
 msgstr "Fichier de configuration positionné à %s."
 
-#: ../src/helpers.cpp:44
+#: ../src/helpers.cpp:48
 #, c-format
 msgid "Duplicate item: %s."
 msgstr "Champ en double: %s."
 
-#: ../src/Config.rl:82
+#: ../src/Config.rl:80
 #, c-format
 msgid "Duplicate key ignored: %s"
 msgstr "Clef en double ignorée: %s."
+
+#: ../src/Config.rl:29
+#, c-format
+msgid "Error line %d on char '%c' after '%c'."
+msgstr "Erreur à la ligne %d au caractère '%c' après '%c'."
 
 #: ../src/Options.cpp:193
 #, c-format
 msgid "Invalid argument: %s."
 msgstr "Argument invalide: %s."
 
-#: ../src/Config.rl:346
+#: ../src/Config.rl:344
 #, c-format
 msgid "Missing chip definition: %s"
 msgstr "Définition de copeau manquante: %s."
 
-#: ../src/Config.rl:273
+#: ../src/Config.rl:271
 msgid "Missing chip positions."
 msgstr "Positions des copeaux manquantes."
 
@@ -79,7 +84,7 @@ msgstr "Positions des copeaux manquantes."
 msgid "Missing options or configuration file."
 msgstr "Options ou fichier de configuration manquants."
 
-#: ../src/Config.rl:272
+#: ../src/Config.rl:270
 msgid "Missing termite positions."
 msgstr "Positions de termites manquantes."
 
@@ -87,7 +92,7 @@ msgstr "Positions de termites manquantes."
 msgid "More than one configuration file given."
 msgstr "Plus d'un fichier de configuration fournis."
 
-#: ../src/Config.rl:26
+#: ../src/Config.rl:24
 #, c-format
 msgid "Parse error at line %d."
 msgstr "Erreur de parsing à la ligne %d."
@@ -106,10 +111,17 @@ msgstr ""
 "Merci de fournir soit un fichier de configuration, soit toutes les options "
 "obligatoires (hauteur, largeur, termites, copeaux, temps)"
 
-#: ../src/Config.rl:306
+#: ../src/Config.rl:304
 #, c-format
 msgid "Position out of bounds (at %d, %d)."
 msgstr "Position hors limites (%d, %d)"
+
+#: ../src/Board.cpp:59
+#, fuzzy, c-format
+msgid "Termite at (%d, %d) can't move to already occupied (%d, %d)."
+msgstr ""
+"Le Termite sur (%d, %d) ne peut pas se déplacer vers la case déjà occupée "
+"(%d, %d)."
 
 #: ../src/Options.cpp:185
 msgid "Too many termites and chips for board size."
@@ -120,31 +132,31 @@ msgstr "Trop de termites et copeau pour la taille du tableau."
 msgid "Undefined option '%c'."
 msgstr "Option '%c' non-définie."
 
-#: ../src/Config.rl:270
+#: ../src/Config.rl:268
 msgid "Undefined parameter 'chips'."
 msgstr "Paramètre 'copeau' non-défini."
 
-#: ../src/Config.rl:268
+#: ../src/Config.rl:266
 msgid "Undefined parameter 'height'."
 msgstr "Paramètre 'hauteur' non-défini."
 
-#: ../src/Config.rl:271
+#: ../src/Config.rl:269
 msgid "Undefined parameter 'species'."
 msgstr "Paramètre 'copeau' non-défini."
 
-#: ../src/Config.rl:267
+#: ../src/Config.rl:265
 msgid "Undefined parameter 'tics'."
 msgstr "Paramètre 'temps' non-défini."
 
-#: ../src/Config.rl:269
+#: ../src/Config.rl:267
 msgid "Undefined parameter 'width'."
 msgstr "Paramètre 'largeur' non-défini."
 
-#: ../src/Config.rl:203
+#: ../src/Config.rl:201
 msgid "Unknown entity store."
 msgstr "Conteneur d'entités inconnu."
 
-#: ../src/Config.rl:298
+#: ../src/Config.rl:296
 #, c-format
 msgid "Wood species '%s' (at %d, %d) is not defined in global species."
 msgstr "Espèce de bois '%s' (at %d, %d) non défini dans les espèces globales. "
@@ -154,27 +166,22 @@ msgstr "Espèce de bois '%s' (at %d, %d) non défini dans les espèces globales.
 msgid "entitiy positions: %s."
 msgstr "positions des entités: %s."
 
-#: ../src/Config.rl:31
-#, c-format
-msgid "Error line %d on char '%c' after '%c'."
-msgstr "Erreur à la ligne %d au caractère '%c' après '%c'."
-
-#: ../src/Config.rl:141
+#: ../src/Config.rl:139
 #, c-format
 msgid "height set to %d"
 msgstr "hautreur positionnée à %d"
 
-#: ../src/Config.rl:101
+#: ../src/Config.rl:99
 #, c-format
 msgid "pstate.key=%s"
 msgstr ""
 
-#: ../src/Config.rl:125
+#: ../src/Config.rl:123
 #, c-format
 msgid "tics set to %d"
 msgstr "temps positionné à %d"
 
-#: ../src/Config.rl:133
+#: ../src/Config.rl:131
 #, c-format
 msgid "width set to %d"
 msgstr "largeur positionnée à %d"

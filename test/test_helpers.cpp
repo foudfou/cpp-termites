@@ -22,7 +22,7 @@ namespace tmt {
     free(buffer);
   }
 
-  std::string LogCapture::getBuffer() {return std::string(buffer);}
+  std::string LogCapture::getBuffer() const {return std::string(buffer);}
 
   int alen(const char**ary)
   {

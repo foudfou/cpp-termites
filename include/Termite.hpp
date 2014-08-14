@@ -12,9 +12,13 @@ public:
 
   virtual bool isTermite() const;
   virtual std::string dump() const;
+  bool     isLoaded() const;
+  void     load(const PiecePtr& chip);
+  PiecePtr unload();
 
 private:
   TermiteSpeciesPtr species;
+  PiecePtr woodChip;
 };
 
 #endif /* _TERMITE_H_ */

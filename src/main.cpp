@@ -24,6 +24,7 @@ int main(int argc , char* argv[])
   options.setConfig(conf);
   if (!options.parse(argc, argv))
     return EXIT_SUCCESS;
+  // FIXME: we need to EXIT_SUCCESS with --help
 
   auto confFileName = options.getConfigFileName();
   if (!confFileName.empty() && !conf->read(confFileName))
@@ -31,6 +32,10 @@ int main(int argc , char* argv[])
 
   World& world = World::getInstance();
   world.populate(conf);
+
+  FILE_LOG(logINFO) << "BEFORE:" << std::endl << world.board.dump();
+  while (world.tic()) ;
+  FILE_LOG(logINFO) << "AFTER:" << std::endl << world.board.dump();
 
   return EXIT_SUCCESS;
 }

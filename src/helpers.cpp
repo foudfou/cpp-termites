@@ -17,6 +17,19 @@ namespace tmt {
     return col == rhs.col && row == rhs.row;
   }
 
+  bool Position::operator<(const Position& rhs) const
+  {
+    /* Don't do (col < rhs.col || row < rhs.row), because {5,2}<{5,3} should
+       return true */
+    if (col != rhs.col) return col < rhs.col;
+    return row < rhs.row;
+  }
+
+  std::ostream& operator<<(std::ostream& os, const Position& pos)
+  {
+    return os << "{" << pos.col << "," << pos.row << "}";
+  }
+
   void log(TLogLevel level, const char* msg, ...)
   {
     char buff[MSG_MAX_LEN];
@@ -64,14 +77,14 @@ namespace tmt {
     return slice;
   }
 
-  Position rankToPosition(const unsigned n, const unsigned width)
+  Position rankToPosition(const idx_t& n, const unsigned& width)
   {
     if (width < 1) throw std::invalid_argument("width < 1");
     unsigned row = n / width, col = n % width;
     return {col, row};
   }
 
-  unsigned positionToRank(const Position pos, const unsigned width)
+  idx_t positionToRank(const Position& pos, const unsigned& width)
   {
     if (width < 1) throw std::invalid_argument("width < 1");
     if (pos.col >= width) throw std::invalid_argument("row out of bound");

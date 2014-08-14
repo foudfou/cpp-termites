@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iostream>
+#include "Piece.hpp"
 #include "World.hpp"
 #include "Termite.hpp"
 #include "WoodChip.hpp"
@@ -39,6 +40,8 @@ TermiteSpeciesPtr World::getTermiteSpecies(const std::string& name) const
 
 void World::populate(std::shared_ptr<Config> conf)
 {
+  tics = conf->getTics();
+
   board.resize({conf->getWidth(), conf->getHeight()});
   for (auto& kv : conf->getChips()) {
     woodSpecies.push_back(WoodSpeciesPtr(new WoodSpecies(kv.first)));
@@ -56,11 +59,21 @@ void World::populate(std::shared_ptr<Config> conf)
 
   for (auto& ent : conf->getTermitePositions()) {
     TermiteSpeciesPtr tspc = getTermiteSpecies(ent.species);
-    board({ent.pos.col, ent.pos.row}) = Board::PiecePtr(new Termite(tspc));
+    board({ent.pos.col, ent.pos.row}) = PiecePtr(new Termite(tspc));
   }
 
   for (auto& ent : conf->getChipPositions()) {
     WoodSpeciesPtr wspc = getWoodSpecies(ent.species);
-    board({ent.pos.col, ent.pos.row}) = Board::PiecePtr(new WoodChip(wspc));
+    board({ent.pos.col, ent.pos.row}) = PiecePtr(new WoodChip(wspc));
   }
+}
+
+unsigned World::tic()
+{
+  if (!tics)
+    throw std::logic_error("No remaining tics");
+  for (auto pos : board.getTermitePositions()) {
+    board.runTermite(pos);
+  }
+  return --tics;
 }

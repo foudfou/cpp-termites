@@ -1,4 +1,5 @@
 #include "ext/catch.hpp"
+#include "test_helpers.hpp"
 #include "helpers.hpp"
 
 TEST_CASE( "Bool to string", "[helpers]" ) {
@@ -13,6 +14,7 @@ TEST_CASE( "Map(string->int) dump", "[helpers]" ) {
 }
 
 TEST_CASE( "List(string) to map(string->int)", "[helpers]" ) {
+  tmt::LogCapture logCap;
   std::list<std::string> l1 { "can", "be" };
   const std::map<std::string, int> m1 { {"can", 1}, {"be", 1}, };
   REQUIRE( tmt::listStringToMapStringInt(l1) == m1 );
