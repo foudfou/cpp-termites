@@ -7,7 +7,9 @@
 #include "helpers.hpp"
 #include "Piece.hpp"
 
-// FIXME: rename to "Game" (as it comprises rules also), and rename 'grid' to 'board'
+// FIXME: Board should not be renamed to Game (because it comprises rules
+// also): *World* should be renamed to Game, and most of Board's methods should
+// be moved to Game.
 class Board
 {
 public:

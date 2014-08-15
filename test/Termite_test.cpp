@@ -5,7 +5,7 @@
 #include "Termite.hpp"
 #include "WoodChip.hpp"
 
-TEST_CASE( "Termite", "[world]" ) {
+TEST_CASE( "Termite", "[game]" ) {
   WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
   TermiteSpeciesPtr tspc1(new TermiteSpecies("brown", {wspc1}));
   PiecePtr w1 = PiecePtr(new WoodChip(wspc1));

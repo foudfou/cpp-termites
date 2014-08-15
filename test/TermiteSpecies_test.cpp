@@ -1,7 +1,7 @@
 #include "ext/catch.hpp"
 #include "TermiteSpecies.hpp"
 
-TEST_CASE( "TermiteSpecies find", "[world]" ) {
+TEST_CASE( "TermiteSpecies find", "[game]" ) {
   WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
   WoodSpeciesPtr wspc2(new WoodSpecies("maple"));
   WoodSpeciesPtr wspc3(new WoodSpecies("birch"));

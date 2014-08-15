@@ -1,5 +1,5 @@
-#ifndef _WORLD_H_
-#define _WORLD_H_
+#ifndef _GAME_H_
+#define _GAME_H_
 
 #include <list>
 #include <memory>
@@ -9,11 +9,11 @@
 #include "TermiteSpecies.hpp"
 #include "WoodSpecies.hpp"
 
-class World
+class Game
 {
 public:
-  static World& getInstance() {
-    static World W;
+  static Game& getInstance() {
+    static Game W;
     return W;
   }
 
@@ -29,16 +29,16 @@ public:
   unsigned tic();
 
 private:
-  World();
-  ~World();
+  Game();
+  ~Game();
 
   // copy not permitted
-  World(const World&) = delete;
-  void operator=(const World&) = delete;
+  Game(const Game&) = delete;
+  void operator=(const Game&) = delete;
 
   unsigned tics;
   std::list<WoodSpeciesPtr> woodSpecies;
   std::list<TermiteSpeciesPtr> termiteSpecies;
 };
 
-#endif /* _WORLD_H_ */
+#endif /* _GAME_H_ */

@@ -1,11 +1,12 @@
 #include "ext/catch.hpp"
 #include <iostream>
+#include "test_helpers.hpp"
 #include "Board.hpp"
 #include "Piece.hpp"
 #include "Termite.hpp"
 #include "WoodChip.hpp"
 
-TEST_CASE( "Board", "[world]" ) {
+TEST_CASE( "Board", "[game]" ) {
   Board b;
   b.resize({2,3});
   REQUIRE( !b({0,0}) );
@@ -21,7 +22,7 @@ TEST_CASE( "Board", "[world]" ) {
   REQUIRE( b(termites[0])->isTermite() );
 }
 
-TEST_CASE( "Surrounding positions", "[world]" ) {
+TEST_CASE( "Surrounding positions", "[game]" ) {
   Board b;
   b.resize({4,5});
 
@@ -41,7 +42,7 @@ TEST_CASE( "Surrounding positions", "[world]" ) {
   }
 }
 
-TEST_CASE( "Intersect adjacent positions", "[world]" ) {
+TEST_CASE( "Intersect adjacent positions", "[game]" ) {
   Board b;
   b.resize({10,7});
   auto inter = b.intersectAdjacentPositions(tmt::Position({1,1}),
@@ -58,7 +59,8 @@ TEST_CASE( "Intersect adjacent positions", "[world]" ) {
   REQUIRE( inter == std::vector<tmt::Position>({{4,3},{5,4}}) );
 }
 
-TEST_CASE( "Termite move", "[world]" ) {
+TEST_CASE( "Termite move", "[game]" ) {
+  tmt::LogCapture logCap;
   Board b;
   b.resize({3,3});
   WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
@@ -79,7 +81,8 @@ TEST_CASE( "Termite move", "[world]" ) {
   delete pos;
 }
 
-TEST_CASE( "Termite un-/load", "[world]" ) {
+TEST_CASE( "Termite un-/load", "[game]" ) {
+  tmt::LogCapture logCap;
   Board b;
   b.resize({2,2});
   WoodSpeciesPtr wspc1(new WoodSpecies("oak"));

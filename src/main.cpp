@@ -6,7 +6,7 @@
 #include <memory>
 #include "Config.hpp"
 #include "Options.hpp"
-#include "World.hpp"
+#include "Game.hpp"
 #include "helpers.hpp"
 #include "ext/log.h"
 #include "config.h"
@@ -30,12 +30,12 @@ int main(int argc , char* argv[])
   if (!confFileName.empty() && !conf->read(confFileName))
     return EXIT_FAILURE;
 
-  World& world = World::getInstance();
-  world.populate(conf);
+  Game& game = Game::getInstance();
+  game.populate(conf);
 
-  FILE_LOG(logINFO) << "BEFORE:" << std::endl << world.board.dump();
-  while (world.tic()) ;
-  FILE_LOG(logINFO) << "AFTER:" << std::endl << world.board.dump();
+  FILE_LOG(logINFO) << "BEFORE:" << std::endl << game.board.dump();
+  while (game.tic()) ;
+  FILE_LOG(logINFO) << "AFTER:" << std::endl << game.board.dump();
 
   return EXIT_SUCCESS;
 }

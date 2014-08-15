@@ -1,16 +1,16 @@
 #include <algorithm>
 #include <iostream>
 #include "Piece.hpp"
-#include "World.hpp"
+#include "Game.hpp"
 #include "Termite.hpp"
 #include "WoodChip.hpp"
 #include "helpers.hpp"
 
-World::World() { }
+Game::Game() { }
 
-World::~World() { }
+Game::~Game() { }
 
-std::string World::dumpWoodSpecies() const
+std::string Game::dumpWoodSpecies() const
 {
   std::string str;
   for (auto& wspc : woodSpecies) {
@@ -19,7 +19,7 @@ std::string World::dumpWoodSpecies() const
   return str;
 }
 
-std::string World::dumpTermiteSpecies() const
+std::string Game::dumpTermiteSpecies() const
 {
   std::string str;
   for (auto& tspc : termiteSpecies) {
@@ -28,17 +28,17 @@ std::string World::dumpTermiteSpecies() const
   return str;
 }
 
-WoodSpeciesPtr World::getWoodSpecies(const std::string& name) const
+WoodSpeciesPtr Game::getWoodSpecies(const std::string& name) const
 {
   return tmt::find(woodSpecies, name);
 }
 
-TermiteSpeciesPtr World::getTermiteSpecies(const std::string& name) const
+TermiteSpeciesPtr Game::getTermiteSpecies(const std::string& name) const
 {
   return tmt::find(termiteSpecies, name);
 }
 
-void World::populate(std::shared_ptr<Config> conf)
+void Game::populate(std::shared_ptr<Config> conf)
 {
   tics = conf->getTics();
 
@@ -68,7 +68,7 @@ void World::populate(std::shared_ptr<Config> conf)
   }
 }
 
-unsigned World::tic()
+unsigned Game::tic()
 {
   if (!tics)
     throw std::logic_error("No remaining tics");
