@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: termites 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-13 11:46+0200\n"
+"POT-Creation-Date: 2014-08-15 16:49+0200\n"
 "PO-Revision-Date: 2014-07-19 14:19+0200\n"
 "Last-Translator:  <foudil.newbie@gmail.com>\n"
 "Language-Team: French\n"
@@ -51,7 +51,7 @@ msgstr "Config parsée jusu'à la fin: %s."
 msgid "Configuration file set to %s."
 msgstr "Fichier de configuration positionné à %s."
 
-#: ../src/helpers.cpp:48
+#: ../src/helpers.cpp:61
 #, c-format
 msgid "Duplicate item: %s."
 msgstr "Champ en double: %s."
@@ -116,8 +116,8 @@ msgstr ""
 msgid "Position out of bounds (at %d, %d)."
 msgstr "Position hors limites (%d, %d)"
 
-#: ../src/Board.cpp:59
-#, fuzzy, c-format
+#: ../src/Game.cpp:111
+#, c-format
 msgid "Termite at (%d, %d) can't move to already occupied (%d, %d)."
 msgstr ""
 "Le Termite sur (%d, %d) ne peut pas se déplacer vers la case déjà occupée "
