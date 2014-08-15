@@ -29,6 +29,7 @@ namespace tmt {
   std::ostream& operator<<(std::ostream& os, const Position& pos);
 
   static const int MSG_MAX_LEN = 512;
+  enum Options { SUCCESS, NOOP, ERROR };
 
   inline std::mt19937& random_gen() {
     static std::random_device rd;

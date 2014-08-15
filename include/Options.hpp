@@ -31,7 +31,7 @@ public:
   Options& operator=(const Options& that) = delete;
 
   void setConfig(std::shared_ptr<Config> cnf);
-  bool parse(const int argc, char* const* argv);
+  int parse(const int argc, char* const* argv);
   std::string getConfigFileName();
 
 private:

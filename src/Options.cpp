@@ -24,7 +24,7 @@ void Options::setConfig(std::shared_ptr<Config> cnf)
   conf = cnf;
 }
 
-bool Options::parse(const int argc, char* const* argv)
+int Options::parse(const int argc, char* const* argv)
 {
   static struct option long_options[] = {
     {"debug", no_argument, NULL, 'd'},
@@ -58,12 +58,12 @@ bool Options::parse(const int argc, char* const* argv)
       break;
     case 'h':
       std::cout << usage;
-      return true;
+      return tmt::Options::NOOP;
       break;
     case 'v':
       std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << std::endl;
       std::cout << PACKAGE_COPYRIGHT << std::endl;
-      return true;
+      return tmt::Options::NOOP;
       break;
     case 'o':
       options["logFileName"] = optarg;
@@ -84,7 +84,7 @@ bool Options::parse(const int argc, char* const* argv)
       options["tics"] = optarg;
       break;
     case '?':               // error
-      return false;
+      return tmt::Options::ERROR;
       break;
     default:
       tmt::log(logERROR, _("Undefined option '%c'."), c);
@@ -97,7 +97,7 @@ bool Options::parse(const int argc, char* const* argv)
     if (argc - optind > 1)
     {
       tmt::log(logERROR, _("More than one configuration file given."));
-      return false;
+      return tmt::Options::ERROR;
     }
     else
     {
@@ -107,16 +107,16 @@ bool Options::parse(const int argc, char* const* argv)
     }
   }
 
-  if (!check()) return false;
+  if (!check()) return tmt::Options::ERROR;
   if (conf->getInitialized())
   {
     tmt::log(logERROR, _("Config already initialized."));
-    return false;
+    return tmt::Options::ERROR;
   }
-  if (!processInOrder()) return false;
+  if (!processInOrder()) return tmt::Options::ERROR;
   if (initMode == InitMode::OPTS) conf->setInitialized();
 
-  return true;
+  return tmt::Options::SUCCESS;
 }
 
 bool Options::check()

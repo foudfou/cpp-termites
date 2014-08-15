@@ -22,9 +22,11 @@ int main(int argc , char* argv[])
   std::shared_ptr<Config> conf(new Config);
   Options options;
   options.setConfig(conf);
-  if (!options.parse(argc, argv))
+  int res = options.parse(argc, argv);
+  if (res == tmt::Options::NOOP)
     return EXIT_SUCCESS;
-  // FIXME: we need to EXIT_SUCCESS with --help
+  if (res == tmt::Options::ERROR)
+    return EXIT_FAILURE;
 
   auto confFileName = options.getConfigFileName();
   if (!confFileName.empty() && !conf->read(confFileName))
