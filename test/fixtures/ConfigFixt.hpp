@@ -1,7 +1,7 @@
 #ifndef CONFIGFIXT_H
 #define CONFIGFIXT_H
 
-class Config;
+#include "Config.hpp"
 
 inline Config confFixt1()
 {

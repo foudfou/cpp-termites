@@ -1,22 +1,18 @@
 #include "ext/catch.hpp"
+#include "test_helpers.hpp"
+#include "fixtures/ConfigFixt.hpp"
 #include "Board.hpp"
 #include "Config.hpp"
 #include "Piece.hpp"
 #include "Game.hpp"
-#include "test_helpers.hpp"
-#include "fixtures/ConfigFixt.hpp"
-
-TEST_CASE( "Game is a singleton", "[game]" ) {
-  Game& g1 = Game::getInstance();
-  Game& g2 = Game::getInstance();
-  REQUIRE( &g1 == &g2 );
-}
+#include "Termite.hpp"
+#include "WoodChip.hpp"
 
 TEST_CASE( "Game logic", "[game]" ) {
   tmt::LogCapture logCap;
   std::shared_ptr<Config> conf = std::make_shared<Config>(confFixt1());
-  Game& g1 = Game::getInstance();
-  g1.populate(conf);
+  Game g1;
+  g1.init(conf);
 
   SECTION( "Game setup" ) {
     REQUIRE( g1.getWoodSpecies("pine") );
@@ -52,5 +48,48 @@ TEST_CASE( "Game logic", "[game]" ) {
   SECTION( "Game tic" ) {
     g1.tic();
   }
+}
 
+TEST_CASE( "Termite move", "[game]" ) {
+  tmt::LogCapture logCap;
+  Game g1;
+  g1.board.resize({3,3});
+  WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
+  TermiteSpeciesPtr tspc1(new TermiteSpecies("brown", {wspc1}));
+  g1.board({1,1}) = PiecePtr(new Termite(tspc1));
+
+  g1.runTermite({1,1});
+  REQUIRE( !g1.board({1,1}) );
+  tmt::Position* pos = nullptr;
+  std::vector<tmt::Position> dirs =
+    {{0,0},{1,0},{2,0}, {0,1},{2,1}, {0,2},{1,2},{2,2}};
+  for (auto p : dirs) {
+    if (g1.board(p) && g1.board(p)->isTermite()) {
+      pos = new tmt::Position(p);
+      break;
+    }
+  }
+  REQUIRE( pos );
+  delete pos;
+}
+
+TEST_CASE( "Termite un-/load", "[game]" ) {
+  tmt::LogCapture logCap;
+  Game g1;
+  g1.board.resize({2,2});
+  WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
+  TermiteSpeciesPtr tspc1(new TermiteSpecies("brown", {wspc1}));
+  g1.board({0,0}) = PiecePtr(new Termite(tspc1));
+  g1.board({1,0}) = PiecePtr(new WoodChip(wspc1));
+  g1.board({1,1}) = PiecePtr(new WoodChip(wspc1));
+
+  g1.runTermite({0,0});
+  std::vector<tmt::Position> termitePositions = g1.board.getTermitePositions();
+  REQUIRE( std::dynamic_pointer_cast<Termite>(
+             g1.board(termitePositions[0]))->isLoaded() );
+
+  g1.runTermite(termitePositions[0]);
+  termitePositions = g1.board.getTermitePositions();
+  REQUIRE( !std::dynamic_pointer_cast<Termite>(
+             g1.board(termitePositions[0]))->isLoaded() );
 }

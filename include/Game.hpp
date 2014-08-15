@@ -4,6 +4,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include "helpers.hpp"
 #include "Board.hpp"
 #include "Config.hpp"
 #include "TermiteSpecies.hpp"
@@ -12,33 +13,28 @@
 class Game
 {
 public:
-  static Game& getInstance() {
-    static Game W;
-    return W;
-  }
-
-  Board board;
-
-  WoodSpeciesPtr getWoodSpecies(const std::string& name) const;
-  inline size_t getWoodSpeciesSize() const {return woodSpecies.size();}
-  std::string dumpWoodSpecies() const;
-  TermiteSpeciesPtr getTermiteSpecies(const std::string& name) const;
-  inline size_t getTermiteSpeciesSize() const {return termiteSpecies.size();}
-  std::string dumpTermiteSpecies() const;
-  void populate(std::shared_ptr<Config> conf);
-  unsigned tic();
-
-private:
   Game();
   ~Game();
 
-  // copy not permitted
-  Game(const Game&) = delete;
-  void operator=(const Game&) = delete;
+  Board board;
 
+  WoodSpeciesPtr    getWoodSpecies(const std::string& name) const;
+  inline size_t     getWoodSpeciesSize() const {return woodSpecies.size();}
+  std::string       dumpWoodSpecies() const;
+  TermiteSpeciesPtr getTermiteSpecies(const std::string& name) const;
+  inline size_t     getTermiteSpeciesSize() const {return termiteSpecies.size();}
+  std::string       dumpTermiteSpecies() const;
+  void init(std::shared_ptr<Config> conf);
+  unsigned tic();
+  void runTermite(const tmt::Position& pos);
+
+private:
   unsigned tics;
   std::list<WoodSpeciesPtr> woodSpecies;
   std::list<TermiteSpeciesPtr> termiteSpecies;
+
+  tmt::Position moveTermite(const tmt::Position& pos);
+  void toggleTermiteLoadMaybe(const tmt::Position& newPos);
 };
 
 #endif /* _GAME_H_ */

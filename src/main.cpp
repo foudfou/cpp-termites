@@ -30,8 +30,8 @@ int main(int argc , char* argv[])
   if (!confFileName.empty() && !conf->read(confFileName))
     return EXIT_FAILURE;
 
-  Game& game = Game::getInstance();
-  game.populate(conf);
+  Game game;
+  game.init(conf);
 
   FILE_LOG(logINFO) << "BEFORE:" << std::endl << game.board.dump();
   while (game.tic()) ;
