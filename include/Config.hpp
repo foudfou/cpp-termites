@@ -10,9 +10,11 @@
 #include <vector>
 #include "helpers.hpp"
 
+/** Class for parsing configuration files. */
 class Config
 {
 public:
+  /** Virtual pieces intended to exist on the Board. */
   struct Entity {
     std::string species;
     tmt::Position pos;

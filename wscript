@@ -12,7 +12,7 @@ out = 'build'
 
 
 def options(opt):
-    opt.recurse('i18n')
+    opt.recurse('i18n doc')
 
     opt.load('compiler_c compiler_cxx')
     opt.load('waf_unit_test')
@@ -42,7 +42,7 @@ def options(opt):
 
 def configure(cnf):
     cnf.env.APPNAME = APPNAME
-    cnf.recurse('src test i18n')
+    cnf.recurse('src test i18n doc')
 
     if cnf.options.compiler == 'clang':
         cnf.env['CC'] = 'clang'
@@ -56,6 +56,8 @@ def configure(cnf):
     cnf.check_cxx(cxxflags=['-Wall', '-std=c++11'])
     cnf.check(cxxflags=['--coverage'], linkflags='--coverage')
     cnf.check(header_name='getopt.h', features='cxx cxxprogram')
+    cnf.check(lib=['sfml-system','sfml-window','sfml-graphics','sfml-audio'],
+              uselib_store='SFML')
     cnf.find_program('ragel')
     cnf.find_program('cppcheck', var='CPPCHECK', mandatory=False)
     cnf.find_program('valgrind', var='VALGRIND', mandatory=False)
@@ -97,7 +99,7 @@ def configure(cnf):
 
 
 def build(bld):
-    bld.recurse('src test i18n')
+    bld.recurse('src test i18n doc')
 
 
 def distclean(ctx):

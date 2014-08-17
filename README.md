@@ -20,3 +20,4 @@ Apart from the core simulation functionality, this assignment shows off:
 * code coverage (*gcov*)
 * basic tasks for static analysis/lint (*cppcheck*), dynamic analysis (*valgrind*)
 * internationalization (*gettext*)
+* documentation (*doxygen*)

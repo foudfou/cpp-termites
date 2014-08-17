@@ -78,7 +78,7 @@ bool Config::Entity::operator==(const Entity& rhs) const
       pstate.hash[pstate.key] = tmt::listStringToMapStringInt(pstate.list);
     else
       tmt::log(logWARNING, _("Duplicate key ignored: %s"), pstate.key.c_str());
-      pstate.key.clear();
+    pstate.key.clear();
     pstate.list.clear();
   }
 
@@ -203,6 +203,10 @@ void Config::storeEntityPosition(Config::Positions &store, const TmpString &word
                      << ", " << ent.pos.row;
 }
 
+/** Main method to actually parse a configuration file.
+ *
+ * @param configFile the path of the configuration file to parse.
+ */
 bool Config::read(std::string const& configFile)
 {
   if (initialized)
@@ -227,6 +231,10 @@ bool Config::read(std::string const& configFile)
   return finished && checked;
 }
 
+/** Parse a configuration from a string.
+ *
+ * For testing purpose mainly.
+ */
 bool Config::read(std::istringstream& config)
 {
   if (initialized)
@@ -240,6 +248,7 @@ bool Config::read(std::istringstream& config)
   return finished && checked;
 }
 
+/** Run parser on given stream chunk-by-chunk of size BUFFER_SIZE. */
 bool Config::parserRun(std::istream& stream)
 {
   ParserState pstate;
@@ -252,12 +261,17 @@ bool Config::parserRun(std::istream& stream)
   return parserFinish(pstate);
 }
 
+/** Check the configuration coherence.
+ *
+ * This is intended to be used once a configuration is already parsed.
+ */
 bool Config::check() const
 {
   return checkParamsDefined() && checkSpeciesChipsCoherence() &&
     checkSpeciesAndBounds() && checkInitialPositions();
 }
 
+/** @todo to be made private. */
 bool Config::checkParamsDefined() const
 {
   struct param_check_t { const char* msg; unsigned val; };
@@ -279,6 +293,7 @@ bool Config::checkParamsDefined() const
   return true;
 }
 
+/** @todo to be made private. */
 bool Config::checkSpeciesAndBounds() const
 {
   struct member_t { const Config::Positions* positions; const Species* spc;
@@ -310,6 +325,7 @@ bool Config::checkSpeciesAndBounds() const
   return true;
 }
 
+/** @todo to be made private. */
 bool Config::checkInitialPositions() const
 {
   std::vector<bool> cells(width*height);
@@ -330,6 +346,7 @@ bool Config::checkInitialPositions() const
   return true;
 }
 
+/** @todo to be made private. */
 bool Config::checkSpeciesChipsCoherence() const
 {
   Chips woods;

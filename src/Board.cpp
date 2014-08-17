@@ -7,12 +7,14 @@ Board::Board() : width(0), height(0) {}
 
 Board::~Board() { }
 
+/** Resizes the board to `{width,height}` (the first outer cell). */
 void Board::resize(tmt::Position outer)
 {
   width = outer.col; height = outer.row;
   grid.resize(height*width, nullptr);
 }
 
+/** Computes a string representing the board. */
 std::string Board::dump() const
 {
   std::string brd = " ";
@@ -48,6 +50,7 @@ std::string Board::dump() const
   return brd;
 }
 
+/** Computes the list of termite positions. */
 std::vector<tmt::Position> Board::getTermitePositions() const
 {
   std::vector<tmt::Position> tpositions;
@@ -60,6 +63,8 @@ std::vector<tmt::Position> Board::getTermitePositions() const
   return tpositions;
 }
 
+/** Computes the list of the positions adjacent to a given position, considering
+ * board borders. */
 std::vector<tmt::Position>
 Board::getAdjacentPositions(const tmt::Position& pos) const
 {
@@ -78,6 +83,8 @@ Board::getAdjacentPositions(const tmt::Position& pos) const
   return positions;
 }
 
+/** Computes the list of the adjacent positions that two positions have in
+ * common, considering board borders. */
 std::vector<tmt::Position>
 Board::intersectAdjacentPositions(const tmt::Position& pos1,
                                   const tmt::Position& pos2) const

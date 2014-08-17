@@ -30,7 +30,7 @@ def options(ctx):
 def configure(cnf):
     if not cnf.env.LOCALEDIR:
         cnf.env.LOCALEDIR = os.path.join(cnf.env.PREFIX, 'share', 'locale')
-    cnf.msg("I18n installation", cnf.env.LOCALEDIR)
+    cnf.msg("I18n installation directory", cnf.env.LOCALEDIR)
 
     install_i18n = 'no'
     if cnf.options.install_i18n:

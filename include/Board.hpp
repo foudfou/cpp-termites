@@ -6,6 +6,9 @@
 #include "helpers.hpp"
 #include "Piece.hpp"
 
+/** A class representing a 2D finite board for the game.
+ * Cells are localized by their Position. The `{0,0}` position is the origin.
+ */
 class Board
 {
 public:
@@ -19,7 +22,9 @@ public:
   std::vector<tmt::Position> intersectAdjacentPositions(
     const tmt::Position& pos1, const tmt::Position& pos2) const;
 
-  /* we could make `grid` public, but this one's handy */
+  /** Facility operator to get and set a cell content.
+   *
+   * @note We could make `grid` public, but this one's handy. */
   inline PiecePtr& operator()(const tmt::Position pos) {
     return grid.at(width*pos.row+pos.col);
   }

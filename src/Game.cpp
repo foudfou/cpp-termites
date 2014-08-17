@@ -10,6 +10,7 @@ Game::Game() : tics(0) {}
 
 Game::~Game() {}
 
+/** Returns the list of wood species as a string. */
 std::string Game::dumpWoodSpecies() const
 {
   std::string str;
@@ -19,6 +20,7 @@ std::string Game::dumpWoodSpecies() const
   return str;
 }
 
+/** Returns the list of termite species as a string. */
 std::string Game::dumpTermiteSpecies() const
 {
   std::string str;
@@ -28,16 +30,19 @@ std::string Game::dumpTermiteSpecies() const
   return str;
 }
 
+/** Get a WoodSpecies object by its name. */
 WoodSpeciesPtr Game::getWoodSpecies(const std::string& name) const
 {
   return tmt::find(woodSpecies, name);
 }
 
+/** Get a TermiteSpecies object by its name. */
 TermiteSpeciesPtr Game::getTermiteSpecies(const std::string& name) const
 {
   return tmt::find(termiteSpecies, name);
 }
 
+/** Initialize a game from a configuration. */
 void Game::init(std::shared_ptr<Config> conf)
 {
   tics = conf->getTics();
@@ -68,6 +73,7 @@ void Game::init(std::shared_ptr<Config> conf)
   }
 }
 
+/** Move all termites once. */
 unsigned Game::tic()
 {
   if (!tics)
@@ -78,16 +84,19 @@ unsigned Game::tic()
   return --tics;
 }
 
-/*
-  – Les termites se déplacent aléatoirement de case en case dans les huit
-  directions possibles.
-  – Si une termite sans brindille arrive près d’une brindille, elle la prend
-  sur elle.
-  – Si une termite avec brindille arrive près d’une brindille elle la dépose
-  dans une case vide autour du copeau trouvé.
-  – Deux termites ne peuvent se trouver sur une même case.
-  – Une termite renonce à un déplacement si celui-ci doit l’amener en dehors
-  des limites du terrain ou sur une case où se trouve déjà une autre termite.
+/**
+ * Apply move and un-/load rules to a termite.
+ *
+ * Rules are as follows:
+ * > * Les termites se déplacent aléatoirement de case en case dans les huit
+ * >   directions possibles.
+ * > * Si une termite sans brindille arrive près d’une brindille, elle la prend
+ * >   sur elle.
+ * > * Si une termite avec brindille arrive près d’une brindille elle la dépose
+ * >   dans une case vide autour du copeau trouvé.
+ * > * Deux termites ne peuvent se trouver sur une même case.
+ * > * Une termite renonce à un déplacement si celui-ci doit l’amener en dehors
+ * >   des limites du terrain ou sur une case où se trouve déjà une autre termite.
 */
 void Game::runTermite(const tmt::Position& pos)
 {
@@ -95,6 +104,7 @@ void Game::runTermite(const tmt::Position& pos)
   toggleTermiteLoadMaybe(newPos);
 }
 
+/** Move a termite depending on its surrounding. */
 tmt::Position Game::moveTermite(const tmt::Position& pos)
 {
   auto dirs  = board.getAdjacentPositions(pos);
@@ -116,6 +126,7 @@ tmt::Position Game::moveTermite(const tmt::Position& pos)
   return newPos;
 }
 
+/** Move a termite depending on its surrounding. */
 void Game::toggleTermiteLoadMaybe(const tmt::Position& newPos)
 {
   std::shared_ptr<Termite> termite =
