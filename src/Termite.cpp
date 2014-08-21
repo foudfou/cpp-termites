@@ -9,6 +9,8 @@ bool Termite::isTermite() const {return true;}
 
 std::string Termite::dump() const {return "Termite";}
 
+TermiteSpeciesPtr Termite::getSpecies() const {return species;}
+
 bool Termite::isLoaded() const {return bool(woodChip);}
 
 void Termite::load(const PiecePtr& chip)

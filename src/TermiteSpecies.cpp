@@ -11,7 +11,15 @@ TermiteSpecies::~TermiteSpecies() { }
 
 std::string TermiteSpecies::getName() const {return name;}
 
-bool TermiteSpecies::likes(const std::string& wood) const
+bool TermiteSpecies::likes(const WoodSpeciesPtr& woodSpecies) const
 {
-  return bool(tmt::find(woodsLiked, wood));
+  bool found = false;
+  for (auto tspc : woodsLiked) {
+    if (tspc == woodSpecies)
+    {
+      found = true;
+      break;
+    }
+  }
+  return found;
 }

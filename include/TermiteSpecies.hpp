@@ -14,7 +14,7 @@ public:
   virtual ~TermiteSpecies();
 
   std::string getName() const;
-  bool likes(const std::string& wood) const;
+  bool likes(const WoodSpeciesPtr& woodSpecies) const;
 
 private:
   std::string name;

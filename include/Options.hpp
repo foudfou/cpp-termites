@@ -43,8 +43,9 @@ private:
   bool processInOrder();
   bool setLogFile(std::string filename);
   std::vector<Config::Entity>
-  buildEntities(int amount, const std::vector<int> &randoms, int width,
-                int offset) const;
+  // FIXME: passing a char* ?
+  buildEntities(const char* spcname, int amount,
+                const std::vector<int> &randoms, int width, int off) const;
 };
 
 #endif /* _OPTIONS_H_ */

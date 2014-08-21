@@ -194,8 +194,17 @@ bool Options::processInOrder()
       return false;
     }
 
-    conf->setTermitePositions(buildEntities(tamount, randoms, width, 0));
-    conf->setChipPositions(buildEntities(camount, randoms, width, tamount));
+    const char* SPECIES_WOOD_DEFAULT_NAME    = "wspecies0";
+    const char* SPECIES_TERMITE_DEFAULT_NAME = "tspecies0";
+
+    conf->setChips({{SPECIES_WOOD_DEFAULT_NAME,0}});
+    conf->setSpecies(
+      { {SPECIES_TERMITE_DEFAULT_NAME, {{SPECIES_WOOD_DEFAULT_NAME,1}}} });
+
+    conf->setTermitePositions(
+      buildEntities(SPECIES_TERMITE_DEFAULT_NAME, tamount, randoms, width, 0));
+    conf->setChipPositions(
+      buildEntities(SPECIES_WOOD_DEFAULT_NAME, camount, randoms, width, tamount));
   }
   if (options.count("tics"))
   {
@@ -223,14 +232,14 @@ std::string Options::getConfigFileName()
 }
 
 std::vector<Config::Entity>
-Options::buildEntities(int amount, const std::vector<int> &randoms,
-                            int width, int off) const
+Options::buildEntities(const char* spcname, int amount,
+                       const std::vector<int> &randoms, int width, int off) const
 {
   std::vector<Config::Entity> positions;
   std::stringstream randomsStr;
   for (int i=0; i<amount; ++i) {
     auto pos = tmt::rankToPosition(randoms[i+off], width);
-    positions.push_back(Config::Entity({"species0", {pos.col, pos.row}}));
+    positions.push_back(Config::Entity({spcname, {pos.col, pos.row}}));
     if (FILELog::ReportingLevel() >= logDEBUG)
       randomsStr << '|' << pos.col << ':' << pos.row;
   }

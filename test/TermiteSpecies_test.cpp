@@ -5,6 +5,7 @@ TEST_CASE( "TermiteSpecies find", "[game]" ) {
   WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
   WoodSpeciesPtr wspc2(new WoodSpecies("maple"));
   WoodSpeciesPtr wspc3(new WoodSpecies("birch"));
-  TermiteSpeciesPtr tspc1(new TermiteSpecies("brown", {wspc1,wspc2,wspc3}));
-  REQUIRE( tspc1->likes("maple") );
+  TermiteSpeciesPtr tspc1(new TermiteSpecies("brown", {wspc1,wspc2}));
+  REQUIRE( tspc1->likes(wspc2) );
+  REQUIRE( !tspc1->likes(wspc3) );
 }

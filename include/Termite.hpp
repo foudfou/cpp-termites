@@ -12,6 +12,7 @@ public:
 
   virtual bool isTermite() const;
   virtual std::string dump() const;
+  TermiteSpeciesPtr getSpecies() const;
   bool     isLoaded() const;
   void     load(const PiecePtr& chip);
   PiecePtr unload();

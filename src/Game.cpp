@@ -97,7 +97,10 @@ unsigned Game::tic()
  * > * Deux termites ne peuvent se trouver sur une même case.
  * > * Une termite renonce à un déplacement si celui-ci doit l’amener en dehors
  * >   des limites du terrain ou sur une case où se trouve déjà une autre termite.
-*/
+ * ...plus this unexpressed rule:
+ * * Les termites chargent les copeaux des espèces de bois qu'elles aiment, et
+     les déchargent à côté des espèces aimées.
+ */
 void Game::runTermite(const tmt::Position& pos)
 {
   tmt::Position newPos = moveTermite(pos);
@@ -107,10 +110,10 @@ void Game::runTermite(const tmt::Position& pos)
 /** Move a termite depending on its surrounding. */
 tmt::Position Game::moveTermite(const tmt::Position& pos)
 {
-  auto dirs  = board.getAdjacentPositions(pos);
-  std::uniform_int_distribution<int> dis(0, dirs.size()-1);
+  auto directions  = board.getAdjacentPositions(pos);
+  std::uniform_int_distribution<int> dis(0, directions.size()-1);
   int next = dis(tmt::random_gen());
-  tmt::Position newPos = dirs[next];
+  tmt::Position newPos = directions[next];
   if (!board(newPos))
   {
     board(newPos) = board(pos);
@@ -126,26 +129,31 @@ tmt::Position Game::moveTermite(const tmt::Position& pos)
   return newPos;
 }
 
-/** Move a termite depending on its surrounding. */
+/** Make termite load or unload a wood chip, depending on if it's loaded. */
 void Game::toggleTermiteLoadMaybe(const tmt::Position& newPos)
 {
   std::shared_ptr<Termite> termite =
     std::dynamic_pointer_cast<Termite>(board(newPos));
 
-  auto dirs = board.getAdjacentPositions(newPos);
-  for (auto dir : dirs)
+  auto directions = board.getAdjacentPositions(newPos);
+  for (auto dir : directions)
   {
-    PiecePtr p = board(dir);
-    if (p && p->isWoodChip())
+    PiecePtr piece = board(dir);
+    if (piece && piece->isWoodChip())
     {
+      std::shared_ptr<WoodChip> wchip =
+        std::dynamic_pointer_cast<WoodChip>(piece);
+      if (!termite->getSpecies()->likes(wchip->getSpecies()))
+        continue;
+
       if (termite->isLoaded())
       {
         auto commonPositions = board.intersectAdjacentPositions(newPos, dir);
         tmt::Position dropPos; bool dropFound = false;
-        for (auto p : commonPositions) {
-          if (!board(p))  // TODO: pick randomly
+        for (auto pos : commonPositions) {
+          if (!board(pos))  // TODO: pick randomly
           {
-            dropPos = p;
+            dropPos = pos;
             dropFound = true;
             break;
           }
@@ -156,7 +164,7 @@ void Game::toggleTermiteLoadMaybe(const tmt::Position& newPos)
       }
       else
       {
-        termite->load(p);
+        termite->load(piece);
         board(dir) = nullptr;
       }
       break;

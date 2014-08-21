@@ -12,6 +12,7 @@ public:
 
   virtual bool isWoodChip() const;
   std::string dump() const;
+  WoodSpeciesPtr getSpecies() const;
 
 private:
   WoodSpeciesPtr species;
