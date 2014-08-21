@@ -5,6 +5,10 @@ def configure(cnf):
     cnf.env.SRC_INC_DIRS = ['../include', '.']
     cnf.env.SRC_DIR = cnf.path.get_src().abspath()
 
+    cnf.load('compiler_c compiler_cxx')
+    cnf.check(lib=['sfml-system','sfml-window','sfml-graphics'],
+              uselib_store='SFML')
+
 
 def build(bld):
     MAIN = 'main.cpp'
@@ -26,6 +30,7 @@ def build(bld):
         target   = 'termites',
         includes = bld.env.SRC_INC_DIRS,
         use      = 'SRC_OBJS',
+        uselib   = ['SFML'],
     )
 
     if bld.options.do_valgrind:

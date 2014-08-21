@@ -30,6 +30,7 @@ int Options::parse(const int argc, char* const* argv)
     {"debug", no_argument, NULL, 'd'},
     {"help", no_argument, NULL, 'h'},
     {"version", no_argument, NULL, 'v'},
+    {"graphical", no_argument, NULL, 'g'},
     {"output", no_argument, NULL, 'o'},
     {"height", required_argument, NULL, 'H'},
     {"width", required_argument, NULL, 'W'},
@@ -43,7 +44,7 @@ int Options::parse(const int argc, char* const* argv)
   while (1)
   {
     int option_index = 0;
-    int c = getopt_long(argc, argv, "+dhvo:H:W:t:c:T:",
+    int c = getopt_long(argc, argv, "+dhvgo:H:W:t:c:T:",
                         long_options, &option_index);
 
     /* Detect the end of the options. */
@@ -64,6 +65,9 @@ int Options::parse(const int argc, char* const* argv)
       std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << std::endl;
       std::cout << PACKAGE_COPYRIGHT << std::endl;
       return tmt::Options::NOOP;
+      break;
+    case 'g':
+      conf->setGraphicalMode();
       break;
     case 'o':
       options["logFileName"] = optarg;

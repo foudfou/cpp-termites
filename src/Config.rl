@@ -7,7 +7,9 @@
 #include "ext/log.h"
 #include "helpers.hpp"
 
-Config::Config(): initialized(false), tics(0), width(0), height(0) {}
+Config::Config()
+  : initialized(false), graphical(false), tics(0), width(0), height(0)
+{}
 
 Config::~Config() {}
 
@@ -179,12 +181,13 @@ void Config::setChipPositions(const Config::Positions &cpos)
   chipPositions = cpos;
 }
 
+bool Config::getGraphicalMode() const {return graphical;}
+
+void Config::setGraphicalMode() {graphical = true;}
+
 bool Config::getInitialized() const {return initialized;}
 
-void Config::setInitialized()
-{
-  initialized = true;
-}
+void Config::setInitialized() {initialized = true;}
 
 void Config::storeEntityPosition(Config::Positions &store, const TmpString &word,
                                  const TmpString &c, const TmpString &r)

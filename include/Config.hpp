@@ -50,11 +50,14 @@ public:
   void      setTermitePositions(const Positions &tpos);
   Positions getChipPositions() const;
   void      setChipPositions(const Positions &cpos);
+  bool      getGraphicalMode() const;
+  void      setGraphicalMode();
   bool      getInitialized() const;
   void      setInitialized();
 
 private:
   bool initialized;
+  bool graphical;
   unsigned tics;
   unsigned width;
   unsigned height;

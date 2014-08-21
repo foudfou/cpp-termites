@@ -56,8 +56,6 @@ def configure(cnf):
     cnf.check_cxx(cxxflags=['-Wall', '-std=c++11'])
     cnf.check(cxxflags=['--coverage'], linkflags='--coverage')
     cnf.check(header_name='getopt.h', features='cxx cxxprogram')
-    cnf.check(lib=['sfml-system','sfml-window','sfml-graphics','sfml-audio'],
-              uselib_store='SFML')
     cnf.find_program('ragel')
     cnf.find_program('cppcheck', var='CPPCHECK', mandatory=False)
     cnf.find_program('valgrind', var='VALGRIND', mandatory=False)

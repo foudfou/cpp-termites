@@ -14,6 +14,7 @@ class Options
     "  -h, --help\n"
     "  -d, --debug\n"
     "  -v, --version\n"
+    "  -g, --graphical	Graphical mode\n"
     "  -o, --ouput		Log ouput\n"
     "  -H, --height		Board height\n"
     "  -W, --width		Board width\n"
