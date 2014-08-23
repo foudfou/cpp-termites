@@ -7,6 +7,10 @@ Board::Board() : width(0), height(0) {}
 
 Board::~Board() { }
 
+int Board::getWidth() const {return width;}
+
+int Board::getHeight() const {return height;}
+
 /** Resizes the board to `{width,height}` (the first outer cell). */
 void Board::resize(tmt::Position outer)
 {

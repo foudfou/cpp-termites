@@ -76,11 +76,12 @@ def configure(cnf):
         cnf.env.append_value('CXXFLAGS', ['-g'])
     cnf.msg("Compilation mode", release)
 
+    cnf.env.DATA_DIR = cnf.path.find_dir('data').abspath()
     with_coverage = 'no'
     if cnf.options.coverage:
         with_coverage = 'yes'
         cnf.env.append_value('CXXFLAGS', ['--coverage'])
-        cnf.env.LCOV_DIR = cnf.path.find_dir('data').abspath() + '/cov'
+        cnf.env.LCOV_DIR = cnf.env.DATA_DIR + '/cov'
         if cnf.options.compiler == 'clang':
             cnf.env.append_value('STLIBPATH', ['/usr/lib/clang/3.4.2/lib/linux'])
             cnf.env.append_value('STLIB', ['clang_rt.profile-x86_64'])
@@ -93,6 +94,7 @@ def configure(cnf):
     cnf.define('PACKAGE_COPYRIGHT', "Copyright (c) 2014 Foudil Brétel. All rights reserved.")
     cnf.define('LOCALEDIR', cnf.env.LOCALEDIR)
     cnf.define('TEST_DIR', cnf.env.TEST_DIR)
+    cnf.define('DATA_DIR', cnf.env.DATA_DIR)
     cnf.write_config_header('include/config.h')
 
 

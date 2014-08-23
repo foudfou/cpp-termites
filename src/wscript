@@ -21,6 +21,7 @@ def build(bld):
         source   = bld.env.SRC_SOURCES,
         includes = bld.env.SRC_INC_DIRS,
         target   = 'SRC_OBJS',
+        use      = ['SFML'],
     )
     bld.add_manual_dependency(parser, bld.path.find_node('rl/termites_conf.rl'))
 
@@ -30,7 +31,6 @@ def build(bld):
         target   = 'termites',
         includes = bld.env.SRC_INC_DIRS,
         use      = 'SRC_OBJS',
-        uselib   = ['SFML'],
     )
 
     if bld.options.do_valgrind:

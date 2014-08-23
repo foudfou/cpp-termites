@@ -1,7 +1,8 @@
 bin/
 build/
 obj*
-data/
+data/cov/
+*.sample
 .lock-waf*
 .waf*
 TAGS

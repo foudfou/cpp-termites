@@ -15,6 +15,8 @@ public:
   Board();
   virtual ~Board();
 
+  int getWidth() const;
+  int getHeight() const;
   void resize(tmt::Position outer);
   std::string dump() const;
   std::vector<tmt::Position> getTermitePositions() const;
