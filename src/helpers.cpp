@@ -30,6 +30,7 @@ namespace tmt {
     return os << "{" << pos.col << "," << pos.row << "}";
   }
 
+  /** Localized logging. */
   void log(TLogLevel level, const char* msg, ...)
   {
     char buff[MSG_MAX_LEN];
@@ -40,11 +41,13 @@ namespace tmt {
     va_end (args);
   }
 
+  /** Converts a boolean to a "true" or "false" string. */
   std::string btos(const bool& b)
   {
     return b ? "true" : "false";
   }
 
+  /** Returns a strings comprising keys of a map(string->int). */
   std::string dumpMapStringInt(const std::map<std::string, int>& m)
   {
     std::string str;
@@ -52,6 +55,7 @@ namespace tmt {
     return str;
   }
 
+  /** Converts a list of strings to a map(string,int). */
   std::map<std::string, int> listStringToMapStringInt(std::list<std::string> l)
   {
     std::map<std::string, int> m;
@@ -64,6 +68,8 @@ namespace tmt {
     return m;
   }
 
+  /** Pick randomly `n` integers among a a list from 0 to `len`, without
+   * putting back. */
   std::vector<int> pickn(const int n, const int len)
   {
     if (n > len) throw std::invalid_argument("n > length");
@@ -77,6 +83,8 @@ namespace tmt {
     return slice;
   }
 
+  /** Converts a (integer) rank/index inside a vector representing a grid of
+   * witdth `width` to a `Position` coordinate.  */
   Position rankToPosition(const idx_t& n, const unsigned& width)
   {
     if (width < 1) throw std::invalid_argument("width < 1");
@@ -84,6 +92,8 @@ namespace tmt {
     return {col, row};
   }
 
+  /** Converts a `Position` coordinate to a (integer) rank/index inside a
+   * vector representing a grid of witdth `width`. */
   idx_t positionToRank(const Position& pos, const unsigned& width)
   {
     if (width < 1) throw std::invalid_argument("width < 1");

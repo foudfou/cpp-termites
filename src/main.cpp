@@ -40,6 +40,7 @@ int main(int argc , char* argv[])
   if (conf->getGraphicalMode())
   {
     Graphical graphics(game);
+    graphics.init();
     if (!graphics.run())
       return EXIT_FAILURE;
   }

@@ -11,7 +11,7 @@ Game::Game() : tics(0) {}
 Game::~Game() {}
 
 /** Returns the list of wood species as a string. */
-std::string Game::dumpWoodSpecies() const
+std::string Game::dumpWoodSpeciesList() const
 {
   std::string str;
   for (auto& wspc : woodSpecies) {
@@ -21,7 +21,7 @@ std::string Game::dumpWoodSpecies() const
 }
 
 /** Returns the list of termite species as a string. */
-std::string Game::dumpTermiteSpecies() const
+std::string Game::dumpTermiteSpeciesList() const
 {
   std::string str;
   for (auto& tspc : termiteSpecies) {

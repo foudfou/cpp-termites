@@ -11,7 +11,7 @@ class TermiteSpecies
 {
 public:
   TermiteSpecies(const std::string& spc, const std::list<WoodSpeciesPtr>& wd);
-  virtual ~TermiteSpecies();
+  ~TermiteSpecies();
 
   std::string getName() const;
   bool likes(const WoodSpeciesPtr& woodSpecies) const;

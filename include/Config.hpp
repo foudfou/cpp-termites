@@ -26,7 +26,7 @@ public:
   typedef std::vector<Entity>          Positions;
 
   Config();
-  virtual ~Config();
+  ~Config();
 
   bool read(std::string const& configFile);
   bool read(std::istringstream& config);

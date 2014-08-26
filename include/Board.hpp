@@ -13,7 +13,7 @@ class Board
 {
 public:
   Board();
-  virtual ~Board();
+  ~Board();
 
   int getWidth() const;
   int getHeight() const;

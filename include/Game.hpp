@@ -19,11 +19,11 @@ public:
   Board board;
 
   WoodSpeciesPtr    getWoodSpecies(const std::string& name) const;
-  inline size_t     getWoodSpeciesSize() const {return woodSpecies.size();}
-  std::string       dumpWoodSpecies() const;
+  inline std::list<WoodSpeciesPtr> getWoodSpeciesList() const {return woodSpecies;}
+  std::string       dumpWoodSpeciesList() const;
   TermiteSpeciesPtr getTermiteSpecies(const std::string& name) const;
-  inline size_t     getTermiteSpeciesSize() const {return termiteSpecies.size();}
-  std::string       dumpTermiteSpecies() const;
+  inline std::list<TermiteSpeciesPtr> getTermiteSpeciesList() const {return termiteSpecies;}
+  std::string       dumpTermiteSpeciesList() const;
   void init(std::shared_ptr<Config> conf);
   unsigned tic();
   void runTermite(const tmt::Position& pos);

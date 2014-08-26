@@ -26,7 +26,7 @@ class Options
 
 public:
   Options();
-  virtual ~Options();
+  ~Options();
   /* copy not allowed, as Options needs to manage a FILE* for FILELog */
   Options(const Options& that) = delete;
   Options& operator=(const Options& that) = delete;

@@ -8,7 +8,7 @@ class WoodSpecies
 {
 public:
   WoodSpecies(const std::string& nam);
-  virtual ~WoodSpecies();
+  ~WoodSpecies();
 
   std::string getName() const;
 

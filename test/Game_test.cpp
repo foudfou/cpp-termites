@@ -18,11 +18,11 @@ TEST_CASE( "Game logic", "[game]" ) {
     REQUIRE( g1.getWoodSpecies("pine") );
     REQUIRE( g1.getWoodSpecies("cypress") );
     REQUIRE( !g1.getWoodSpecies("NOWSPECIES") );
-    REQUIRE( g1.getWoodSpeciesSize() == 5 );
+    REQUIRE( g1.getWoodSpeciesList().size() == 5 );
     REQUIRE( g1.getTermiteSpecies("brown") );
     REQUIRE( g1.getTermiteSpecies("red") );
     REQUIRE( !g1.getWoodSpecies("NOTSPECIES") );
-    REQUIRE( g1.getTermiteSpeciesSize() == 3 );
+    REQUIRE( g1.getTermiteSpeciesList().size() == 3 );
     auto brd = R"( 0123456
 0-------
 1-T-----
