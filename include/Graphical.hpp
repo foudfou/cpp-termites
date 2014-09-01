@@ -10,16 +10,16 @@
 class Graphical
 {
 public:
+  struct TermiteColors { sf::Color loaded; sf::Color unloaded; };
+
   Graphical(std::shared_ptr<Game> gam);
   ~Graphical();
 
-  bool init();
   bool run();
 
 private:
   std::shared_ptr<Game> game;
 
-  bool initialized;
   unsigned width;
   unsigned height;
 
@@ -28,8 +28,8 @@ private:
   unsigned spriteWidth;
   unsigned spriteHeight;
 
-  std::map<WoodSpeciesPtr, sf::Color>    woodColors;
-  std::map<TermiteSpeciesPtr, std::pair<sf::Color, sf::Color>> termiteColors;
+  std::map<WoodSpeciesPtr, sf::Color> woodColors;
+  std::map<TermiteSpeciesPtr, TermiteColors> termiteColors;
 
   void update();
   void initColors();

@@ -4,6 +4,7 @@
 #include <locale.h>
 #include <cstdlib>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 #include "Config.hpp"
 #include "Options.hpp"
@@ -39,9 +40,16 @@ int main(int argc , char* argv[])
 
   if (conf->getGraphicalMode())
   {
-    Graphical graphics(game);
-    graphics.init();
-    if (!graphics.run())
+    std::unique_ptr<Graphical> graphics;
+    try {
+      graphics = std::unique_ptr<Graphical>(new Graphical(game));
+    }
+    catch (std::runtime_error& ex) {
+      FILE_LOG(logERROR) << std::string(ex.what());
+      return EXIT_FAILURE;
+    }
+
+    if (!graphics->run())
       return EXIT_FAILURE;
   }
   else

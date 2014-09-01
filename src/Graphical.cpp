@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <stdexcept>
 #include "config.h"
 #include "helpers.hpp"
 #include "Graphical.hpp"
@@ -7,26 +8,13 @@
 #include "WoodChip.hpp"
 
 Graphical::Graphical(std::shared_ptr<Game> gam)
-  : game(gam), initialized(false), width(0), height(0),
-    spriteWidth(0), spriteHeight(0)
-{}
-
-Graphical::~Graphical() {}
-
-// FIXME: could be done in ctor, but what if ctor fails ?
-bool Graphical::init()
+  : game(gam), width(0), height(0), spriteWidth(0), spriteHeight(0)
 {
-  if (initialized)
-  {
-    tmt::log(logERROR, _("Graphical already initialized."));
-    return true;
-  }
-
   width = game->board.getWidth();
   height = game->board.getHeight();
 
   if (!texture.loadFromFile(std::string(DATA_DIR) + "/square-outline-32x32.png"))
-    return false;
+    throw std::runtime_error("Can't load texture.");
 
   sf::Vector2u textureSize = texture.getSize();
   spriteWidth  = textureSize.x;
@@ -38,18 +26,12 @@ bool Graphical::init()
   window->setVerticalSyncEnabled(true);
 
   initColors();
-
-  initialized = true;
-  return true;
 }
+
+Graphical::~Graphical() {}
 
 bool Graphical::run()
 {
-  if (!initialized)
-  {
-    tmt::log(logERROR, _("Graphical must be initialized before running."));
-    return false;
-  }
   unsigned next = 1;
   while (window->isOpen())
   {
@@ -89,9 +71,9 @@ void Graphical::update()
         std::shared_ptr<Termite> termite =
           std::dynamic_pointer_cast<Termite>(piece);
         if (termite->isLoaded())
-          sprite.setColor(termiteColors[termite->getSpecies()].first);
+          sprite.setColor(termiteColors[termite->getSpecies()].loaded);
         else
-          sprite.setColor(termiteColors[termite->getSpecies()].second);
+          sprite.setColor(termiteColors[termite->getSpecies()].unloaded);
       }
       else if (piece && piece->isWoodChip())
       {
@@ -112,6 +94,8 @@ void Graphical::update()
 void Graphical::initColors()
 {
   auto woodSpecies = game->getWoodSpeciesList();
+  // TODO: better would be to split the range [255/2, 255] by the number of
+  // species. Ex: 3 species => 127 191 255
   std::vector<int> intColors = tmt::pickn(woodSpecies.size(), 255);
   auto it = intColors.begin();
   for (auto wspc : woodSpecies) {
@@ -121,7 +105,6 @@ void Graphical::initColors()
   intColors = tmt::pickn(woodSpecies.size(), 255);
   it = intColors.begin();
   for (auto tspc : termiteSpecies) {
-    // FIXME: named tuples ?
     termiteColors[tspc] = { sf::Color(0, 0, *(it)), sf::Color(*(it++), 0, 0) };
   }
 }
