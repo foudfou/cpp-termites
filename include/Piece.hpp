@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef _PIECE_H_
 #define _PIECE_H_
 

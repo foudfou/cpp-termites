@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef _TERMITE_H_
 #define _TERMITE_H_
 

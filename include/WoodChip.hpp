@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef _WOODCHIP_H_
 #define _WOODCHIP_H_
 

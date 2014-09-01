@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #include "ext/catch.hpp"
 #include "WoodSpecies.hpp"
 #include "TermiteSpecies.hpp"

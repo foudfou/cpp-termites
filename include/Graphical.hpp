@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef GRAPHICAL_H
 #define GRAPHICAL_H
 

@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #include <iostream>
 #include "ext/log.h"
 #include "helpers.hpp"

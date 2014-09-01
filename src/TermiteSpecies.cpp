@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #include <algorithm>
 #include "helpers.hpp"
 #include "TermiteSpecies.hpp"

@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
 

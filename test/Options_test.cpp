@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #include <memory>
 #include "ext/catch.hpp"
 #include "helpers.hpp"

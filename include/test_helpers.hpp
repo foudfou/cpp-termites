@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef TEST_HELPERS_H
 #define TEST_HELPERS_H
 

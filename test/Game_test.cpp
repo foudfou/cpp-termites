@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #include "ext/catch.hpp"
 #include "test_helpers.hpp"
 #include "fixtures/ConfigFixt.hpp"

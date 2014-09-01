@@ -1,3 +1,5 @@
+/* Copyright (c) 2014 Foudil Brétel. All rights reserved. */
+
 #ifndef CONFIGFIXT_H
 #define CONFIGFIXT_H
 
