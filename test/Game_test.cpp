@@ -80,7 +80,7 @@ TEST_CASE( "Termite un-/load", "[game]" ) {
   WoodSpeciesPtr wspc1(new WoodSpecies("oak"));
   TermiteSpeciesPtr tspc1(new TermiteSpecies("brown", {wspc1}));
 
-  SECTION( "must load" ) {
+  SECTION( "must load and drop" ) {
     g1.board({0,0}) = PiecePtr(new Termite(tspc1));
     g1.board({1,0}) = PiecePtr(new WoodChip(wspc1));
     g1.board({1,1}) = PiecePtr(new WoodChip(wspc1));
@@ -91,13 +91,14 @@ TEST_CASE( "Termite un-/load", "[game]" ) {
     REQUIRE( std::dynamic_pointer_cast<Termite>(
                g1.board(termitePositions[0]))->isLoaded() );
 
-    g1.runTermite(termitePositions[0]);
+    g1.runTermite(termitePositions[0]); // must drop
     termitePositions = g1.board.getTermitePositions();
     REQUIRE( !std::dynamic_pointer_cast<Termite>(
-               g1.board(termitePositions[0]))->isLoaded() );
+               g1.board(termitePositions[0])
+               )->isLoaded() );
   }
 
-  SECTION( "must not load" ) {
+  SECTION( "must not load and remain unloaded" ) {
     WoodSpeciesPtr wspc2(new WoodSpecies("pine"));
     g1.board({0,0}) = PiecePtr(new Termite(tspc1));
     g1.board({1,0}) = PiecePtr(new WoodChip(wspc2));
@@ -109,9 +110,29 @@ TEST_CASE( "Termite un-/load", "[game]" ) {
     REQUIRE( !std::dynamic_pointer_cast<Termite>(
                  g1.board(termitePositions[0]))->isLoaded() );
 
-    g1.runTermite(termitePositions[0]);
+    g1.runTermite(termitePositions[0]); // must remain unloaded
     termitePositions = g1.board.getTermitePositions();
     REQUIRE( !std::dynamic_pointer_cast<Termite>(
-               g1.board(termitePositions[0]))->isLoaded() );
+               g1.board(termitePositions[0])
+               )->isLoaded() );
+  }
+
+  SECTION( "must load and remain loaded" ) {
+    WoodSpeciesPtr wspc2(new WoodSpecies("pine"));
+    g1.board({0,0}) = PiecePtr(new Termite(tspc1));
+    g1.board({1,0}) = PiecePtr(new WoodChip(wspc1));
+    g1.board({1,1}) = PiecePtr(new WoodChip(wspc2));
+    REQUIRE( !std::dynamic_pointer_cast<Termite>(g1.board({0,0}))->isLoaded() );
+
+    g1.runTermite({0,0});
+    std::vector<tmt::Position> termitePositions = g1.board.getTermitePositions();
+    REQUIRE( std::dynamic_pointer_cast<Termite>(
+                 g1.board(termitePositions[0]))->isLoaded() );
+
+    g1.runTermite(termitePositions[0]); // must remain loaded
+    termitePositions = g1.board.getTermitePositions();
+    REQUIRE( std::dynamic_pointer_cast<Termite>(
+               g1.board(termitePositions[0])
+               )->isLoaded() );
   }
 }

@@ -64,6 +64,8 @@ namespace tmt {
     return (it != ctnr.end()) ? *it : nullptr;
   }
 
+  std::vector<int> splitRange(const int lo, const int hi, const int n);
+
 }
 
 #endif /* _HELPERS_H_ */

@@ -93,16 +93,18 @@ void Graphical::update()
 
 void Graphical::initColors()
 {
+  static const int COLOR_LO = 127;
+  static const int COLOR_HI = 255;
+
   auto woodSpecies = game->getWoodSpeciesList();
-  // TODO: better would be to split the range [255/2, 255] by the number of
-  // species. Ex: 3 species => 127 191 255
-  std::vector<int> intColors = tmt::pickn(woodSpecies.size(), 255);
+  std::vector<int> intColors =
+    tmt::splitRange(COLOR_LO, COLOR_HI, woodSpecies.size());
   auto it = intColors.begin();
   for (auto wspc : woodSpecies) {
     woodColors[wspc] =  sf::Color(0, *(it++), 0);
   }
   auto termiteSpecies = game->getTermiteSpeciesList();
-  intColors = tmt::pickn(woodSpecies.size(), 255);
+  intColors = tmt::splitRange(COLOR_LO, COLOR_HI, termiteSpecies.size());
   it = intColors.begin();
   for (auto tspc : termiteSpecies) {
     termiteColors[tspc] = { sf::Color(0, 0, *(it)), sf::Color(*(it++), 0, 0) };

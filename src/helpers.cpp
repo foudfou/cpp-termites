@@ -101,4 +101,19 @@ namespace tmt {
     return pos.row * width + pos.col;
   }
 
+  /** Split a range [`lo`, `hi`] into `n` slices */
+  std::vector<int> splitRange(const int lo, const int hi, const int n)
+  {
+    if (lo >= hi) throw std::invalid_argument("lo >= hi");
+    if (n < 1) throw std::invalid_argument("n < 1");
+    if (n == 1) return std::vector<int>({hi});
+
+    std::vector<int> vec(n);
+    int delta = (hi - lo)/(n - 1);
+    vec[0] = lo;
+    for (int i=1; i<n; ++i)
+      vec[i] = lo + delta*i;
+    return vec;
+  }
+
 }

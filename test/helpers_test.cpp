@@ -50,3 +50,10 @@ TEST_CASE( "Position to Rank.", "[helpers]" ) {
   REQUIRE( tmt::positionToRank({2, 0}, 5) == 2 );
   REQUIRE( tmt::positionToRank({2, 2}, 5) == 12 );
 }
+
+TEST_CASE( "splitRange.", "[helpers]" ) {
+  REQUIRE_THROWS( tmt::splitRange(127, 255, 0) );
+  REQUIRE( tmt::splitRange(127, 255, 1) == std::vector<int>({255}) );
+  REQUIRE( tmt::splitRange(127, 255, 2) == std::vector<int>({127, 255}) );
+  REQUIRE( tmt::splitRange(127, 255, 3) == std::vector<int>({127, 191, 255}) );
+}
